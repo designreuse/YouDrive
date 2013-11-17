@@ -43,7 +43,7 @@ public class LocationManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
-		ILocationManager ilm = (LocationDAO) ctx.getAttribute("ilm");
+		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
 		}
