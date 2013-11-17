@@ -31,13 +31,12 @@ public class UserDAO implements IUserManager {
 			conn = ConnectionManager.getInstance();
 			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by name");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
-			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where name = ?");
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addMembershipStmt = conn.prepareStatement("insert into " + Constants.MEMBERSHIP + " values (DEFAULT,?,?,?)" ,Statement.RETURN_GENERATED_KEYS);
 			deleteMembershipStmt = conn.prepareStatement("delete from " + Constants.MEMBERSHIP + " where id = ?"); 
-			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?)");
+			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
