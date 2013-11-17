@@ -52,9 +52,9 @@ public class LocationManagement extends HttpServlet {
 			System.out.println("Got here.");
 			int id = addLocation(request,ilm);
 			if (id == 0){
-				System.out.println("Problem saving vehicle type to db.");
+				System.out.println("Problem saving location to db.");
 			}else{
-				System.out.println("Vehicle saved with id of " + id);
+				System.out.println("location saved with id of " + id);
 			}
 		}else{
 			

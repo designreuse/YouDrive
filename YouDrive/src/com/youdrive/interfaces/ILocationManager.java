@@ -31,6 +31,14 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public int addLocation(String name, String address, int capacity);
+	/**
+	 * Same as addLocation(name,address,capacity) but with an attempt to be able to pass the errorcode forward
+	 * @param name
+	 * @param address
+	 * @param capacity
+	 * @param errorCode
+	 * @return
+	 */
 	public int addLocation(String name, String address, int capacity, StringBuilder errorCode);
 	/**
 	 * Delete a location by its id

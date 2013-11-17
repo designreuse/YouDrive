@@ -9,12 +9,12 @@
 <body>
 <form id="addLocation" name="addLocation" action="LocationManagement" method="post">
 <label for="locationName">Location Name:</label>
-<input id="locationName" name="locationName" type="text"/>
+<input id="locationName" name="locationName" type="text"/><br/>
 <label for="locationAddress">Address:</label>
-<input id="locationAddress" name="locationAddress" type="text" />
+<input id="locationAddress" name="locationAddress" type="text" /><br/>
 <label for="capacity">Capacity:</label>
-<input id="action" name="action" value="addLocation" type="text"/>
-<input type="hidden" name="action" id="action"/>
+<input id="capacity" name="capacity" type="text"/><br/>
+<input type="hidden" id="action" name="action" value="addLocation" />
 <input type="submit" value="Submit"/>
 <input type="reset" value="Reset"/>
 </form>
