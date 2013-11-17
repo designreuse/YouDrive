@@ -17,6 +17,7 @@ import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.UserDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IUserManager;
+import com.youdrive.models.User;
 
 /**
  * Servlet implementation class UserManagement
@@ -54,17 +55,48 @@ public class UserManagement extends HttpServlet {
 		if (action.equalsIgnoreCase("addUser1")){
 			String isAdmin = request.getParameter("isAdmin");
 			if (isAdmin != null){
-				addAdminUser(request,ium);
+				int userID = addAdminUser(request,ium);
+				if (userID != 0){
+					dispatcher = ctx.getRequestDispatcher("/admin.jsp");
+				}else{
+					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
+				}
 			}else{
 				if (addRegularUserPg1(request,ium)){
-					
+					dispatcher = ctx.getRequestDispatcher("/addUserPg2.jsp");
 				}else{
-					
+					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
 				}
+			}
+		}else if (action.equalsIgnoreCase("login")){
+			User user = authenticateUser(request,ium);
+			if (user != null){
+				if (user.isAdmin()){
+					dispatcher = ctx.getRequestDispatcher("/admin.jsp");
+				}else{
+					dispatcher = ctx.getRequestDispatcher("/user.jsp");
+				}
+			}else{
+				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
 		}else{
 			
 		}
+		dispatcher.forward(request,response);
+	}
+	
+	private User authenticateUser(HttpServletRequest request,IUserManager ium){
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		if (username == null || username.isEmpty()){
+			request.setAttribute("errorMessage", "Missing username");
+		}else if (password == null || password.isEmpty()){
+			request.setAttribute("errorMessage", "Missing password");
+		}else{
+			User user = ium.authenticateUser(username, password);
+			return user;
+		}
+		return null;
 	}
 
 	private int addAdminUser(HttpServletRequest request,IUserManager ium){

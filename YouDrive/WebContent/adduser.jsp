@@ -9,7 +9,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-		<form id="addUser" name="addUser" action="UserManagement" action="post">
+		<form id="addUser" name="addUser" action="UserManagement" method="post">
 		<label for="firstName">First Name:</label>
 		<input required type="text" id="firstName" name="firstName"/><br/>
 		<label for="lastName">Password:</label>

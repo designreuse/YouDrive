@@ -11,7 +11,7 @@
 <title>Login to YouDrive!</title>
 </head>
 <body>
-		<form id="userLogin" name="userLogin" action="UserManagement" action="post">
+		<form id="userLogin" name="userLogin" action="UserManagement" method="post">
 		<label for="username">Username:</label>
 		<input required type="text" id="username" name="username"/><br/>
 		<label for="password">Password:</label>

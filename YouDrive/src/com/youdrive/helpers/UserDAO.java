@@ -17,7 +17,6 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement authenticateUserStmt;
 	private PreparedStatement addRegularUserStmt;
 	private PreparedStatement addAdminUserStmt;
-	private PreparedStatement addUserStmt;
 	private PreparedStatement deleteUserByUsernameStmt;
 	private PreparedStatement addMembershipStmt;
 	private PreparedStatement deleteMembershipStmt;
@@ -35,10 +34,10 @@ public class UserDAO implements IUserManager {
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where name = ?");
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
-			addUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addMembershipStmt = conn.prepareStatement("insert into " + Constants.MEMBERSHIP + " values (DEFAULT,?,?,?)" ,Statement.RETURN_GENERATED_KEYS);
 			deleteMembershipStmt = conn.prepareStatement("delete from " + Constants.MEMBERSHIP + " where id = ?"); 
+			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?)");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -159,5 +158,24 @@ public class UserDAO implements IUserManager {
 		return errorCode;
 	}
 
-
+	@Override
+	public User authenticateUser(String username, String password){
+		User user = null;
+		try{
+			authenticateUserStmt.setString(1,username);
+			authenticateUserStmt.setString(2,password);
+			ResultSet rs = authenticateUserStmt.executeQuery();
+			if (rs.next()){
+				user = new User();
+				user.setId(rs.getInt("id"));
+				user.setAdmin(rs.getBoolean("isAdmin"));
+				return user;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with addMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return user;
+	}
 }
