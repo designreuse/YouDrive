@@ -64,7 +64,7 @@ public class LocationDAO implements ILocationManager {
 				result = new Location(locID,name,address,capacity);
 			}
 		}catch(SQLException e){
-			System.err.println(e.getErrorCode());
+			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with getLocationById: " + e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -85,7 +85,7 @@ public class LocationDAO implements ILocationManager {
 				result = new Location(locID,locName,address,capacity);
 			}
 		}catch(SQLException e){
-			System.err.println(e.getErrorCode());
+			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with getLocationByName: " + e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -105,7 +105,7 @@ public class LocationDAO implements ILocationManager {
 				results.add(new Location(locID,locName,address,capacity));
 			}
 		}catch(SQLException e){
-			System.err.println(e.getErrorCode());
+			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with getAllLocations: " + e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -146,8 +146,7 @@ public class LocationDAO implements ILocationManager {
 				locationID = rs.getInt(1);
 			}
 		}catch(SQLException e){
-			errorCode.append(e.getErrorCode());
-			System.err.println(errorCode.toString() + " " + e.getMessage());
+			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
@@ -162,7 +161,7 @@ public class LocationDAO implements ILocationManager {
 			deleteLocationByIdStmt.executeUpdate();
 		}catch(SQLException e){
 			errorCode = String.valueOf(e.getErrorCode());
-			System.err.println(errorCode);
+			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			errorCode = "Error";
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
