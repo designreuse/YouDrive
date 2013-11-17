@@ -1,4 +1,4 @@
-package com.youdrive.helpers;
+package com.youdrive.models;
 
 public class Membership {
 	private int id;
