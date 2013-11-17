@@ -57,12 +57,14 @@ public class UserManagement extends HttpServlet {
 			if (isAdmin != null){
 				int userID = addAdminUser(request,ium);
 				if (userID != 0){
+					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 				}else{
 					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
 				}
 			}else{
 				if (addRegularUserPg1(request,ium)){
+					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/addUserPg2.jsp");
 				}else{
 					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
@@ -71,6 +73,7 @@ public class UserManagement extends HttpServlet {
 		}else if (action.equalsIgnoreCase("login")){
 			User user = authenticateUser(request,ium);
 			if (user != null){
+				request.setAttribute("errorMessage","");
 				if (user.isAdmin()){
 					dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 				}else{

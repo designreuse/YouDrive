@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Create a Customer/Admin</title>
 </head>
 <body>
 		<form id="addUser" name="addUser" action="UserManagement" method="post">

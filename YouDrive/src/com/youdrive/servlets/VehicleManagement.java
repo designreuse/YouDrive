@@ -56,7 +56,8 @@ public class VehicleManagement extends HttpServlet {
 			if (id == 0){
 				System.out.println("Problem saving vehicle to db.");
 			}else{
-				System.out.println("Vehicle saved with id of " + id);
+				request.setAttribute("errorMessage","");
+				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
 		}else if(action.equalsIgnoreCase("addVehicleType")){
 			System.out.println("Got here.");
@@ -69,6 +70,7 @@ public class VehicleManagement extends HttpServlet {
 		}else{
 			
 		}
+		dispatcher.forward(request,response);
 	}
 
 	private int addVehicleType(HttpServletRequest request, IVehicleManager ivm){

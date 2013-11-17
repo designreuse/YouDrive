@@ -52,25 +52,27 @@ public class LocationManagement extends HttpServlet {
 			System.out.println("Got here.");
 			int id = addLocation(request,ilm);
 			if (id == 0){
-				System.out.println("Problem saving location to db.");
+				dispatcher = ctx.getRequestDispatcher("/addlocation.jsp");
 			}else{
-				System.out.println("location saved with id of " + id);
+				request.setAttribute("errorMessage","");
+				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
 		}else{
 			
 		}
+		dispatcher.forward(request,response);
 	}
 
 	private int addLocation(HttpServletRequest request, ILocationManager ilm){
 		String errorMessage = "";
+		int locationID = 0;
 		try{
 			String name = request.getParameter("locationName");
 			String address = request.getParameter("locationAddress");
 			String c = request.getParameter("capacity");
 			int cap = Integer.parseInt(c);
-			int vehicleTypeID = ilm.addLocation(name, address, cap);
-			System.out.println(vehicleTypeID+"-"+name+"-"+address+"-"+cap);
-			return vehicleTypeID;
+			locationID = ilm.addLocation(name, address, cap);
+			System.out.println(locationID+"-"+name+"-"+address+"-"+cap);
 		}catch(NumberFormatException e){
 			errorMessage = "Error parsing one of the numeric values.";
 		}catch(Exception e){
@@ -78,7 +80,7 @@ public class LocationManagement extends HttpServlet {
 			System.err.println(e.getMessage());
 		}
 		request.setAttribute("errorMessage", errorMessage);
-		return 0;	
+		return locationID;	
 	}
 
 }
