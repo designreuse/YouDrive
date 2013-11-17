@@ -15,7 +15,8 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement getAllUsersStmt;
 	private PreparedStatement getUserStmt;
 	private PreparedStatement authenticateUserStmt;
-	private PreparedStatement addAdminStmt;
+	private PreparedStatement addRegularUserStmt;
+	private PreparedStatement addAdminUserStmt;
 	private PreparedStatement addUserStmt;
 	private PreparedStatement deleteUserByUsernameStmt;
 	private PreparedStatement addMembershipStmt;
@@ -32,7 +33,8 @@ public class UserDAO implements IUserManager {
 			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by name");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where name = ?");
-			addAdminStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
+			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
+			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
 			addUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addMembershipStmt = conn.prepareStatement("insert into " + Constants.MEMBERSHIP + " values (DEFAULT,?,?,?)" ,Statement.RETURN_GENERATED_KEYS);
@@ -49,13 +51,13 @@ public class UserDAO implements IUserManager {
 	public int addAdmin(String username, String password, String firstName,String lastName, String email) {
 		int userID = 0;
 		try{
-			addAdminStmt.setString(1, username);
-			addAdminStmt.setString(2, password);
-			addAdminStmt.setString(3, firstName);
-			addAdminStmt.setString(4, lastName);
-			addAdminStmt.setString(5, email);
-			addAdminStmt.executeUpdate();
-			ResultSet rs = addAdminStmt.getGeneratedKeys();
+			addRegularUserStmt.setString(1, username);
+			addRegularUserStmt.setString(2, password);
+			addRegularUserStmt.setString(3, firstName);
+			addRegularUserStmt.setString(4, lastName);
+			addRegularUserStmt.setString(5, email);
+			addRegularUserStmt.executeUpdate();
+			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
 			if (rs.next()){
 				userID = rs.getInt(1);
 			}
@@ -68,24 +70,47 @@ public class UserDAO implements IUserManager {
 	}
 
 	@Override
+	public int addAdminUser(String username, String password, String firstName, String lastName, String email) {
+		int userID = 0;
+		try{
+			addAdminUserStmt.setString(1, username);
+			addAdminUserStmt.setString(2,password);
+			addAdminUserStmt.setString(3,firstName);
+			addAdminUserStmt.setString(4,lastName);
+			addAdminUserStmt.setString(5,email);
+			addAdminUserStmt.executeUpdate();
+			ResultSet rs = addAdminUserStmt.getGeneratedKeys();
+			if (rs.next()){
+				userID = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with addUser method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return userID;
+	}
+	
+	@Override
 	public int addUser(User p) {
 		int userID = 0;
 		try{
-			addAdminStmt.setString(1, p.getUsername());
-			addAdminStmt.setString(2, p.getPassword());
-			addAdminStmt.setString(3, p.getFirstName());
-			addAdminStmt.setString(4, p.getLastName());
-			addAdminStmt.setString(5, p.getState());
-			addAdminStmt.setString(6, p.getLicense());
-			addAdminStmt.setString(7, p.getAddress());
-			addAdminStmt.setString(8, p.getCcType());
-			addAdminStmt.setInt(9, p.getCcNumber());
-			addAdminStmt.setInt(10, p.getCcSecurityCode());
-			addAdminStmt.setDate(11, p.getCcExpirationDate());
-			addAdminStmt.setBoolean(12, p.isAdmin());
-			addAdminStmt.setDate(13, p.getMemberExpiration());
-			userID = addAdminStmt.executeUpdate();
-			ResultSet rs = addAdminStmt.getGeneratedKeys();
+			addRegularUserStmt.setString(1, p.getUsername());
+			addRegularUserStmt.setString(2, p.getPassword());
+			addRegularUserStmt.setString(3, p.getFirstName());
+			addRegularUserStmt.setString(4, p.getLastName());
+			addRegularUserStmt.setString(5, p.getState());
+			addRegularUserStmt.setString(6, p.getLicense());
+			addRegularUserStmt.setString(7, p.getEmail());
+			addRegularUserStmt.setString(8, p.getAddress());
+			addRegularUserStmt.setString(9, p.getCcType());
+			addRegularUserStmt.setInt(10, p.getCcNumber());
+			addRegularUserStmt.setInt(11, p.getCcSecurityCode());
+			addRegularUserStmt.setDate(12, p.getCcExpirationDate());
+			addRegularUserStmt.setDate(13, p.getMemberExpiration());
+			addRegularUserStmt.setInt(14, p.getMembershipLevel());
+			userID = addRegularUserStmt.executeUpdate();
+			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
 			if (rs.next()){
 				userID = rs.getInt(1);
 			}
@@ -117,6 +142,7 @@ public class UserDAO implements IUserManager {
 		return membershipID;
 	}
 
+	
 	@Override
 	public String deleteMembership(int id) {
 		String errorCode = "";
@@ -132,4 +158,6 @@ public class UserDAO implements IUserManager {
 		}
 		return errorCode;
 	}
+
+
 }
