@@ -12,7 +12,7 @@
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script>
   $(function() {
-    $( "#lastServiced" ).datepicker();
+    $( "#datePicker" ).datepicker();
   });
   
   function setbg(color)
@@ -24,7 +24,9 @@
 </head>
 <body>
 <h3>Add Vehicle</h3>
-	<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO" scope="session"/>
+	<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO" scope="application"/>
+	<jsp:useBean id="vehicleDAO" class="com.youdrive.helpers.VehicleDAO" scope="application"/>
+	<p class="error"><c:out value="${errorMessage }" /></p>
 	<form id="addVehicle" name="addVehicle" action="VehicleManagement" method="post">
 		<label for="make">Make:</label> 
 		<input name="make" id="make" type="text" /><br /> 
@@ -40,9 +42,9 @@
 		<input name="lastServiced" id="lastServiced" type="date" /><br />
 		<label for="vehicleType">Vehicle Type:</label> 
 		<select name="vehicleType">
-			<option value="1">Regular Car</option>
-			<option value="2">Pickup Truck</option>
-			<option value="3">Luxury Car</option>
+		<c:forEach items="${vehicleDAO.getAllVehicleTypes()}" var="vehicleType" varStatus="status">
+			<option value="<c:out value="${ vehicleType.id }" />"> <c:out value="${vehicleType.type }" /></td>				
+		</c:forEach>
 		</select><br/>
 		<label for="assignedLocation">Vehicle Location:</label> 
 		<select name="vehicleLocation">

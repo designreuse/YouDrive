@@ -19,7 +19,7 @@ import com.youdrive.util.Constants;
 
 public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement allVehiclesStmt;
-	private PreparedStatement allVehiclesTypesStmt;
+	private PreparedStatement allVehicleTypesStmt;
 	private PreparedStatement getVehicleStmt;
 	private PreparedStatement addVehicleStmt;
 	private PreparedStatement deleteVehicleStmt;
@@ -35,7 +35,7 @@ public class VehicleDAO implements IVehicleManager {
 		try{
 			conn = ConnectionManager.getInstance();
 			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES);
-			allVehiclesTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES);
+			allVehicleTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES);
 			getVehicleStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where id = ?");
 			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.id = ?");
 			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
@@ -246,19 +246,13 @@ public class VehicleDAO implements IVehicleManager {
 	public ArrayList<VehicleType> getAllVehicleTypes() {
 		ArrayList<VehicleType> results = new ArrayList<VehicleType>();
 		try{
-			ResultSet rs = allVehiclesStmt.executeQuery();
+			ResultSet rs = allVehicleTypesStmt.executeQuery();
 			while (rs.next()){
 				int id = rs.getInt("id");
-				String make = rs.getString("make");
-				String model = rs.getString("model");
-				int year = rs.getInt("year");
-				String tag = rs.getString("tag");
-				int mileage = rs.getInt("mileage");
-				Date lastServiced = rs.getTimestamp("lastServiced");
-				boolean isAvailable = rs.getBoolean("isAvailable");
-				int vehicleType = rs.getInt("vehicleType");
-				int assignedLocation = rs.getInt("assignedLocation");
-				results.add(new Vehicle(id,make,model,year,tag,mileage,lastServiced,isAvailable,vehicleType,assignedLocation));
+				String type = rs.getString("type");
+				Double hourlyPrice = rs.getDouble("hourlyPrice");
+				Double dailyPrice = rs.getDouble("dailyPrice");
+				results.add(new VehicleType(id, type, dailyPrice, dailyPrice));
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));

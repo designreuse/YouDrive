@@ -41,9 +41,38 @@ public class Constants {
 	public static final String LOCATIONS_CAPACITY = "capacity";
 	
 	public static final String COMMENTS = "Comments";
+	public static final String COMMENTS_ID = "id";
+	public static final String COMMENTS_CREATED_ON = "createdOn";
+	public static final String COMMENTS_COMMENT = "comment";
+	public static final String COMMENTS_AUTHOR = "author";
+	
 	public static final String RESERVATIONS = "Reservations";
+	public static final String RESERVATIONS_ID = "id";
+	public static final String RESERVATIONS_CUSTOMER_ID = "customerID";
+	public static final String RESERVATIONS_LOCATION_ID = "locationID";
+	public static final String RESERVATIONS_VEHICLE_ID = "vehicleID";
+	public static final String RESERVATIONS_PICKUP_TIME = "timePickup";
+	public static final String RESERVATIONS_START_TIME = "reservationStart";
+	public static final String RESERVATIONS_END_TIME = "reservationEnd";
+	
+	
 	public static final String VEHICLE_TYPES = "VehicleTypes";
+	public static final String VEHICLE_TYPES_ID = "id";
+	public static final String VEHICLE_TYPES_TYPE = "type";
+	public static final String VEHICLE_TYPES_HOURLY_PRICE = "hourlyPrice";
+	public static final String VEHICLE_TYPES_DAILY_PRICE = "dailyPrice";
+	
 	public static final String VEHICLES = "Vehicles";
+	public static final String VEHICLES_ID = "id";
+	public static final String VEHICLES_MAKE = "make";
+	public static final String VEHICLES_MODEL = "model";
+	public static final String VEHICLES_YEAR = "year";
+	public static final String VEHICLES_TAG = "tag";
+	public static final String VEHICLES_MILEAGE = "mileage";
+	public static final String VEHICLES_LAST_SERVICED = "lastServiced";
+	public static final String VEHICLES_IS_AVAILABLE = "isAvailable";
+	public static final String VEHICLES_VEHICLE_TYPE = "vehicleType";
+	public static final String VEHICLES_LOCATION = "assignedLocation";
 
 	//MySQL Database
 	public static HashMap<Integer,String> errorCodes = new LinkedHashMap<Integer,String>();

@@ -14,6 +14,9 @@
 <li><a href="addvehicle.jsp">Add Vehicle</a></li>
 <li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
 <li><a href="addlocation.jsp">Add Location</a></li>
+<li><a href="managevehicles.jsp">Manage Vehicles and Types</a></li>
+<li><a href="managelocations.jsp">Manage Locations</a></li>
+<li><a href="manageusers.jsp">Manage Users</a></li>
 </ol>
 </body>
 </html>

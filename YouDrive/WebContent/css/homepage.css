@@ -5,6 +5,12 @@ div.logo {
 	font-size: 10em;
 }
 
+p.error{
+	color:red;		
+    text-transform:uppercase;
+    font-size:140%;
+}
+
 #enter{
 	background-color: #1E1E1E;
     color: #979797;
