@@ -21,6 +21,7 @@ public class LocationDAO implements ILocationManager {
 	private PreparedStatement addLocationStmt;
 	private PreparedStatement deleteLocationByNameStmt;
 	private PreparedStatement deleteLocationByIdStmt;
+	private PreparedStatement getVehiclesByLocationStmt;
 	private PreparedStatement updateLocationStmt;
 	private Constants cs = new Constants();
 	private Connection conn = null;
@@ -35,6 +36,8 @@ public class LocationDAO implements ILocationManager {
 			addLocationStmt = conn.prepareStatement("insert into " + Constants.LOCATIONS + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where name = ?");
 			deleteLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where id = ?");
+			getVehiclesByLocationStmt = conn.prepareStatement("select count(*) from " + Constants.VEHICLES + " as v left outer join " 
+										+ Constants.LOCATIONS + " as l on l.id = v.assignedLocation where l.id = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -175,7 +178,6 @@ public class LocationDAO implements ILocationManager {
 		try{
 			deleteLocationByNameStmt.setString(1, name);
 			deleteLocationByNameStmt.executeUpdate();
-			deleteLocationByNameStmt.close();
 		}catch(SQLException e){
 			errorCode = String.valueOf(e.getErrorCode());
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -184,6 +186,24 @@ public class LocationDAO implements ILocationManager {
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return errorCode;
+	}
+
+	@Override
+	public boolean isLocationInUse(int locationID) {
+		try{
+			getVehiclesByLocationStmt.setInt(1, locationID);
+			ResultSet rs = getVehiclesByLocationStmt.executeQuery();
+			if (rs.next()){
+				if (rs.getInt(1) > 0){
+					return true;
+				}
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
 	}
 
 }

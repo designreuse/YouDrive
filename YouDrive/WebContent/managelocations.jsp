@@ -26,7 +26,10 @@
 				<td><c:out value="${ location.name }" /></td>
 				<td><c:out value="${ location.address}" /></td>
 				<td><c:out value="${ location.capacity}" /></td>
-				<td><a	href="editlocations.jsp&locationID=<c:out value="${ location.id }" />">Edit</a>
+				<c:url value="LocationManagement" var="url">
+					<c:param name="locationID" value="${location.id}"/>
+				</c:url>
+				<td><a	href="<c:out value="${url }" />">Edit</a>
 				</td>
 			</tr>
 		</c:forEach>

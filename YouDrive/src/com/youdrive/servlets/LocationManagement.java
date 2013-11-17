@@ -14,6 +14,7 @@ import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.models.Location;
 
 /**
  * Servlet implementation class LocationManagement
@@ -34,7 +35,32 @@ public class LocationManagement extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		ServletContext ctx = this.getServletContext();
+		RequestDispatcher dispatcher = null;
+		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
+		if (ilm == null){
+			ilm = new LocationDAO();
+		}
+		String locationID = request.getParameter("locationID");
+		if (locationID != null && !locationID.isEmpty()){
+			int locID = Integer.parseInt(locationID);
+			Location loc = ilm.getLocationById(locID);
+			if (loc != null){
+				request.setAttribute("location", loc);
+				request.setAttribute("errorMessage","");
+				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
+			}else{
+				request.setAttribute("errorMessage", "Unable to find Location object.");
+				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");
+			}
+/*			boolean isLocationInUse = ilm.isLocationInUse(locID);
+			if (isLocationInUse){
+				
+			}else{
+				errorMessage = "This location has vehicles assigned to it. Please re-assign those vehicles first before deleting."
+			}*/
+		}
+		dispatcher.forward(request,response);
 	}
 
 	/**

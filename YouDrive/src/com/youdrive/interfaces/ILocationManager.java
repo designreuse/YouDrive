@@ -52,4 +52,5 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public String deleteLocationByName(String name);
+	public boolean isLocationInUse(int locationID);
 }
