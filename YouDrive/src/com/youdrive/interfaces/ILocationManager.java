@@ -54,4 +54,11 @@ public interface ILocationManager {
 	public String deleteLocationByName(String name);
 	public boolean isLocationInUse(int locationID);
 	public boolean updateLocation(int locationID, String name, String address, int capacity);
+	/**
+	 * Check to ensure the updated capacity matches the vehicle count in db 
+	 * @param locationID
+	 * @param capacity
+	 * @return
+	 */
+	public int getCurrentCapacity(int locationID);
 }

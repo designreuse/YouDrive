@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.VehicleDAO;
@@ -46,7 +47,7 @@ public class LocationManagement extends HttpServlet {
 			int locID = Integer.parseInt(locationID);
 			Location loc = ilm.getLocationById(locID);
 			if (loc != null){
-				request.setAttribute("location", loc);
+				ctx.setAttribute("location", loc);
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
 			}else{
@@ -75,7 +76,7 @@ public class LocationManagement extends HttpServlet {
 		}
 		String action = request.getParameter("action");
 		if (action.equalsIgnoreCase("addLocation")){
-			System.out.println("Got here.");
+			System.out.println("addLocation action.");
 			int id = addLocation(request,ilm);
 			if (id == 0){
 				dispatcher = ctx.getRequestDispatcher("/addlocation.jsp");
@@ -84,26 +85,36 @@ public class LocationManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editLocation")){
+			System.out.println("Edit Location action.");
 			Location loc = (Location) ctx.getAttribute("location");
 			if (loc == null){
+				System.out.println("Location object not found in request object so instantiating one.");
 				String locationID = request.getParameter("locationID");
 				int locID = Integer.parseInt(locationID);
 				loc = ilm.getLocationById(locID);
 			}
 			if (editLocation(request,ilm,loc)){
 				//Set update message
+				System.out.println("Location updated.");
 				request.setAttribute("errorMessage", "");	
 				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");			
 			}else{
-				//Set error message
+				request.setAttribute("location", loc);
+				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
 			}
-			dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
 		}else{
 			
 		}
 		dispatcher.forward(request,response);
 	}
 
+	/**
+	 * Editing a Location
+	 * @param request
+	 * @param ilm
+	 * @param location
+	 * @return
+	 */
 	private boolean editLocation(HttpServletRequest request, ILocationManager ilm, Location location){
 		String name = request.getParameter("locationName");
 		String address = request.getParameter("locationAddress");
@@ -117,9 +128,21 @@ public class LocationManagement extends HttpServlet {
 			errorMessage = "Missing location capacity";
 		}else{
 			try{
+				//TODO make sure # of assigned vehicles is == or less than this capacity
+				//TODO make sure capacity is not a negative number
+				int locationID = location.getId();
 				int capacity = Integer.parseInt(size);
-				ilm.updateLocation(location.getId(), name, address, capacity);				
-				return true;
+				if (capacity > 0){
+					int currentCapacity = ilm.getCurrentCapacity(locationID);
+					if (currentCapacity <= capacity){
+						ilm.updateLocation(locationID, name, address, capacity);
+						return true;
+					}else{
+						errorMessage = "Increase the capacity of this location. " + currentCapacity + " vehicles are at this location.";
+					}
+				}else{
+					errorMessage = "Location must hold at least 1 vehicle.";
+				}
 			}catch(NumberFormatException e){
 				errorMessage = "Error parsing location capacity.";
 			}
@@ -128,6 +151,12 @@ public class LocationManagement extends HttpServlet {
 		return false;
 	}
 	
+	/**
+	 * Adding a Location
+	 * @param request
+	 * @param ilm
+	 * @return
+	 */
 	private int addLocation(HttpServletRequest request, ILocationManager ilm){
 		String errorMessage = "";
 		int locationID = 0;

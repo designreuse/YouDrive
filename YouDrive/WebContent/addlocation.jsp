@@ -4,6 +4,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="css/homepage.css">
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <title>Add Rental Location</title>
 </head>
 <body>

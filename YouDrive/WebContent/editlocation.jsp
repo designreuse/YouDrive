@@ -6,9 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="css/homepage.css">
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <title>Edit Location</title>
 </head>
 <body>
+<p class="error"><c:out value="${errorMessage }" /></p>
 	<form method="post" action="LocationManagement" name="editLocation"
 		id="editLocation">
 		<c:if test="${location != null }">

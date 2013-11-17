@@ -47,12 +47,6 @@ public class LocationDAO implements ILocationManager {
 		}
 	}
 
-	/*public static LocationDAO getInstance(){
-		if (ldao == null){
-			ldao = new LocationDAO();				
-		}
-		return ldao;
-	}*/
 	
 	@Override
 	public Location getLocationById(int id){
@@ -132,7 +126,7 @@ public class LocationDAO implements ILocationManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with addLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return locationID;
 	}
@@ -152,7 +146,7 @@ public class LocationDAO implements ILocationManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with addLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return locationID;
 	}
@@ -168,7 +162,7 @@ public class LocationDAO implements ILocationManager {
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			errorCode = "Error";
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with deleteLocationById method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return errorCode;
 	}
@@ -184,7 +178,7 @@ public class LocationDAO implements ILocationManager {
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			errorCode = "Error";
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with deleteLocationByName method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return errorCode;
 	}
@@ -202,7 +196,7 @@ public class LocationDAO implements ILocationManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with isLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return false;
 	}
@@ -218,9 +212,26 @@ public class LocationDAO implements ILocationManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with updateLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return false;
+	}
+
+	@Override
+	public int getCurrentCapacity(int locationID) {
+		int result = -1;
+		try{
+			getVehiclesByLocationStmt.setInt(1, locationID);
+			ResultSet rs = getVehiclesByLocationStmt.executeQuery();
+			if (rs.next()){
+				result = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getCurrentCapacity method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return result;
 	}
 
 }

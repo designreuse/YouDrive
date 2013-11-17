@@ -6,6 +6,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="css/homepage.css">
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <title>Enter Payment Information</title>
 </head>
 <body>
