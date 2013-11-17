@@ -30,14 +30,15 @@ public class LocationDAO implements ILocationManager {
 	public LocationDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			getAllLocationsStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " order by name");
-			getLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where id = ?");
-			getLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where name = ?");
+			getAllLocationsStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " order by " + Constants.LOCATIONS_NAME);
+			getLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_ID + " = ?");
+			getLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_NAME + " = ?");
 			addLocationStmt = conn.prepareStatement("insert into " + Constants.LOCATIONS + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where name = ?");
-			deleteLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where id = ?");
+			deleteLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_NAME + " = ?");
+			deleteLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_ID + " = ?");
 			getVehiclesByLocationStmt = conn.prepareStatement("select count(*) from " + Constants.VEHICLES + " as v left outer join " 
 										+ Constants.LOCATIONS + " as l on l.id = v.assignedLocation where l.id = ?");
+			updateLocationStmt = conn.prepareStatement("update " + Constants.LOCATIONS + " set " + Constants.LOCATIONS_NAME + " = ?, " + Constants.LOCATIONS_ADDRESS + " = ?, " + Constants.LOCATIONS_CAPACITY + " = ? where " + Constants.LOCATIONS_ID + " = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -198,6 +199,22 @@ public class LocationDAO implements ILocationManager {
 					return true;
 				}
 			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updateLocation(int locationID, String name, String address,int capacity) {
+		try{
+			updateLocationStmt.setString(1, name);
+			updateLocationStmt.setString(2, address);
+			updateLocationStmt.setInt(3, capacity);
+			updateLocationStmt.setInt(4, locationID);			
+			updateLocationStmt.executeUpdate();
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){

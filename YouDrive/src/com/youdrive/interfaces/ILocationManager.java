@@ -53,4 +53,5 @@ public interface ILocationManager {
 	 */
 	public String deleteLocationByName(String name);
 	public boolean isLocationInUse(int locationID);
+	public boolean updateLocation(int locationID, String name, String address, int capacity);
 }

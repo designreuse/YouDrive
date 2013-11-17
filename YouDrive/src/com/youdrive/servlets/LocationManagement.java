@@ -83,12 +83,51 @@ public class LocationManagement extends HttpServlet {
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
+		}else if (action.equalsIgnoreCase("editLocation")){
+			Location loc = (Location) ctx.getAttribute("location");
+			if (loc == null){
+				String locationID = request.getParameter("locationID");
+				int locID = Integer.parseInt(locationID);
+				loc = ilm.getLocationById(locID);
+			}
+			if (editLocation(request,ilm,loc)){
+				//Set update message
+				request.setAttribute("errorMessage", "");	
+				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");			
+			}else{
+				//Set error message
+			}
+			dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
 		}else{
 			
 		}
 		dispatcher.forward(request,response);
 	}
 
+	private boolean editLocation(HttpServletRequest request, ILocationManager ilm, Location location){
+		String name = request.getParameter("locationName");
+		String address = request.getParameter("locationAddress");
+		String size = request.getParameter("capacity");
+		String errorMessage = "";
+		if (name == null || name.isEmpty()){
+			errorMessage = "Missing location name";
+		}else if (address == null || address.isEmpty()){
+			errorMessage = "Missing location address";
+		}else if (size == null || size.isEmpty()){
+			errorMessage = "Missing location capacity";
+		}else{
+			try{
+				int capacity = Integer.parseInt(size);
+				ilm.updateLocation(location.getId(), name, address, capacity);				
+				return true;
+			}catch(NumberFormatException e){
+				errorMessage = "Error parsing location capacity.";
+			}
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
+	}
+	
 	private int addLocation(HttpServletRequest request, ILocationManager ilm){
 		String errorMessage = "";
 		int locationID = 0;
@@ -96,11 +135,19 @@ public class LocationManagement extends HttpServlet {
 			String name = request.getParameter("locationName");
 			String address = request.getParameter("locationAddress");
 			String c = request.getParameter("capacity");
-			int cap = Integer.parseInt(c);
-			locationID = ilm.addLocation(name, address, cap);
-			System.out.println(locationID+"-"+name+"-"+address+"-"+cap);
+			if (name == null || name.isEmpty()){
+				errorMessage = "Missing location name";
+			}else if (address == null || address.isEmpty()){
+				errorMessage = "Missing location address";
+			}else if (c == null || c.isEmpty()){
+				errorMessage = "Missing location capacity";
+			}else{
+				int cap = Integer.parseInt(c);
+				locationID = ilm.addLocation(name, address, cap);
+			}
+			System.out.println(locationID+"-"+name+"-"+address+"-"+c);
 		}catch(NumberFormatException e){
-			errorMessage = "Error parsing one of the numeric values.";
+			errorMessage = "Error parsing one of the location capacity. Please enter a whole number.";
 		}catch(Exception e){
 			errorMessage = e.getMessage();
 			System.err.println(e.getMessage());
