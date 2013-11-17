@@ -9,6 +9,7 @@
 <title>Create a Customer/Admin</title>
 </head>
 <body>
+<h3>Create A User</h3>
 		<form id="addUser" name="addUser" action="UserManagement" method="post">
 		<label for="firstName">First Name:</label>
 		<input required type="text" id="firstName" name="firstName"/><br/>

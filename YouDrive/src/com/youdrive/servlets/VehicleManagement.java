@@ -51,63 +51,97 @@ public class VehicleManagement extends HttpServlet {
 			ivm = new VehicleDAO();
 		}
 		String action = request.getParameter("action");
+		//Adding a single vehicle
 		if (action.equalsIgnoreCase("addVehicle")){
 			int id = addVehicle(request,ivm);
 			if (id == 0){
-				System.out.println("Problem saving vehicle to db.");
+				System.err.println("Problem saving vehicle to db.");
+				dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
 			}else{
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
 		}else if(action.equalsIgnoreCase("addVehicleType")){
-			System.out.println("Got here.");
+			//adding a vehicle type
 			int id = addVehicleType(request,ivm);
 			if (id == 0){
-				System.out.println("Problem saving vehicle type to db.");
+				System.err.println("Problem saving vehicle type to db.");
+				dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
 			}else{
-				System.out.println("Vehicle saved with id of " + id);
+				request.setAttribute("errorMessage","");
+				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
 		}else{
-			
+
 		}
 		dispatcher.forward(request,response);
 	}
 
 	private int addVehicleType(HttpServletRequest request, IVehicleManager ivm){
 		String errorMessage = "";
+		int vehicleTypeID = 0;
 		try{
 			String type = request.getParameter("vehicleTypeName");
 			String hPrice = request.getParameter("hourlyPrice");
 			String dPrice = request.getParameter("dailyPrice");
-			Double hourlyPrice = Double.parseDouble(hPrice);
-			Double dailyPrice = Double.parseDouble(dPrice);
-			int vehicleTypeID = ivm.addVehicleType(type, hourlyPrice, dailyPrice);
-			System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
-			return vehicleTypeID;
+			if (type == null || type.isEmpty()){
+				errorMessage = "Missing vehicle type";
+			}else if (hPrice == null || hPrice.isEmpty()){
+				errorMessage = "Missing hourly price";
+			}else if (dPrice == null || dPrice.isEmpty()){
+				errorMessage = "Missing daily price";
+			}else{
+				Double hourlyPrice = Double.parseDouble(hPrice);
+				Double dailyPrice = Double.parseDouble(dPrice);
+				vehicleTypeID = ivm.addVehicleType(type, hourlyPrice, dailyPrice);
+				System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+			}
 		}catch(NumberFormatException e){
-			errorMessage = "Error parsing one of the numeric values.";
+			errorMessage = "Error parsing the hourly or daily price entered.";
 		}catch(Exception e){
 			errorMessage = e.getMessage();
 			System.err.println(e.getMessage());
 		}
 		request.setAttribute("errorMessage", errorMessage);
-		return 0;	
+		return vehicleTypeID;	
 	}
-	
+
 	private int addVehicle(HttpServletRequest request, IVehicleManager ivm){
 		String errorMessage = "";
+		int vehicleID = 0;
 		try{
 			String make = request.getParameter("make");
 			String model = request.getParameter("model");
-			int year = Integer.parseInt(request.getParameter("year"));
+			String yr = request.getParameter("year");
 			String tag = request.getParameter("tag");
-			int mileage = Integer.parseInt(request.getParameter("mileage"));
+			String miles = request.getParameter("mileage");
 			String lastServiced = request.getParameter("lastServiced");
-			int vehicleType = Integer.parseInt(request.getParameter("vehicleType"));
-			int assignedLocation = Integer.parseInt(request.getParameter("vehicleLocation"));
-			System.out.println(make+"-"+model+"-"+year+"-"+tag+"-"+mileage+"-"+lastServiced+"-"+vehicleType+"-"+assignedLocation);
-			int vehicleID = ivm.addVehicle(make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation);
-			return vehicleID;
+			String type = request.getParameter("vehicleType");
+			String location = request.getParameter("vehicleLocation");
+			System.out.println(make+"-"+model+"-"+yr+"-"+tag+"-"+miles+"-"+lastServiced+"-"+type+"-"+location);
+			if (make == null || make.isEmpty()){
+				errorMessage = "Missing make";
+			}else if (model == null || model.isEmpty()){
+				errorMessage = "Missing model";
+			}else if (yr == null || yr.isEmpty()){
+				errorMessage = "Missing year";
+			}else if(tag == null || tag.isEmpty()){
+				errorMessage = "Missing tag";
+			}else if(miles == null || miles.isEmpty()){
+				errorMessage = "Missing mileage";
+			}else if(lastServiced == null || lastServiced.isEmpty()){
+				errorMessage = "Missing last serviced date";
+			}else if(type == null || type.isEmpty()){
+				errorMessage = "Missing vehicle type";
+			}else if(location == null || location.isEmpty()){
+				errorMessage = "Missing assigned location";
+			}else{
+				int year = Integer.parseInt(yr);
+				int mileage = Integer.parseInt(miles);
+				int vehicleType = Integer.parseInt(type);
+				int assignedLocation = Integer.parseInt(location);
+				vehicleID = ivm.addVehicle(make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation);
+			}
 		}catch(NumberFormatException e){
 			errorMessage = "Error parsing one of the numeric values.";
 		}catch(Exception e){
@@ -115,6 +149,6 @@ public class VehicleManagement extends HttpServlet {
 			System.err.println(e.getMessage());
 		}
 		request.setAttribute("errorMessage", errorMessage);
-		return 0;		
+		return vehicleID;	
 	}
 }

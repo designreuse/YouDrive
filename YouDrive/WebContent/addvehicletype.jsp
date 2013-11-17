@@ -9,13 +9,14 @@
 <title>Add Vehicle Type</title>
 </head>
 <body>
+<h3>Add Vehicle Type</h3>
 <form id="addVehicleType" name="addVehicleType" action="VehicleManagement" method="post">
 <label for="vehicleTypeName">Vehicle Type Name:</label>
-<input id="vehicleTypeName" name="vehicleTypeName" type="text"/>
+<input id="vehicleTypeName" name="vehicleTypeName" type="text"/><br/>
 <label for="hourlyPrice">Hourly Price:</label>
-<input id="hourlyPrice" name="hourlyPrice" type="text" />
+<input id="hourlyPrice" name="hourlyPrice" type="text" /><br/>
 <label for="dailyPrice">Daily Price:</label>
-<input id="dailyPrice" name="dailyPrice" type="text"/>
+<input id="dailyPrice" name="dailyPrice" type="text"/><br/>
 <input type="hidden" name="action" id="action" value="addVehicleType"/>
 <input type="submit" value="Submit" />
 <input type="reset" value="Reset"/>

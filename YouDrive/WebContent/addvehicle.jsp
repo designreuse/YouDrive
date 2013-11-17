@@ -23,6 +23,7 @@
 <title>Add Vehicle</title>
 </head>
 <body>
+<h3>Add Vehicle</h3>
 	<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO" scope="session"/>
 	<form id="addVehicle" name="addVehicle" action="VehicleManagement" method="post">
 		<label for="make">Make:</label> 

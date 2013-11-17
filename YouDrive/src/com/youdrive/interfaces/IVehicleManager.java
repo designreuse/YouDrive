@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.youdrive.models.Vehicle;
+import com.youdrive.models.VehicleType;
 
 public interface IVehicleManager {
 	/**
@@ -53,4 +54,5 @@ public interface IVehicleManager {
 	public String deleteVehicle(int id);
 	public String deleteVehicleType(String name);
 	public int addVehicleType(String type, double hourlyPrice, double dailyPrice);
+	public ArrayList<VehicleType> getAllVehicleTypes();
 }

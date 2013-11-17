@@ -7,6 +7,7 @@
 <title>Add Rental Location</title>
 </head>
 <body>
+<h3>Add Rental Location</h3>
 <form id="addLocation" name="addLocation" action="LocationManagement" method="post">
 <label for="locationName">Location Name:</label>
 <input id="locationName" name="locationName" type="text"/><br/>

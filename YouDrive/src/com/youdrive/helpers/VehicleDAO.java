@@ -13,11 +13,13 @@ import java.util.Locale;
 
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Vehicle;
+import com.youdrive.models.VehicleType;
 import com.youdrive.util.ConnectionManager;
 import com.youdrive.util.Constants;
 
 public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement allVehiclesStmt;
+	private PreparedStatement allVehiclesTypesStmt;
 	private PreparedStatement getVehicleStmt;
 	private PreparedStatement addVehicleStmt;
 	private PreparedStatement deleteVehicleStmt;
@@ -32,14 +34,15 @@ public class VehicleDAO implements IVehicleManager {
 	public VehicleDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			allVehiclesStmt = conn.prepareStatement("select * from Vehicles");
-			getVehicleStmt = conn.prepareStatement("select * from Vehicles where id = ?");
-			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from Vehicles v left outer join Locations l on v.assignedLocation = l.id where l.id = ?");
-			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from Vehicles v left outer join Locations l on v.assignedLocation = l.id where l.name = ?");
-			addVehicleStmt = conn.prepareStatement("insert into Vehicles values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteVehicleStmt = conn.prepareStatement("delete from Vehicles where id = ?");
-			addVehicleTypeStmt = conn.prepareStatement("insert into VehicleTypes values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteVehicleTypeStmt = conn.prepareStatement("delete from VehicleTypes where type = ?");
+			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES);
+			allVehiclesTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES);
+			getVehicleStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where id = ?");
+			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.id = ?");
+			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
+			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
+			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
+			addVehicleTypeStmt = conn.prepareStatement("insert into " + Constants.VEHICLE_TYPES + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -237,5 +240,31 @@ public class VehicleDAO implements IVehicleManager {
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return vehicleTypeID;
+	}
+
+	@Override
+	public ArrayList<VehicleType> getAllVehicleTypes() {
+		ArrayList<VehicleType> results = new ArrayList<VehicleType>();
+		try{
+			ResultSet rs = allVehiclesStmt.executeQuery();
+			while (rs.next()){
+				int id = rs.getInt("id");
+				String make = rs.getString("make");
+				String model = rs.getString("model");
+				int year = rs.getInt("year");
+				String tag = rs.getString("tag");
+				int mileage = rs.getInt("mileage");
+				Date lastServiced = rs.getTimestamp("lastServiced");
+				boolean isAvailable = rs.getBoolean("isAvailable");
+				int vehicleType = rs.getInt("vehicleType");
+				int assignedLocation = rs.getInt("assignedLocation");
+				results.add(new Vehicle(id,make,model,year,tag,mileage,lastServiced,isAvailable,vehicleType,assignedLocation));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllVehicles method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return results;
 	}
 }
