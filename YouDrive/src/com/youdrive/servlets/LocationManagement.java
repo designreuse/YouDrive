@@ -54,12 +54,6 @@ public class LocationManagement extends HttpServlet {
 				request.setAttribute("errorMessage", "Unable to find Location object.");
 				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");
 			}
-/*			boolean isLocationInUse = ilm.isLocationInUse(locID);
-			if (isLocationInUse){
-				
-			}else{
-				errorMessage = "This location has vehicles assigned to it. Please re-assign those vehicles first before deleting."
-			}*/
 		}
 		dispatcher.forward(request,response);
 	}

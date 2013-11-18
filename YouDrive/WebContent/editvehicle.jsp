@@ -2,8 +2,9 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="vehicleTypeMgr"
-	class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
+<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="application" />
+<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
+<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,12 +27,49 @@
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form id="editVehicle" name="editVehicle" action="VehicleManagement"
-			method="post">
-			<input type="submit" value="Update" /> 
-			<input type="button" onclick="window.location.replace('managevehicles.jsp')"
-				value="Cancel" />
-		</form>
+
+		<c:choose>
+			<c:when test="${vehicle != null }">
+				<form id="editVehicle" name="editVehicle" action="VehicleManagement"
+					method="post">
+					<label for="make">Make:</label>
+					<input required type="text" id="make" name="make" value="${vehicle.make }" /><br/>
+					<label for="model">Model:</label>
+					<input required type="text" id="model" name="model" value="${vehicle.model }" /><br/>
+					<label for="year">Year:</label>
+					<input required type="text" id="year" name="year" value="${vehicle.year }" /><br/>
+					<label for="tag">Tag:</label>
+					<input required type="text" id="tag" name="tag" value="${vehicle.tag }" /><br/>
+					<label for="mileage">Mileage:</label>
+					<input required type="text" id="mileage" name="mileage" value="${vehicle.mileage }" /><br/>
+					<label for="lastServiced">Last Serviced:</label>
+					<input required type="text" id="lastServiced" name="lastServiced" value="${vehicle.lastServiced }" /><br/>
+					<label for="vehicleType">Vehicle Type:</label>
+					<select name="vehicleType">
+						<option value="${vehicle.vehicleType }"><c:out value="${vehicleMgr.getVehicleType(vehicle.vehicleType)}"/></option>
+						<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}" var="vehicleType" varStatus="status">
+							<c:if test="${vehicleType.id != vehicle.vehicleType }">
+								<option value="${vehicleType.id }"><c:out value="${vehicleMgr.getVehicleLocation(vehicleType.id)}"/></option>
+							</c:if>
+						</c:forEach>
+					</select>
+					<label for="assignedLocation">Location:</label>
+					<select name="assignedLocation">
+						<option value="${vehicle.assignedLocation }"><c:out value="${vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}"/></option>
+						<c:forEach items="${locationMgr.getAllLocations()}" var="location" varStatus="status">
+							<c:if test="${location.id != vehicle.assignedLocation }">
+								<option value="${location.id }"><c:out value="${vehicleMgr.getVehicleLocation(location.id)}"/></option>
+							</c:if>
+						</c:forEach>
+					</select>
+					<input type="hidden" id="action" name="action" value="editVehicle"/>
+					<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>
+					<input type="submit" value="Update" /> <input type="button"
+						onclick="window.location.replace('managevehicles.jsp')"
+						value="Cancel" />
+				</form>
+			</c:when>
+		</c:choose>
 	</div>
 </body>
 </html>

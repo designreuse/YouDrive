@@ -22,6 +22,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehicleStmt;
 	private PreparedStatement getVehicleLocationStmt;
 	private PreparedStatement addVehicleStmt;
+	private PreparedStatement updateVehicleStmt;
 	private PreparedStatement deleteVehicleStmt;
 	private PreparedStatement getVehicleTypeStmt;
 	private PreparedStatement getVehiclesByLocationIdStmt;
@@ -41,6 +42,7 @@ public class VehicleDAO implements IVehicleManager {
 			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
 			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
+			updateVehicleStmt = conn.prepareStatement("update " + Constants.VEHICLES + " set make = ?, model = ?, year = ?,tag=?,mileage=?,lastServiced=?,vehicleType=?,assignedLocation=? where id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -232,8 +234,32 @@ public class VehicleDAO implements IVehicleManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getVehicleLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with getVehicleType method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return result;
+	}
+
+	@Override
+	public boolean updateVehicle(int id, String make, String model, int year,
+			String tag, int mileage, String lastServiced, int vehicleType,
+			int assignedLocation) {
+		try{
+			updateVehicleStmt.setString(1, make);
+			updateVehicleStmt.setString(2, model);
+			updateVehicleStmt.setInt(3, year);
+			updateVehicleStmt.setString(4, tag);
+			updateVehicleStmt.setInt(5,mileage);
+			updateVehicleStmt.setString(6, lastServiced);
+			updateVehicleStmt.setInt(7, vehicleType);
+			updateVehicleStmt.setInt(8, assignedLocation);
+			updateVehicleStmt.setInt(9, id);
+			updateVehicleStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with updateVehicle method: " + e.getClass().getName() + ": " + e.getMessage());		
+		}
+		return false;
 	}
 }

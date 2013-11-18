@@ -54,4 +54,6 @@ public interface IVehicleManager {
 	 */
 	public String deleteVehicle(int id);
 	String getVehicleType(int vehicleTypeID);
+	boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
+			int vehicleType, int assignedLocation);
 }
