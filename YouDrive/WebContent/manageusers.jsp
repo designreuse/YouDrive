@@ -12,16 +12,17 @@
 <title>Manage Users</title>
 </head>
 <body>
-<h3>Manage Users</h3>
-<ol class="nav">
-<li><a href="addvehicle.jsp">Add Vehicle</a></li>
-<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
-<li><a href="addlocation.jsp">Add Location</a></li>
-<li><a href="managevehicles.jsp">Manage Vehicles</a></li>
-<li><a href="managevehicletypes.jsp">Manage Vehicle Types</a></li>
-<li><a href="managelocations.jsp">Manage Locations</a></li>
-<li><a href="manageusers.jsp">Manage Users</a></li>
-</ol>
+	<h3>Manage Users</h3>
+	<ol class="nav">
+		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
+		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
+		<li><a href="addlocation.jsp">Add Location</a></li>
+		<li><a href="adduser.jsp">Add Admin User</a></li>
+		<li><a href="managevehicles.jsp">Manage Vehicles</a></li>
+		<li><a href="managevehicletypes.jsp">Manage Vehicle Types</a></li>
+		<li><a href="managelocations.jsp">Manage Locations</a></li>
+		<li><a href="manageusers.jsp">Manage Users</a></li>
+	</ol>
 <div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />

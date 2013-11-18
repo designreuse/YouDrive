@@ -22,10 +22,12 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement updateAdminUserStmt;
 	private PreparedStatement updateRegularUserStmt;
 	private PreparedStatement addAdminUserStmt;
-	private PreparedStatement deleteUserByUsernameStmt;
 	private PreparedStatement addMembershipStmt;
+	private PreparedStatement checkUsernameStmt;
+	private PreparedStatement checkEmailStmt;
 	private PreparedStatement deleteMembershipStmt;
 	private PreparedStatement updateMembershipStmt;
+	private PreparedStatement deleteUserByUsernameStmt;
 
 	private Constants cs = new Constants();
 	private Connection conn = null;
@@ -45,6 +47,8 @@ public class UserDAO implements IUserManager {
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
 			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
+			checkUsernameStmt = conn.prepareStatement("select username from " + Constants.USERS + " where username = ?");
+			checkEmailStmt  = conn.prepareStatement("select email from " + Constants.USERS + " where email = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -110,7 +114,7 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt.setString(7, p.getEmail());
 			addRegularUserStmt.setString(8, p.getAddress());
 			addRegularUserStmt.setString(9, p.getCcType());
-			addRegularUserStmt.setInt(10, p.getCcNumber());
+			addRegularUserStmt.setString(10, p.getCcNumber());
 			addRegularUserStmt.setInt(11, p.getCcSecurityCode());
 			addRegularUserStmt.setString(12, p.getCcExpirationDate());
 			addRegularUserStmt.setDate(13, p.getMemberExpiration());
@@ -203,7 +207,7 @@ public class UserDAO implements IUserManager {
 				String email = rs.getString("email");
 				String address = rs.getString("address");
 				String ccType = rs.getString("ccType");
-				int ccNumber = rs.getInt("ccNumber");
+				String ccNumber = rs.getString("ccNumber");
 				int ccSecurityCode = rs.getInt("ccSecurityCode");
 				String ccExpirationDate = rs.getString("ccExpirationDate");
 				boolean isAdmin = rs.getBoolean("isAdmin");
@@ -236,7 +240,7 @@ public class UserDAO implements IUserManager {
 				String email = rs.getString("email");
 				String address = rs.getString("address");
 				String ccType = rs.getString("ccType");
-				int ccNumber = rs.getInt("ccNumber");
+				String ccNumber = rs.getString("ccNumber");
 				int ccSecurityCode = rs.getInt("ccSecurityCode");
 				String ccExpirationDate = rs.getString("ccExpirationDate");
 				boolean isAdmin = rs.getBoolean("isAdmin");
@@ -269,7 +273,7 @@ public class UserDAO implements IUserManager {
 				String email = rs.getString("email");
 				String address = rs.getString("address");
 				String ccType = rs.getString("ccType");
-				int ccNumber = rs.getInt("ccNumber");
+				String ccNumber = rs.getString("ccNumber");
 				int ccSecurityCode = rs.getInt("ccSecurityCode");
 				String ccExpirationDate = rs.getString("ccExpirationDate");
 				boolean isAdmin = rs.getBoolean("isAdmin");
@@ -299,7 +303,7 @@ public class UserDAO implements IUserManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+			System.err.println("Problem with updateAdminUser method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return false;
 	}
@@ -317,7 +321,7 @@ public class UserDAO implements IUserManager {
 	 * @return
 	 */
 	@Override
-	public boolean updateUser(int id, String username, String password, String firstName, String lastName, String state, String license, String email, String address, String ccType, int ccNumber, int ccSecurityCode, String ccExpirationDate){
+	public boolean updateUser(int id, String username, String password, String firstName, String lastName, String state, String license, String email, String address, String ccType, String ccNumber, int ccSecurityCode, String ccExpirationDate){
 		try{
 			updateRegularUserStmt.setString(1,username);
 			updateRegularUserStmt.setString(2, password);
@@ -328,7 +332,7 @@ public class UserDAO implements IUserManager {
 			updateRegularUserStmt.setString(7, email);
 			updateRegularUserStmt.setString(8, address);
 			updateRegularUserStmt.setString(9, ccType);
-			updateRegularUserStmt.setInt(10, ccNumber);
+			updateRegularUserStmt.setString(10, ccNumber);
 			updateRegularUserStmt.setInt(11, ccSecurityCode);
 			updateRegularUserStmt.setString(12, ccExpirationDate);
 			updateRegularUserStmt.setInt(13, id);
@@ -337,8 +341,40 @@ public class UserDAO implements IUserManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+			System.err.println("Problem with updateUser method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isUsernameInUse(String username){
+		try{
+			checkUsernameStmt.setString(1, username);
+			ResultSet rs = checkUsernameStmt.executeQuery();
+			if (rs.next()){
+				return username.equalsIgnoreCase(rs.getString(1));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isUsernameInUse method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean isEmailInUse(String email){
+		try{
+			checkEmailStmt.setString(1, email);
+			ResultSet rs = checkEmailStmt.executeQuery();
+			if (rs.next()){
+				return email.equalsIgnoreCase(rs.getString(1));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isUsernameInUse method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return true;
 	}
 }

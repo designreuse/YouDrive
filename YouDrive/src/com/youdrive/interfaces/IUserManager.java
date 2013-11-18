@@ -5,19 +5,113 @@ import java.util.ArrayList;
 import com.youdrive.models.User;
 
 public interface IUserManager {
+	/**
+	 * Adding an admin user
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param email
+	 * @return
+	 */
 	public int addAdmin(String username, String password, String firstName, String lastName, String email);
+	/**
+	 * Adding a regular User and returns the user's id
+	 * @param p
+	 * @return
+	 */
 	public int addUser(User p);
+	/**
+	 * Adding an Admin user and returns the admin's id
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param email
+	 * @return
+	 */
 	public int addAdminUser(String username, String password, String firstName, String lastName, String email);
+	/**
+	 * TODO move to Membership interface
+	 * @param name
+	 * @param price
+	 * @param duration
+	 * @return
+	 */
 	public int addMembership(String name, double price, int duration);
+	/**
+	 * Get the User object by the user's id
+	 * @param userID
+	 * @return
+	 */
 	public User getUser(int userID);
+	/**
+	 * Get the User object by their username
+	 * @param username
+	 * @return
+	 */
 	public User getUserByUsername(String username);
+	/**
+	 * TODO remove to separate interface
+	 * @param id
+	 * @return
+	 */
 	public String deleteMembership(int id);
-	User authenticateUser(String username, String password);
-	ArrayList<User> getAllUsers();
+	/**
+	 * Returns the user by combination of username and password
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public User authenticateUser(String username, String password);
+	/**
+	 * Returns an arraylist of all the users in the system
+	 * @return  ArrayList<User> 
+	 */
+	public ArrayList<User> getAllUsers();
+	/**
+	 * Updates the admin user's information
+	 * @param id
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param email
+	 * @return
+	 */
 	boolean updateAdminUser(int id, String username, String password, String firstName,
 			String lastName, String email);
+	/**
+	 * Updates the regular user's information
+	 * @param id
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param state
+	 * @param license
+	 * @param email
+	 * @param address
+	 * @param ccType
+	 * @param ccNumber
+	 * @param ccSecurityCode
+	 * @param ccExpirationDate
+	 * @return
+	 */
 	boolean updateUser(int id,String username, String password, String firstName,
 			String lastName, String state, String license, String email,
-			String address, String ccType, int ccNumber, int ccSecurityCode,
+			String address, String ccType, String ccNumber, int ccSecurityCode,
 			String ccExpirationDate);
+	/**
+	 * Returns true if the provided username is taken
+	 * @param username
+	 * @return
+	 */
+	boolean isUsernameInUse(String username);
+	/**
+	 * Returns true if the provided email is taken
+	 * @param email
+	 * @return
+	 */
+	boolean isEmailInUse(String email);
 }

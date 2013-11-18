@@ -18,6 +18,12 @@ public interface IVehicleManager {
 	 * @return Vehicle
 	 */
 	public Vehicle getVehicle(int id);
+	/**
+	 * Get the vehicle location name of a provided location id
+	 * TODO maybe move to Location  interface
+	 * @param locationID
+	 * @return
+	 */
 	public String getVehicleLocation(int locationID);
 	/**
 	 * Get vehicles by providing the location  ID
@@ -53,7 +59,25 @@ public interface IVehicleManager {
 	 * @return
 	 */
 	public String deleteVehicle(int id);
-	String getVehicleType(int vehicleTypeID);
-	boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
+	/**
+	 * Get the vehicle Type by the vehicle type id of a vehicle
+	 * @param vehicleTypeID
+	 * @return String
+	 */
+	public String getVehicleType(int vehicleTypeID);
+	/**
+	 * Update the Vehicle details. Returns true if successful and false otherwise
+	 * @param id
+	 * @param make
+	 * @param model
+	 * @param year
+	 * @param tag
+	 * @param mileage
+	 * @param lastServiced
+	 * @param vehicleType
+	 * @param assignedLocation
+	 * @return boolean
+	 */
+	public boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
 			int vehicleType, int assignedLocation);
 }

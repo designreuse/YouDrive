@@ -16,6 +16,7 @@
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
 		<li><a href="addlocation.jsp">Add Location</a></li>
+		<li><a href="adduser.jsp">Add Admin User</a></li>
 		<li><a href="managevehicles.jsp">Manage Vehicles</a></li>
 		<li><a href="managevehicletypes.jsp">Manage Vehicle Types</a></li>
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
@@ -62,7 +63,7 @@
 					</c:if>					
 					<input type="hidden" id="id" name="id" value="${user.id }" />
 					<input type="hidden" id="isAdmin" name="isAdmin" value="${user.isAdmin() }" />
-					<input type="hidden" id="action" name="action" value="editUser"/>
+					<input type="hidden" id="action" name="action" value="AdminEditUser"/>
 					<input type="submit" value="Update"/>
 					<input type="button" onclick="window.location.replace('manageusers.jsp')" value="Cancel"/>
 				</form>

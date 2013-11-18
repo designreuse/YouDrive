@@ -36,7 +36,7 @@
 						<option value="DE">DE</option>
 						<option value="DC">DC</option>
 						<option value="FL">FL</option>
-						<option value="GA">GE</option>
+						<option value="GA">GA</option>
 						<option value="HI">HI</option>
 						<option value="ID">ID</option>
 						<option value="IL">IL</option>
@@ -86,13 +86,13 @@
 						<option value="Amex">American Express</option>
 					</select><br /> 
 					<label for="ccNumber">Credit Card Number:</label> 
-					<input required type="text" id="username" name="username" /><br /> 
+					<input required type="text" id="ccNumber" name="ccNumber" /><br /> 
 					<label	for="ccSecurityCode">CVC/CVV:</label> 
 					<input required type="text"	id="ccSecurityCode" name="ccSecurityCode" /><br /> 
 					<label	for="ccExpiration">Card Expires:</label> 
 					<input required	type="text" id="ccExpiration" name="ccExpiration"
 						placeholder="Enter as: MM/YY" /><br /> 
-					<input type="hidden" id="action" name="action" value="addUser2" /> 
+					<input type="hidden" id="action" name="action" value="registerUser2" /> 
 					<input	type="submit" value="Next" /> 
 					<input type="reset" value="Reset" />
 					<input type="hidden" id="firstName" name="firstName"

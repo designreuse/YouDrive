@@ -13,7 +13,7 @@ public class User {
 	String email;
 	String address;
 	String ccType;
-	int ccNumber;
+	String ccNumber;
 	int ccSecurityCode;
 	String ccExpirationDate;
 	boolean isAdmin;
@@ -59,7 +59,7 @@ public class User {
 	 */
 	public User(int id, String username, String password, String firstName,
 			String lastName, String state, String license, String email,
-			String address, String ccType, int ccNumber, int ccSecurityCode,
+			String address, String ccType, String ccNumber, int ccSecurityCode,
 			String ccExpirationDate,  boolean isAdmin,
 			Date memberExpiration, int membershipLevel) {
 		this.id = id;
@@ -139,10 +139,10 @@ public class User {
 	public void setCcType(String ccType) {
 		this.ccType = ccType;
 	}
-	public int getCcNumber() {
+	public String getCcNumber() {
 		return ccNumber;
 	}
-	public void setCcNumber(int ccNumber) {
+	public void setCcNumber(String ccNumber) {
 		this.ccNumber = ccNumber;
 	}
 	public int getCcSecurityCode() {
