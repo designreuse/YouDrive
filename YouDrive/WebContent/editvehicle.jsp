@@ -61,8 +61,8 @@
 							</c:if>
 						</c:forEach>
 					</select><br/>
-					<label for="assignedLocation">Location:</label>
-					<select name="assignedLocation">
+					<label for="vehicleLocation">Location:</label>
+					<select name="vehicleLocation">
 						<option value="${vehicle.assignedLocation }"><c:out value="${vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}"/></option>
 						<c:forEach items="${locationMgr.getAllLocations()}" var="location" varStatus="status">
 							<c:if test="${location.id != vehicle.assignedLocation }">

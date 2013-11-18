@@ -99,6 +99,7 @@ public class VehicleManagement extends HttpServlet {
 			String vehicleId = request.getParameter("vehicleID");
 			if (vehicleId == null || vehicleId.isEmpty()){
 				request.setAttribute("errorMessage", "Invalid vehicle ID.");
+				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}else{
 				try{
 					int vID = Integer.parseInt(vehicleId);
@@ -107,17 +108,20 @@ public class VehicleManagement extends HttpServlet {
 					if (v != null){
 						if (editVehicle(request,ivm,ilm,v)){
 							request.setAttribute("errorMessage", "");
+							dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 						}else{
-							request.setAttribute("errorMessage","Unable to save the changes.");
+							request.setAttribute("vehicle", v);
+							dispatcher = ctx.getRequestDispatcher("/editvehicle.jsp");
 						}
 					}else{
 						request.setAttribute("errorMessage", "Unable to retrieve Vehicle object.");
+						dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 					}
 				}catch(NumberFormatException e){
 					request.setAttribute("errorMessage","Invalid vehicle ID format.");
+					dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 				}
 			}
-			dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 		}else{
 			dispatcher = ctx.getRequestDispatcher("/login.jsp");
 		}
@@ -251,6 +255,7 @@ public class VehicleManagement extends HttpServlet {
 			}
 		}catch(NumberFormatException e){
 			errorMessage = "Error parsing one of the numeric values.";
+			System.err.println(e.getMessage());
 		}catch(Exception e){
 			errorMessage = e.getMessage();
 			System.err.println(e.getMessage());
