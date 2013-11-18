@@ -12,6 +12,7 @@
 </head>
 <body>
 <h3>Add Vehicle Type</h3>
+<p class="error"><c:out value="${errorMessage }" /></p>
 <form id="addVehicleType" name="addVehicleType" action="VehicleManagement" method="post">
 <label for="vehicleTypeName">Vehicle Type Name:</label>
 <input id="vehicleTypeName" name="vehicleTypeName" type="text"/><br/>

@@ -21,12 +21,14 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement allVehiclesStmt;
 	private PreparedStatement allVehicleTypesStmt;
 	private PreparedStatement getVehicleStmt;
+	private PreparedStatement getVehicleTypeStmt;
 	private PreparedStatement addVehicleStmt;
 	private PreparedStatement deleteVehicleStmt;
 	private PreparedStatement getVehiclesByLocationIdStmt;
 	private PreparedStatement getVehiclesByLocationNameStmt;
 	private PreparedStatement addVehicleTypeStmt;
 	private PreparedStatement deleteVehicleTypeStmt;
+	private PreparedStatement updateVehicleTypeStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = new Constants();
 	private Connection conn;
@@ -37,12 +39,14 @@ public class VehicleDAO implements IVehicleManager {
 			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES);
 			allVehicleTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES);
 			getVehicleStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where id = ?");
+			getVehicleTypeStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES + " where id = ?");
 			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.id = ?");
 			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
 			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
 			addVehicleTypeStmt = conn.prepareStatement("insert into " + Constants.VEHICLE_TYPES + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");
+			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");			
+			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -260,5 +264,43 @@ public class VehicleDAO implements IVehicleManager {
 			System.err.println("Problem with getAllVehicles method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
+	}
+
+	@Override
+	public VehicleType getVehicleType(int vehicleTypeID) {
+		VehicleType result = null;
+		try{
+			getVehicleTypeStmt.setInt(1, vehicleTypeID);
+			ResultSet rs = getVehicleTypeStmt.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("id");
+				String type = rs.getString("type");
+				Double hourlyPrice = rs.getDouble("hourlyPrice");
+				Double dailyPrice = rs.getDouble("dailyPrice");
+				result = new VehicleType(id, type, dailyPrice, dailyPrice);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllVehicles method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public boolean updateVehicleType(int vehicleTypeID, String type,Double hourlyPrice, Double dailyPrice) {
+		try{
+			updateVehicleTypeStmt.setString(1, type);
+			updateVehicleTypeStmt.setDouble(2, hourlyPrice);
+			updateVehicleTypeStmt.setDouble(3, dailyPrice);
+			updateVehicleTypeStmt.setInt(4, vehicleTypeID);			
+			updateVehicleTypeStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with updateLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
 	}
 }

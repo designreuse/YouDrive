@@ -11,18 +11,18 @@
 <title>Create a Customer/Admin</title>
 </head>
 <body>
-<h3>Create A User</h3>
+<h3>YouDrive Registration</h3>
 		<form id="addUser" name="addUser" action="UserManagement" method="post">
 		<label for="firstName">First Name:</label>
 		<input required type="text" id="firstName" name="firstName"/><br/>
 		<label for="lastName">Last Name:</label>
 		<input required type="text" id="lastName" name="lastName"/><br/>
 		<label for="email">Email Address:</label>
-		<input required type="text" id="email" name="email"/><br/>
+		<input required type="email" id="email" name="email"/><br/>
 		<label for="username">Username:</label>
 		<input required type="text" id="username" name="username"/><br/>
 		<label for="password">Password:</label>
-		<input required type="text" id="password" name="password"/><br/>
+		<input required type="password" id="password" name="password"/><br/>
 		<label for="isAdmin">Is Admin:</label>
 		<input type="checkbox" id="isAdmin" name="isAdmin"/><br/>
 		<input type="hidden" id="action" name="action" value="addUser1"/>

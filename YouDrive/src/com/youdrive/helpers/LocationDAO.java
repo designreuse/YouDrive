@@ -209,6 +209,7 @@ public class LocationDAO implements ILocationManager {
 			updateLocationStmt.setInt(3, capacity);
 			updateLocationStmt.setInt(4, locationID);			
 			updateLocationStmt.executeUpdate();
+			return true;
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){

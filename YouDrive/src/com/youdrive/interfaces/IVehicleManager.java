@@ -55,4 +55,6 @@ public interface IVehicleManager {
 	public String deleteVehicleType(String name);
 	public int addVehicleType(String type, double hourlyPrice, double dailyPrice);
 	public ArrayList<VehicleType> getAllVehicleTypes();
+	public VehicleType getVehicleType(int vehicleTypeID);
+	public boolean updateVehicleType(int vehicleTypeID, String type,Double hourlyPrice, Double dailyPrice);
 }
