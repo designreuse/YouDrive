@@ -53,4 +53,5 @@ public interface IVehicleManager {
 	 * @return
 	 */
 	public String deleteVehicle(int id);
+	String getVehicleType(int vehicleTypeID);
 }

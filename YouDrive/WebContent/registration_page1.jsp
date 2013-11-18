@@ -8,11 +8,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>Create a Customer/Admin</title>
+<title>YouDrive Registration</title>
 </head>
 <body>
-<h3>Admin - Add User</h3>
-		<form id="addUser" name="addUser" action="UserManagement" method="post">
+<h3>YouDrive Registration</h3>
+		<form id="registerUser" name="registerUser" action="UserManagement" method="post">
 		<label for="firstName">First Name:</label>
 		<input required type="text" id="firstName" name="firstName"/><br/>
 		<label for="lastName">Last Name:</label>
@@ -23,9 +23,7 @@
 		<input required type="text" id="username" name="username"/><br/>
 		<label for="password">Password:</label>
 		<input required type="password" id="password" name="password"/><br/>
-		<label for="isAdmin">Is Admin:</label>
-		<input type="checkbox" id="isAdmin" name="isAdmin"/><br/>
-		<input type="hidden" id="action" name="action" value="addUser1"/>
+		<input type="hidden" id="action" name="action" value="registerUser1"/>
 		<input type="submit" value="Next"/>
 		<input type="reset" value="Reset"/>
 		</form>

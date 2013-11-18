@@ -90,6 +90,7 @@ public class Vehicle {
 		return isAvailable;
 	}
 
+	
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
 	}

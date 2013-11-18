@@ -80,7 +80,7 @@ public class VehicleTypeManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
 			}else{
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
+				dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editVehicleType")){
 			VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
@@ -91,7 +91,7 @@ public class VehicleTypeManagement extends HttpServlet {
 			}
 			if (editVehicleType(request,ivtm,vType)){
 				request.setAttribute("errorMessage", "");
-				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+				dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
 			}else{
 				dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
 			}

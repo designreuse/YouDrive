@@ -23,6 +23,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehicleLocationStmt;
 	private PreparedStatement addVehicleStmt;
 	private PreparedStatement deleteVehicleStmt;
+	private PreparedStatement getVehicleTypeStmt;
 	private PreparedStatement getVehiclesByLocationIdStmt;
 	private PreparedStatement getVehiclesByLocationNameStmt;
 	private SimpleDateFormat sdf;
@@ -35,6 +36,7 @@ public class VehicleDAO implements IVehicleManager {
 			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " group by vehicleType");
 			getVehicleStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where id = ?");
 			getVehicleLocationStmt = conn.prepareStatement("select name from " + Constants.LOCATIONS + " where id = ?");
+			getVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES + " where id = ?");
 			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.id = ?");
 			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
 			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
@@ -207,6 +209,23 @@ public class VehicleDAO implements IVehicleManager {
 		try{
 			getVehicleLocationStmt.setInt(1, locationID);
 			ResultSet rs = getVehicleLocationStmt.executeQuery();
+			if (rs.next()){
+				result = rs.getString(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getVehicleLocation method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return result;
+	}
+	
+	@Override
+	public String getVehicleType(int vehicleTypeID) {
+		String result = "";
+		try{
+			getVehicleTypeStmt.setInt(1, vehicleTypeID);
+			ResultSet rs = getVehicleTypeStmt.executeQuery();
 			if (rs.next()){
 				result = rs.getString(1);
 			}

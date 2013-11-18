@@ -14,7 +14,7 @@
 	<div class="logo">YouDrive</div>
 	<div class="underlogo">
 		<a href="login.jsp" title="Login to YouDrive!">Login</a> | <a
-			href="adduser.jsp" title="Register For YouDrive">Register</a>
+			href="registration_page1.jsp" title="Register For YouDrive">Register</a>
 	</div>
 </body>
 </html>

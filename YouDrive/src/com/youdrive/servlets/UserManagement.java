@@ -25,14 +25,14 @@ import com.youdrive.models.User;
 @WebServlet("/UserManagement")
 public class UserManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public UserManagement() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public UserManagement() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -70,6 +70,13 @@ public class UserManagement extends HttpServlet {
 					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
 				}
 			}
+		}else if (action.equalsIgnoreCase("registerUser1")){
+			if (addRegularUserPg1(request,ium)){
+				request.setAttribute("errorMessage","");				
+				dispatcher = ctx.getRequestDispatcher("/registration_page2.jsp");
+			}else{
+				dispatcher = ctx.getRequestDispatcher("/registration_page1.jsp");
+			}
 		}else if (action.equalsIgnoreCase("login")){
 			User user = authenticateUser(request,ium);
 			if (user != null){
@@ -83,11 +90,11 @@ public class UserManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
 		}else{
-			
+
 		}
 		dispatcher.forward(request,response);
 	}
-	
+
 	private User authenticateUser(HttpServletRequest request,IUserManager ium){
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
@@ -125,7 +132,7 @@ public class UserManagement extends HttpServlet {
 		}
 		return userID;
 	}
-	
+
 	private boolean addRegularUserPg1(HttpServletRequest request,IUserManager ium){
 		int userID = 0;
 		String username = request.getParameter("username");
@@ -151,7 +158,7 @@ public class UserManagement extends HttpServlet {
 			addUser1.put("firstName", firstName);
 			addUser1.put("lastName", lastName);
 			addUser1.put("email", email);
-			request.setAttribute("addUser1", addUser1);
+			request.setAttribute("registration_page1", addUser1);
 			return true;
 		}
 		return false;

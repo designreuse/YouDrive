@@ -36,6 +36,7 @@
 			<th>Is Available</th>
 			<th>Vehicle Type</th>
 			<th>Vehicle Location</th>
+			<th>Edit</th>
 		</tr>
 		<c:forEach items="${vehicleMgr.getAllVehicles()}" var="vehicle"
 			varStatus="status">
@@ -46,9 +47,9 @@
 				<td><c:out value="${ vehicle.tag }" /></td>
 				<td><c:out value="${ vehicle.mileage }" /></td>
 				<td><c:out value="${ vehicle.lastServiced }" /></td>
-				<td><c:out value="${ vehicle.isAvailable }" /></td>
-				<td><c:out value="${ vehicleMgr.get }" /></td>
-				<td><c:out value="${ vehicle.isAvailable }" /></td>
+				<td><c:out value="${ vehicle.isAvailable() }"/></td>
+				<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
+				<td><c:out value="${ vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}" /></td>
 				<c:url value="VehicleManagement" var="url">
 					<c:param name="vehicleID" value="${vehicle.id}"/>
 				</c:url>

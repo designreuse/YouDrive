@@ -24,7 +24,7 @@
 <body>
 <h3>Add Vehicle</h3>
 	<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO" scope="application"/>
-	<jsp:useBean id="vehicleDAO" class="com.youdrive.helpers.VehicleDAO" scope="application"/>
+	<jsp:useBean id="vehicleTypeDAO" class="com.youdrive.helpers.VehicleTypeDAO" scope="application"/>
 	<p class="error"><c:out value="${errorMessage }" /></p>
 	<form id="addVehicle" name="addVehicle" action="VehicleManagement" method="post">
 		<label for="make">Make:</label> 
@@ -41,7 +41,7 @@
 		<input name="lastServiced" id="lastServiced" type="text" /><br />
 		<label for="vehicleType">Vehicle Type:</label> 
 		<select name="vehicleType">
-		<c:forEach items="${vehicleDAO.getAllVehicleTypes()}" var="vehicleType" varStatus="status">
+		<c:forEach items="${vehicleTypeDAO.getAllVehicleTypes()}" var="vehicleType" varStatus="status">
 			<option value="<c:out value="${ vehicleType.id }" />"> <c:out value="${vehicleType.type }" /></td>				
 		</c:forEach>
 		</select><br/>
