@@ -232,7 +232,7 @@ public class VehicleManagement extends HttpServlet {
 					if (l != null){
 						int locationCapacity = l.getCapacity();
 						//Don't change vehicle is location is full.
-						if (locationCapacity >= currentCapacity){
+						if (locationCapacity > currentCapacity){
 							if (!(ivm.updateVehicle(vehicleID,make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation))){
 								errorMessage = "Could not update Vehicle details.";
 							}else{
