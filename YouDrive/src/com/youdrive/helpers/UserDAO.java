@@ -352,14 +352,14 @@ public class UserDAO implements IUserManager {
 			checkUsernameStmt.setString(1, username);
 			ResultSet rs = checkUsernameStmt.executeQuery();
 			if (rs.next()){
-				return username.equalsIgnoreCase(rs.getString(1));
+				return true;
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with isUsernameInUse method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -368,13 +368,13 @@ public class UserDAO implements IUserManager {
 			checkEmailStmt.setString(1, email);
 			ResultSet rs = checkEmailStmt.executeQuery();
 			if (rs.next()){
-				return email.equalsIgnoreCase(rs.getString(1));
+				return true;
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with isUsernameInUse method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
-		return true;
+		return false;
 	}
 }

@@ -90,6 +90,10 @@ public class Constants {
 	}
 
 	public String getError(int code){
-		return errorCodes.get(code);
+		String errorCode = errorCodes.get(code);
+		if (errorCode == null){
+			errorCode = String.valueOf(code);
+		}
+		return errorCode;
 	}
 }

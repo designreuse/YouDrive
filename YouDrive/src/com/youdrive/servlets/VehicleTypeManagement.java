@@ -83,17 +83,25 @@ public class VehicleTypeManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editVehicleType")){
+			System.out.println("editVehicleType action");
+			String errorMessage = "";
 			VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
 			if (vType == null){
 				String vehicleType = request.getParameter("vehicleTypeID");
-				int vehicleTypeID = Integer.parseInt(vehicleType);
-				vType = ivtm.getVehicleType(vehicleTypeID);
-			}
-			if (editVehicleType(request,ivtm,vType)){
-				request.setAttribute("errorMessage", "");
-				dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
-			}else{
-				dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+				if (vehicleType ==  null || vehicleType.isEmpty()){
+					errorMessage = "No vehicle type requested.";
+				}else{
+					int vehicleTypeID = Integer.parseInt(vehicleType);
+					vType = ivtm.getVehicleType(vehicleTypeID);
+				}
+			}else{				
+				if (editVehicleType(request,ivtm,vType)){
+					request.setAttribute("errorMessage", "");
+					dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
+				}else{
+					request.setAttribute("vehicleType", vType);
+					dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+				}
 			}
 		}
 		dispatcher.forward(request,response);
@@ -122,9 +130,14 @@ public class VehicleTypeManagement extends HttpServlet {
 				}else if (dailyPrice < 0){
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
 				}else{
-					ivtm.updateVehicleType(vehicleTypeID,type, hourlyPrice, dailyPrice);
-					System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
-					return true;
+					boolean isTypeInUse = ivtm.isTypeInUse(type);
+					if (!isTypeInUse || type.equalsIgnoreCase(vType.getType())){
+						ivtm.updateVehicleType(vehicleTypeID,type, hourlyPrice, dailyPrice);
+						System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+						return true;
+					}else{
+						errorMessage = "Type (" + type + ") already in use.";
+					}
 				}
 			}
 		}catch(NumberFormatException e){

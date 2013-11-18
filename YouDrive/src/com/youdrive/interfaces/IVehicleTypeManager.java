@@ -42,5 +42,6 @@ public interface IVehicleTypeManager {
 	 * @return boolean
 	 */
 	public boolean updateVehicleType(int vehicleTypeID, String type, Double hourlyPrice, Double dailyPrice);
+	public boolean isTypeInUse(String type);
 
 }

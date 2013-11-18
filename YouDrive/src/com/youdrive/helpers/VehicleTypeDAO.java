@@ -20,6 +20,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	private PreparedStatement deleteVehicleTypeStmt;
 	private PreparedStatement updateVehicleTypeStmt;
 	private PreparedStatement allVehicleTypesStmt;
+	private PreparedStatement checkVehicleTypeStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = new Constants();
 	private Connection conn;
@@ -32,6 +33,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			addVehicleTypeStmt = conn.prepareStatement("insert into " + Constants.VEHICLE_TYPES + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");			
 			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
+			checkVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES  + " where type = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleTypesDAO");
 		}catch(SQLException e){
@@ -133,6 +135,22 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with updateVehicleType method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isTypeInUse(String type) {
+		try{
+			checkVehicleTypeStmt.setString(1,type);
+			ResultSet rs = checkVehicleTypeStmt.executeQuery();
+			if (rs.next()){
+				return true;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isTypeInUse method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return false;
 	}
