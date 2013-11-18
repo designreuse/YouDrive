@@ -9,27 +9,30 @@ import com.youdrive.interfaces.ILocationManager;
 
 public class ILocationManagerTest {
 	private static ILocationManager ilm = new LocationDAO();
-	private StringBuilder errorCode = new StringBuilder();
 	
 	@Test
 	public void testGetAllLocations() {
-		assertEquals("getAllLocations","3",String.valueOf(ilm.getAllLocations().size()));
+		fail("Not yet implemented.");
 	}
 
 	@Test
 	public void testGetLocationById() {
-		assertEquals("getLocationByID","Milledge Location",ilm.getLocationByName("Milledge Location").getName());
+		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetLocationByName() {
-		assertEquals("getLocationByID",1,ilm.getLocationById(1).getId());
+		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testAddLocation() {
-		int locationID = ilm.addLocation("Locos Location","198 West Campus Rd, Athens GA 30602",250,errorCode);
-		assertEquals("getLocationByID",4,locationID);
+	public void testAddLocationStringStringInt() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testAddLocationStringStringIntStringBuilder() {
+		fail("Not yet implemented");
 	}
 
 	@Test
@@ -39,6 +42,21 @@ public class ILocationManagerTest {
 
 	@Test
 	public void testDeleteLocationByName() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testIsLocationInUse() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testUpdateLocation() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testGetCurrentCapacity() {
 		fail("Not yet implemented");
 	}
 

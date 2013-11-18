@@ -23,6 +23,7 @@ public class LocationDAO implements ILocationManager {
 	private PreparedStatement deleteLocationByIdStmt;
 	private PreparedStatement getVehiclesByLocationStmt;
 	private PreparedStatement updateLocationStmt;
+	private PreparedStatement checkLocationNameStmt;
 	private Constants cs = new Constants();
 	private Connection conn = null;
 	private static LocationDAO ldao = null;
@@ -39,6 +40,7 @@ public class LocationDAO implements ILocationManager {
 			getVehiclesByLocationStmt = conn.prepareStatement("select count(*) from " + Constants.VEHICLES + " as v left outer join " 
 										+ Constants.LOCATIONS + " as l on l.id = v.assignedLocation where l.id = ?");
 			updateLocationStmt = conn.prepareStatement("update " + Constants.LOCATIONS + " set " + Constants.LOCATIONS_NAME + " = ?, " + Constants.LOCATIONS_ADDRESS + " = ?, " + Constants.LOCATIONS_CAPACITY + " = ? where " + Constants.LOCATIONS_ID + " = ?");
+			checkLocationNameStmt = conn.prepareStatement("select name from " + Constants.LOCATIONS + " where name = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -235,4 +237,19 @@ public class LocationDAO implements ILocationManager {
 		return result;
 	}
 
+	@Override
+	public boolean isLocationNameInUse(String name){
+		try{
+			checkLocationNameStmt.setString(1, name);
+			ResultSet rs = checkLocationNameStmt.executeQuery();
+			if (rs.next()){
+				return true;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isLocationNameInUse method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
+	}
 }

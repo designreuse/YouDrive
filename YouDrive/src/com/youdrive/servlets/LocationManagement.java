@@ -68,15 +68,16 @@ public class LocationManagement extends HttpServlet {
 		if (ilm == null){
 			ilm = new LocationDAO();
 		}
+		String dispatchedPage = "/admin.jsp";
 		String action = request.getParameter("action");
 		if (action.equalsIgnoreCase("addLocation")){
 			System.out.println("addLocation action.");
 			int id = addLocation(request,ilm);
 			if (id == 0){
-				dispatcher = ctx.getRequestDispatcher("/addlocation.jsp");
+				dispatchedPage = "/addlocation.jsp";
 			}else{
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");
+				dispatchedPage = "/managelocations.jsp";
 			}
 		}else if (action.equalsIgnoreCase("editLocation")){
 			System.out.println("Edit Location action.");
@@ -91,14 +92,15 @@ public class LocationManagement extends HttpServlet {
 				//Set update message
 				System.out.println("Location updated.");
 				request.setAttribute("errorMessage", "");	
-				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");			
+				dispatchedPage = "/managelocations.jsp";			
 			}else{
 				request.setAttribute("location", loc);
-				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
+				dispatchedPage = "/editlocation.jsp";
 			}
-		}else{
+		}else if (action.equalsIgnoreCase("deleteLocation")){
 			
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 
@@ -129,8 +131,14 @@ public class LocationManagement extends HttpServlet {
 				if (capacity > 0){
 					int currentCapacity = ilm.getCurrentCapacity(locationID);
 					if (currentCapacity <= capacity){
-						ilm.updateLocation(locationID, name, address, capacity);
-						return true;
+						boolean locationInUse = ilm.isLocationNameInUse(name);
+						//If new location name is not in use or if location name is unchanged
+						if (!locationInUse || name.equalsIgnoreCase(location.getName())){
+							ilm.updateLocation(locationID, name, address, capacity);
+							return true;
+						}else{
+							errorMessage = "Location name already in use.";
+						}
 					}else{
 						errorMessage = "Increase the capacity of this location. " + currentCapacity + " vehicles are at this location.";
 					}

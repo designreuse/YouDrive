@@ -1,10 +1,12 @@
 package com.youdrive.interfaces;
 
 import java.util.ArrayList;
+
+import com.youdrive.helpers.LocationDAO;
+import com.youdrive.helpers.UserDAO;
 import com.youdrive.models.Location;
 
 public interface ILocationManager {
-	
 	/**
 	 * Retrieve a list of all locations in the system
 	 * @return ArrayList<Location>
@@ -61,4 +63,10 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public int getCurrentCapacity(int locationID);
+	/**
+	 * Check if the selected location name is in use
+	 * @param name
+	 * @return
+	 */
+	public boolean isLocationNameInUse(String name);
 }
