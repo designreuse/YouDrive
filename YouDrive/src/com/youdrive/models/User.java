@@ -15,8 +15,7 @@ public class User {
 	String ccType;
 	int ccNumber;
 	int ccSecurityCode;
-	Date ccExpirationDate;
-	boolean memberStatus;
+	String ccExpirationDate;
 	boolean isAdmin;
 	Date memberExpiration;
 	int membershipLevel;
@@ -39,6 +38,47 @@ public class User {
 		this.lastName = lastName;
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param state
+	 * @param license
+	 * @param email
+	 * @param address
+	 * @param ccType
+	 * @param ccNumber
+	 * @param ccSecurityCode
+	 * @param ccExpirationDate
+	 * @param isAdmin
+	 * @param memberExpiration
+	 * @param membershipLevel
+	 */
+	public User(int id, String username, String password, String firstName,
+			String lastName, String state, String license, String email,
+			String address, String ccType, int ccNumber, int ccSecurityCode,
+			String ccExpirationDate,  boolean isAdmin,
+			Date memberExpiration, int membershipLevel) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.state = state;
+		this.license = license;
+		this.email = email;
+		this.address = address;
+		this.ccType = ccType;
+		this.ccNumber = ccNumber;
+		this.ccSecurityCode = ccSecurityCode;
+		this.ccExpirationDate = ccExpirationDate;
+		this.isAdmin = isAdmin;
+		this.memberExpiration = memberExpiration;
+		this.membershipLevel = membershipLevel;
+	}
 	public int getId() {
 		return id;
 	}
@@ -111,18 +151,13 @@ public class User {
 	public void setCcSecurityCode(int ccSecurityCode) {
 		this.ccSecurityCode = ccSecurityCode;
 	}
-	public Date getCcExpirationDate() {
+	public String getCcExpirationDate() {
 		return ccExpirationDate;
 	}
-	public void setCcExpirationDate(Date ccExpirationDate) {
+	public void setCcExpirationDate(String ccExpirationDate) {
 		this.ccExpirationDate = ccExpirationDate;
 	}
-	public boolean isMemberStatus() {
-		return memberStatus;
-	}
-	public void setMemberStatus(boolean memberStatus) {
-		this.memberStatus = memberStatus;
-	}
+
 	public boolean isAdmin() {
 		return isAdmin;
 	}

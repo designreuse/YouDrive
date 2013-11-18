@@ -1,10 +1,12 @@
 package com.youdrive.helpers;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
@@ -14,6 +16,7 @@ import com.youdrive.util.Constants;
 public class UserDAO implements IUserManager {
 	private PreparedStatement getAllUsersStmt;
 	private PreparedStatement getUserStmt;
+	private PreparedStatement getUserByUsernameStmt;
 	private PreparedStatement authenticateUserStmt;
 	private PreparedStatement addRegularUserStmt;
 	private PreparedStatement addAdminUserStmt;
@@ -29,8 +32,9 @@ public class UserDAO implements IUserManager {
 	public UserDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by name");
+			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by lastName");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
+			getUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
@@ -104,7 +108,7 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt.setString(9, p.getCcType());
 			addRegularUserStmt.setInt(10, p.getCcNumber());
 			addRegularUserStmt.setInt(11, p.getCcSecurityCode());
-			addRegularUserStmt.setDate(12, p.getCcExpirationDate());
+			addRegularUserStmt.setString(12, p.getCcExpirationDate());
 			addRegularUserStmt.setDate(13, p.getMemberExpiration());
 			addRegularUserStmt.setInt(14, p.getMembershipLevel());
 			userID = addRegularUserStmt.executeUpdate();
@@ -152,7 +156,7 @@ public class UserDAO implements IUserManager {
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			errorCode = "Error";
-			System.err.println("Problem with addMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with deleteMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return errorCode;
 	}
@@ -173,8 +177,107 @@ public class UserDAO implements IUserManager {
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with addMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with authenticateUser method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return user;
+	}
+
+	@Override
+	public User getUser(int userID) {
+		User user = null;
+		try{
+			getUserStmt.setInt(1,userID);
+			ResultSet rs = authenticateUserStmt.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("id");
+				String username = rs.getString("username");
+				String password = rs.getString("password");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String state = rs.getString("state");
+				String license = rs.getString("license");
+				String email = rs.getString("email");
+				String address = rs.getString("address");
+				String ccType = rs.getString("ccType");
+				int ccNumber = rs.getInt("ccNumber");
+				int ccSecurityCode = rs.getInt("ccSecurityCode");
+				String ccExpirationDate = rs.getString("ccExpirationDate");
+				boolean isAdmin = rs.getBoolean("isAdmin");
+				Date memberExpiration = rs.getDate("memberExpiration");
+				int membershipLevel = rs.getInt("membershipLevel");
+				user = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				return user;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getUser method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return user;
+	}
+
+	@Override
+	public User getUserByUsername(String username) {
+		User user = null;
+		try{
+			getUserByUsernameStmt.setString(1,username);
+			ResultSet rs = authenticateUserStmt.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("id");
+				String password = rs.getString("password");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String state = rs.getString("state");
+				String license = rs.getString("license");
+				String email = rs.getString("email");
+				String address = rs.getString("address");
+				String ccType = rs.getString("ccType");
+				int ccNumber = rs.getInt("ccNumber");
+				int ccSecurityCode = rs.getInt("ccSecurityCode");
+				String ccExpirationDate = rs.getString("ccExpirationDate");
+				boolean isAdmin = rs.getBoolean("isAdmin");
+				Date memberExpiration = rs.getDate("memberExpiration");
+				int membershipLevel = rs.getInt("membershipLevel");
+				user = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				return user;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getUserByUsername method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return user;
+	}
+
+	@Override
+	public ArrayList<User> getAllUsers() {
+		ArrayList<User> results = new ArrayList<User>();
+		try{
+			ResultSet rs = getAllUsersStmt.executeQuery();			
+			while (rs.next()){
+				int id = rs.getInt("id");
+				String username = rs.getString("username");
+				String password = rs.getString("password");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String state = rs.getString("state");
+				String license = rs.getString("license");
+				String email = rs.getString("email");
+				String address = rs.getString("address");
+				String ccType = rs.getString("ccType");
+				int ccNumber = rs.getInt("ccNumber");
+				int ccSecurityCode = rs.getInt("ccSecurityCode");
+				String ccExpirationDate = rs.getString("ccExpirationDate");
+				boolean isAdmin = rs.getBoolean("isAdmin");
+				Date memberExpiration = rs.getDate("memberExpiration");
+				int membershipLevel = rs.getInt("membershipLevel");
+				results.add(new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel));				
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return results;
 	}
 }

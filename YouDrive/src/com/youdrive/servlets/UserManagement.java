@@ -47,7 +47,7 @@ public class UserManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
-		IUserManager ium = (UserDAO) ctx.getAttribute("ium");
+		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
 		}
