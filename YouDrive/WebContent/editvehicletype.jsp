@@ -13,7 +13,7 @@
 <body>
 <h3>Edit Vehicle Type</h3>
 <p class="error"><c:out value="${errorMessage }"/></p>
-	<form method="post" action="VehicleManagement" name="editVehicleType" id="editVehicleType">
+	<form method="post" action="VehicleTypeManagement" name="editVehicleType" id="editVehicleType">
 		<c:if test="${vehicleType != null }">
 			<label for="vehicleTypeName">Vehicle Type:</label>
 			<input id="vehicleTypeName" name="vehicleTypeName" value="<c:out value="${vehicleType.type }"/>" />

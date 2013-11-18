@@ -9,10 +9,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>Manage Vehicles and Vehicle Types</title>
+<title>Manage Vehicles</title>
 </head>
 <body>
-<h3>Manage Vehicles and Vehicle Types</h3>
+<h3>Manage Vehicles</h3>
 <ol>
 <li><a href="addvehicle.jsp">Add Vehicle</a></li>
 <li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>

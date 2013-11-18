@@ -12,6 +12,7 @@
 <title>Manage Vehicle Types</title>
 </head>
 <body>
+<h3>Manage Vehicle Types</h3>
 <ol>
 <li><a href="addvehicle.jsp">Add Vehicle</a></li>
 <li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
