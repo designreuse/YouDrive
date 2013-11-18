@@ -115,6 +115,8 @@ public class UserManagement extends HttpServlet {
 				}else{
 					dispatchedPage = "/user.jsp";
 				}
+				//Stash logged in user to application context
+				ctx.setAttribute("loggedInUser", user);
 			}else{
 				request.setAttribute("errorMessage", "Invalid credentials.");
 				dispatchedPage = "/login.jsp";
@@ -211,6 +213,7 @@ public class UserManagement extends HttpServlet {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String email = request.getParameter("email");
+		String errorMessage = "";
 		HashMap<String,String> addUser1 = new LinkedHashMap<String,String>();
 		if (username == null || username.isEmpty()){
 			request.setAttribute("errorMessage", "Missing username");
@@ -223,16 +226,25 @@ public class UserManagement extends HttpServlet {
 		}else if (email == null || email.isEmpty()){
 			request.setAttribute("errorMessage", "Missing email address");
 		}else{
-			request.setAttribute("errorMessage","");
-			//Stash user into into map and send in request object
-			addUser1.put("username",username);
-			addUser1.put("password", password);
-			addUser1.put("firstName", firstName);
-			addUser1.put("lastName", lastName);
-			addUser1.put("email", email);
-			ctx.setAttribute("registration_page1", addUser1);
-			return true;
+			boolean isUsernameInUse = ium.isUsernameInUse(username);
+			boolean isEmailInUse = ium.isEmailInUse(email);
+			if (isUsernameInUse){
+				errorMessage = "This username is already in use.";
+			}else if (isEmailInUse){
+				errorMessage = "This email address is already in use.";
+			}else{			
+				request.setAttribute("errorMessage","");
+				//Stash user into into map and send in request object
+				addUser1.put("username",username);
+				addUser1.put("password", password);
+				addUser1.put("firstName", firstName);
+				addUser1.put("lastName", lastName);
+				addUser1.put("email", email);
+				ctx.setAttribute("registration_page1", addUser1);
+				return true;
+			}
 		}
+		request.setAttribute("errorMessage", errorMessage);
 		return false;
 	}
 
@@ -281,14 +293,17 @@ public class UserManagement extends HttpServlet {
 						user.setPassword(page1_details.get("password"));
 						user.setAdmin(false);
 						userID = ium.addUser(user);
+					}else{
+						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}
 				}else{
-
+					errorMessage = "Invalid credit card number; Must be 16 digits.";
 				}
 			}catch(NumberFormatException e){
 				errorMessage = "Invalid format for the security code. Should be a number.";
 			}
 		}
+		request.setAttribute("errorMessage", errorMessage);
 		return userID;
 	}
 
@@ -384,8 +399,10 @@ public class UserManagement extends HttpServlet {
 					int year = Integer.parseInt(yr);
 					//Year should be greater than current calendar year OR
 					//Be in the current year AND have the expiration month greater than the calendar month
-					if (year > cal.get(Calendar.YEAR) || 
-							(year >= cal.get(Calendar.YEAR) && month > cal.get(Calendar.MONTH))){
+					int calYear = cal.get(Calendar.YEAR);
+					int calMonth = cal.get(Calendar.MONTH);
+					if (year > calYear || 
+							(year >= cal.get(Calendar.YEAR) && month > calMonth)){
 						results.add(month);
 						results.add(year);
 					}

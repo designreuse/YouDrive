@@ -16,15 +16,16 @@
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form id="registerUser" name="registerUser" action="UserManagement"
-			method="post">
-			<label for="firstName">First Name:</label> <input required
-				type="text" id="firstName" name="firstName" /><br /> <label
-				for="lastName">Last Name:</label> <input required type="text"
-				id="lastName" name="lastName" /><br /> <label for="email">Email
-				Address:</label> <input required type="email" id="email" name="email" /><br />
-			<label for="username">Username:</label> <input required type="text"
-				id="username" name="username" /><br /> <label for="password">Password:</label>
+		<form id="registerUser" name="registerUser" action="UserManagement" method="post">
+			<label for="firstName">First Name:</label> 
+			<input required type="text" id="firstName" name="firstName" /><br /> 
+			<label for="lastName">Last Name:</label> 
+			<input required type="text"	id="lastName" name="lastName" /><br /> 
+			<label for="email">Email Address:</label> 
+			<input required type="email" id="email" name="email" /><br />
+			<label for="username">Username:</label> 
+			<input required type="text"	id="username" name="username" /><br />
+			<label for="password">Password:</label>
 			<input required type="password" id="password" name="password" /><br />
 			<input type="hidden" id="action" name="action" value="registerUser1" />
 			<input type="submit" value="Next" /> <input type="reset"

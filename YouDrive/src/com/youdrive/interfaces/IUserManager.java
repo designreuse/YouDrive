@@ -31,14 +31,7 @@ public interface IUserManager {
 	 * @return
 	 */
 	public int addAdminUser(String username, String password, String firstName, String lastName, String email);
-	/**
-	 * TODO move to Membership interface
-	 * @param name
-	 * @param price
-	 * @param duration
-	 * @return
-	 */
-	public int addMembership(String name, double price, int duration);
+
 	/**
 	 * Get the User object by the user's id
 	 * @param userID
@@ -51,12 +44,6 @@ public interface IUserManager {
 	 * @return
 	 */
 	public User getUserByUsername(String username);
-	/**
-	 * TODO remove to separate interface
-	 * @param id
-	 * @return
-	 */
-	public String deleteMembership(int id);
 	/**
 	 * Returns the user by combination of username and password
 	 * @param username

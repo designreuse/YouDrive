@@ -2,6 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,14 +87,20 @@
 						<option value="Amex">American Express</option>
 					</select><br /> 
 					<label for="ccNumber">Credit Card Number:</label> 
-					<input required type="text" id="ccNumber" name="ccNumber" /><br /> 
+					<input required type="text" id="ccNumber" maxlength="16" name="ccNumber" /><br /> 
 					<label	for="ccSecurityCode">CVC/CVV:</label> 
 					<input required type="text"	id="ccSecurityCode" name="ccSecurityCode" /><br /> 
 					<label	for="ccExpiration">Card Expires:</label> 
-					<input required	type="text" id="ccExpiration" name="ccExpiration"
-						placeholder="Enter as: MM/YY" /><br /> 
+					<input required	type="text" maxlength="7" id="ccExpiration" name="ccExpiration"
+						placeholder="Enter as: MM/YYYY" /><br /> 
+					<label for="membershipLevel">Choose Membership</label>
+					<select name="membershipLevel">
+					<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
+						<option value="${membership.id }"><fmt:formatNumber value="${ membership.price}" type="currency" /> for <c:out value="${membership.duration }" /> months</option>
+					</c:forEach>
+					</select>
 					<input type="hidden" id="action" name="action" value="registerUser2" /> 
-					<input	type="submit" value="Next" /> 
+					<input	type="submit" value="Register" /> 
 					<input type="reset" value="Reset" />
 					<input type="hidden" id="firstName" name="firstName"
 						value="<c:out value="${ registration_page1.get('firstName')}"/>" />

@@ -5,6 +5,10 @@ div.logo {
 	font-size: 10em;
 }
 
+.hidden{
+	display:none;	
+}
+
 div.signup{
 	
 }

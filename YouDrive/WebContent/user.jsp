@@ -11,6 +11,10 @@
 <title>User Management Portal</title>
 </head>
 <body>
-
+	<ol class="nav">
+		<li><a href="reservevehicle.jsp">Reserve Vehicle</a></li>
+		<li><a href="returnvehicle.jsp">Return Vehicle</a></li>
+		<li><a href="usermembership.jsp">Manage Membership</a></li>
+	</ol>
 </body>
 </html>

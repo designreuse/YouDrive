@@ -28,6 +28,7 @@
 			<c:out value="${errorMessage }" />
 		</p>
 		<table border="1">
+			<caption>All Users</caption>
 			<tr>
 				<th>ID</th>
 				<th>Name</th>

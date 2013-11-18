@@ -29,8 +29,9 @@
 			<c:out value="${errorMessage }" />
 		</p>
 		<table border="1">
+			<caption>Locations</caption>
 			<tr>
-				<th>ID</th>
+				<th class="hidden">ID</th>
 				<th>Location Name</th>
 				<th>Location Address</th>
 				<th>Location Capacity</th>
@@ -39,7 +40,7 @@
 			<c:forEach items="${locationMgr.getAllLocations()}" var="location"
 				varStatus="status">
 				<tr>
-					<td><c:out value="${ location.id }" /></td>
+					<td class="hidden"><c:out value="${ location.id }" /></td>
 					<td><c:out value="${ location.name }" /></td>
 					<td><c:out value="${ location.address}" /></td>
 					<td><c:out value="${ location.capacity}" /></td>

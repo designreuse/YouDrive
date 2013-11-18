@@ -22,11 +22,8 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement updateAdminUserStmt;
 	private PreparedStatement updateRegularUserStmt;
 	private PreparedStatement addAdminUserStmt;
-	private PreparedStatement addMembershipStmt;
 	private PreparedStatement checkUsernameStmt;
 	private PreparedStatement checkEmailStmt;
-	private PreparedStatement deleteMembershipStmt;
-	private PreparedStatement updateMembershipStmt;
 	private PreparedStatement deleteUserByUsernameStmt;
 
 	private Constants cs = new Constants();
@@ -42,8 +39,6 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
-			addMembershipStmt = conn.prepareStatement("insert into " + Constants.MEMBERSHIP + " values (DEFAULT,?,?,?)" ,Statement.RETURN_GENERATED_KEYS);
-			deleteMembershipStmt = conn.prepareStatement("delete from " + Constants.MEMBERSHIP + " where id = ?"); 
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
 			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
@@ -132,42 +127,7 @@ public class UserDAO implements IUserManager {
 		return userID;
 	}
 
-	@Override
-	public int addMembership(String name, double price, int duration) {
-		int membershipID = 0;
-		try{
-			addMembershipStmt.setString(1, name);
-			addMembershipStmt.setDouble(2, price);
-			addMembershipStmt.setInt(3, duration);
-			addMembershipStmt.executeUpdate();
-			ResultSet rs = addMembershipStmt.getGeneratedKeys();
-			if (rs.next()){
-				membershipID = rs.getInt(1);
-			}
-		}catch(SQLException e){
-			System.err.println(cs.getError(e.getErrorCode()));
-		}catch(Exception e){
-			System.err.println("Problem with addMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
-		}
-		return membershipID;
-	}
 
-	
-	@Override
-	public String deleteMembership(int id) {
-		String errorCode = "";
-		try{
-			deleteMembershipStmt.setInt(1, id);
-			deleteMembershipStmt.executeUpdate();
-		}catch(SQLException e){
-			errorCode = String.valueOf(e.getErrorCode());
-			System.err.println(cs.getError(e.getErrorCode()));
-		}catch(Exception e){
-			errorCode = "Error";
-			System.err.println("Problem with deleteMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
-		}
-		return errorCode;
-	}
 
 	@Override
 	public User authenticateUser(String username, String password){
@@ -229,7 +189,7 @@ public class UserDAO implements IUserManager {
 		User user = null;
 		try{
 			getUserByUsernameStmt.setString(1,username);
-			ResultSet rs = authenticateUserStmt.executeQuery();
+			ResultSet rs = getUserByUsernameStmt.executeQuery();
 			if (rs.next()){
 				int id = rs.getInt("id");
 				String password = rs.getString("password");

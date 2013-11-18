@@ -28,7 +28,7 @@
 		<c:out value="${errorMessage }" />
 	</p>
 	<div class="body">
-		<table border="1">
+		<table border="1">		
 			<caption>Vehicle Types</caption>
 			<tr>
 				<th>Vehicle Type</th>
