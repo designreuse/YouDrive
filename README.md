@@ -17,6 +17,13 @@ Folder structure:
 5. *com.youdrive.tests* -- Some junit tests (unfinished)
 6. *com.youdrive.util* -- Contains constants such as the table names in Constants.java and ConnectionManager singleton class to create a single Connection object.
 
+Implementation:
+
+1. Need to implement some persistent auth scheme to make sure person accessing admin pages is an actual admin
+2. Need adding of delete functionality
+3. Need more helpful user error messages
+4. Need better ui.
+
 
 Users table
 ===========
