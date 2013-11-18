@@ -28,7 +28,8 @@
 		</p>
 		<form id="editVehicle" name="editVehicle" action="VehicleManagement"
 			method="post">
-			<input type="submit" value="Update" /> <input type="button"
+			<input type="submit" value="Update" /> 
+			<input type="button" onclick="window.location.replace('managevehicles.jsp')"
 				value="Cancel" />
 		</form>
 	</div>

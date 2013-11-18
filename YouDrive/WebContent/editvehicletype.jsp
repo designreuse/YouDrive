@@ -46,7 +46,7 @@
 					value="<c:out value="${vehicleType.id}" />" />
 				<input type="submit" value="Update" />
 				<input type="button"
-					onclick="window.location.replace('managevehicles.jsp')"
+					onclick="window.location.replace('managevehicletypes.jsp')"
 					value="Cancel" />
 			</c:if>
 		</form>

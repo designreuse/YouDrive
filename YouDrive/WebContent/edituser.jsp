@@ -60,6 +60,9 @@
 							<input id="ccSecurityCode" name="ccSecurityCode" value="${ user.ccSecurityCode }"/><br />
 						</div>
 					</c:if>
+					<input type="hidden" id="action" name="action" value="editUser"/>
+					<input type="submit" value="Update"/>
+					<input type="button" onclick="window.location.replace('manageusers.jsp')" value="Cancel"/>
 				</form>
 			</c:when>
 			<c:otherwise>
