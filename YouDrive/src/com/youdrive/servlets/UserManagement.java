@@ -31,7 +31,6 @@ public class UserManagement extends HttpServlet {
 	 */
 	public UserManagement() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -84,12 +83,21 @@ public class UserManagement extends HttpServlet {
 					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
 				}
 			}else{
+				//TODO if admin is adding a regular user, direct them to the registration_page_2
 				if (addRegularUserPg1(request,ium)){
 					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/addUserPg2.jsp");
 				}else{
 					dispatcher = ctx.getRequestDispatcher("/adduser.jsp");
 				}
+			}
+		}else if (action.equalsIgnoreCase("addUser2")){
+			//Second page of Registration
+			int userID = addRegularUserPg2(request,ium);
+			if (userID == 0){
+				dispatcher = ctx.getRequestDispatcher("/registration_page1.jsp");
+			}else{
+				dispatcher = ctx.getRequestDispatcher("/user.jsp");
 			}
 		}else if (action.equalsIgnoreCase("registerUser1")){
 			if (addRegularUserPg1(request,ium)){
@@ -151,6 +159,36 @@ public class UserManagement extends HttpServlet {
 			}
 		}
 		dispatcher.forward(request,response);
+	}
+
+	private int addRegularUserPg2(HttpServletRequest request, IUserManager ium) {
+		int userID = 0;
+		String address = request.getParameter("address");
+		String state = request.getParameter("state");
+		String license = request.getParameter("license");
+		String ccNumber = request.getParameter("ccNumber");
+		String ccType = request.getParameter("ccType");
+		String ccSecurityCode = request.getParameter("ccSecurityCode");
+		String ccExpiration = request.getParameter("ccExpiration");
+		String errorMessage = "";
+		if (address == null || address.isEmpty()){
+			errorMessage = "Missing address.";
+		}else if(license == null || license.isEmpty()){
+			errorMessage = "Missing license.";
+		}else if(state == null || state.isEmpty()){
+			errorMessage = "Missing state.";
+		}else if(ccType == null || ccType.isEmpty()){
+			errorMessage = "Missing credit card type.";
+		}else if(ccNumber == null || ccNumber.isEmpty()){
+			errorMessage = "Missing credit card number.";
+		}else if(ccSecurityCode == null || ccSecurityCode.isEmpty()){
+			errorMessage = "Missing credit card security code.";
+		}else if(ccExpiration == null || ccExpiration.isEmpty()){
+			errorMessage = "Missing credit card expiration.";
+		}else{
+			
+		}
+		return userID;
 	}
 
 	private User authenticateUser(HttpServletRequest request,IUserManager ium){

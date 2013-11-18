@@ -23,7 +23,7 @@
 				for="state">State Issue:</label> <input required type="text"
 				id="state" name="state" /><br /> <label for="ccType">Credit
 				Card Type:</label> <select name="ccType">
-				<option value="Mastercard">Mastercard</option>
+				<option value="MasterCard">MasterCard</option>
 				<option value="Visa">Visa</option>
 				<option value="Discover">Discover Card</option>
 				<option value="Amex">American Express</option>

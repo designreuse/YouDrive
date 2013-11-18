@@ -12,39 +12,91 @@
 </head>
 <body>
 	<h3>Complete Registration</h3>
-	<div class="body">
+	<div class="signup">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
 		<c:choose>
 			<c:when
 				test="${registration_page1 != null && registration_page1.size() > 0 }">
-				<form id="registerUser" name="registerUser" action="UserManagement"
-					method="post">
-					<label for="address">Address:</label> <input required type="text"
-						id="address" name="address" /><br /> <label for="license">License:</label>
+				<form id="registerUser" name="registerUser" action="UserManagement" method="post">
+					<label for="address">Address:</label>
+					<input required type="text" id="address" name="address" /><br /> 
+					<label for="license">Driver's License:</label>
 					<input required type="text" id="license" name="license" /><br />
-					<label for="state">State Issue:</label> <input required type="text"
-						id="state" name="state" /><br /> <label for="ccType">Credit
-						Card Type:</label> <select name="ccType">
-						<option value="Mastercard">Mastercard</option>
+					<label for="state">Issuing State:</label> 
+					<select id="state" name="state">
+						<option value="AL">AL</option>
+						<option value="AK">AK</option>
+						<option value="AZ">AZ</option>
+						<option value="AR">AR</option>
+						<option value="CA">CA</option>
+						<option value="CO">CO</option>
+						<option value="CT">CT</option>
+						<option value="DE">DE</option>
+						<option value="DC">DC</option>
+						<option value="FL">FL</option>
+						<option value="GA">GE</option>
+						<option value="HI">HI</option>
+						<option value="ID">ID</option>
+						<option value="IL">IL</option>
+						<option value="IN">IN</option>
+						<option value="IA">IA</option>
+						<option value="KS">KS</option>
+						<option value="KY">KY</option>
+						<option value="LA">LA</option>
+						<option value="ME">ME</option>
+						<option value="MD">MD</option>
+						<option value="MA">MA</option>
+						<option value="MI">MI</option>
+						<option value="MN">MN</option>
+						<option value="MS">MS</option>
+						<option value="MO">MO</option>
+						<option value="MT">MT</option>
+						<option value="NE">NE</option>
+						<option value="NV">NV</option>
+						<option value="NH">NH</option>
+						<option value="NJ">NJ</option>
+						<option value="NM">NM</option>
+						<option value="NY">NY</option>
+						<option value="NC">NC</option>
+						<option value="ND">ND</option>
+						<option value="OH">OH</option>
+						<option value="OK">OK</option>
+						<option value="OR">OR</option>
+						<option value="PA">PA</option>
+						<option value="RI">RI</option>
+						<option value="SC">SC</option>
+						<option value="SD">SD</option>
+						<option value="TN">TN</option>
+						<option value="TX">TX</option>
+						<option value="UT">UT</option>
+						<option value="VT">VT</option>
+						<option value="VA">VA</option>
+						<option value="WA">WA</option>
+						<option value="WV">WV</option>
+						<option value="WI">WI</option>
+						<option value="WY">WY</option>
+					</select> <br/>
+					<label for="ccType">Credit Card Type:</label> 
+					<select	name="ccType">
+						<option value="Mastercard">MasterCard</option>
 						<option value="Visa">Visa</option>
 						<option value="Discover">Discover Card</option>
 						<option value="Amex">American Express</option>
-					</select> <label for="ccNumber">Credit Card Number:</label> <input required
-						type="text" id="username" name="username" /><br /> <label
-						for="ccSecurityCode">CVC/CVV:</label> <input required type="text"
-						id="ccSecurityCode" name="ccSecurityCode" /><br /> <label
-						for="ccSecurityCode">CVC/CVV:</label> <input required type="text"
-						id="ccSecurityCode" name="ccSecurityCode" /><br /> <label
-						for="ccExpiration">Card Expires:</label> <input required
-						type="text" id="ccExpiration" name="ccExpiration"
-						placeholder="Enter as: MM/YY" /><br /> <input type="hidden"
-						id="action" name="action" value="addUser2" /> <input
-						type="submit" value="Next" /> <input type="reset" value="Reset" />
-
+					</select><br /> 
+					<label for="ccNumber">Credit Card Number:</label> 
+					<input required type="text" id="username" name="username" /><br /> 
+					<label	for="ccSecurityCode">CVC/CVV:</label> 
+					<input required type="text"	id="ccSecurityCode" name="ccSecurityCode" /><br /> 
+					<label	for="ccExpiration">Card Expires:</label> 
+					<input required	type="text" id="ccExpiration" name="ccExpiration"
+						placeholder="Enter as: MM/YY" /><br /> 
+					<input type="hidden" id="action" name="action" value="addUser2" /> 
+					<input	type="submit" value="Next" /> 
+					<input type="reset" value="Reset" />
 					<input type="hidden" id="firstName" name="firstName"
-						value="<c:out value="${ register_page1.get('firstName')}"/>" />
+						value="<c:out value="${ registration_page1.get('firstName')}"/>" />
 				</form>
 			</c:when>
 			<c:when test="${registration_page1 == null }">

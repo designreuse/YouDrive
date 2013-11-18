@@ -12,7 +12,7 @@
 </head>
 <body>
 	<h3>YouDrive Registration</h3>
-	<div class="body">
+	<div class="signup">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
