@@ -18,6 +18,7 @@ public interface IVehicleManager {
 	 * @return Vehicle
 	 */
 	public Vehicle getVehicle(int id);
+	public String getVehicleLocation(int locationID);
 	/**
 	 * Get vehicles by providing the location  ID
 	 * @param locationID
@@ -52,9 +53,4 @@ public interface IVehicleManager {
 	 * @return
 	 */
 	public String deleteVehicle(int id);
-	public String deleteVehicleType(String name);
-	public int addVehicleType(String type, double hourlyPrice, double dailyPrice);
-	public ArrayList<VehicleType> getAllVehicleTypes();
-	public VehicleType getVehicleType(int vehicleTypeID);
-	public boolean updateVehicleType(int vehicleTypeID, String type,Double hourlyPrice, Double dailyPrice);
 }

@@ -26,3 +26,7 @@ div.underlogo{
 	margin:0 auto;
 	font-size:4em;
 }
+
+caption {
+display: table-caption;
+text-align: center; }

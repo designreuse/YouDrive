@@ -12,7 +12,7 @@
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script>
   $(function() {
-    $( "#datePicker" ).datepicker();
+    $( "#lastServiced" ).datepicker();
   });
   
   function setbg(color)
@@ -39,7 +39,7 @@
 		<label for="mileage">Vehicle Mileage:</label> 
 		<input name="mileage" id="mileage" type="text" /><br />
 		<label for="lastServiced">Last Serviced Date:</label> 
-		<input name="lastServiced" id="lastServiced" type="date" /><br />
+		<input name="lastServiced" id="lastServiced" type="text" /><br />
 		<label for="vehicleType">Vehicle Type:</label> 
 		<select name="vehicleType">
 		<c:forEach items="${vehicleDAO.getAllVehicleTypes()}" var="vehicleType" varStatus="status">

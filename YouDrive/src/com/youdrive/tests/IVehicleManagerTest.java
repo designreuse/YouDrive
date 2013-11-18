@@ -42,11 +42,5 @@ public class IVehicleManagerTest {
 		fail("Not yet implemented");
 	}
 	
-	@Test
-	public void testAddVehicleType(){
-		int vehicleTypeID = 0;
-		vehicleTypeID = ivm.addVehicleType("Regular",100.00,500.00);
-		assertEquals("addVehicle",1,vehicleTypeID);
-	}
 
 }

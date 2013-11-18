@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
+import com.youdrive.models.Vehicle;
 import com.youdrive.models.VehicleType;
 
 /**
@@ -44,19 +45,22 @@ public class VehicleManagement extends HttpServlet {
 		IVehicleManager ivm = (VehicleDAO) ctx.getAttribute("vehicleMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
-		}		
-		String vehicleTypeID = request.getParameter("vehicleTypeID");
-		if (vehicleTypeID != null && !vehicleTypeID.isEmpty()){
-			int typeID = Integer.parseInt(vehicleTypeID);
-			VehicleType vType = ivm.getVehicleType(typeID);
-			if (vType != null){
-				ctx.setAttribute("vehicleType", vType);
+			ctx.setAttribute("vehicleMgr", ivm);
+		}	
+		String vehicleID = request.getParameter("vehicleID");
+		if (vehicleID != null && !vehicleID.isEmpty()){
+			int vID = Integer.parseInt(vehicleID);
+			Vehicle vehicle = ivm.getVehicle(vID);
+			if (vehicle != null){
+				ctx.setAttribute("vehicle", vehicle);
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+				dispatcher = ctx.getRequestDispatcher("/editvehicle.jsp");
 			}else{
-				request.setAttribute("errorMessage", "Unable to find Location object.");
+				request.setAttribute("errorMessage", "Unable to find Vehicle object.");
 				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}
+		}else{
+			dispatcher = ctx.getRequestDispatcher("/login.jsp");
 		}
 		dispatcher.forward(request,response);
 	}
@@ -70,6 +74,7 @@ public class VehicleManagement extends HttpServlet {
 		IVehicleManager ivm = (VehicleDAO) ctx.getAttribute("vehicleMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
+			ctx.setAttribute("vehicleMgr", ivm);
 		}
 		String action = request.getParameter("action");
 		//Adding a single vehicle
@@ -82,99 +87,10 @@ public class VehicleManagement extends HttpServlet {
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
 			}
-		}else if(action.equalsIgnoreCase("addVehicleType")){
-			//adding a vehicle type
-			int id = addVehicleType(request,ivm);
-			if (id == 0){
-				System.err.println("Problem saving vehicle type to db.");
-				dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
-			}else{
-				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
-			}
-		}else if (action.equalsIgnoreCase("editVehicleType")){
-
+		}else{
+			dispatcher = ctx.getRequestDispatcher("/login.jsp");
 		}
 		dispatcher.forward(request,response);
-	}
-
-	
-	private boolean editVehicleType(HttpServletRequest request, IVehicleManager ivm, VehicleType vType){
-		String errorMessage = "";
-		int vehicleTypeID = -1;
-
-		try{
-			if (vType == null){
-				String vehicleType = request.getParameter("vehicleTypeID");
-				vehicleTypeID = Integer.parseInt(vehicleType);
-			}else{
-				vehicleTypeID = vType.getId();
-			}
-			String type = request.getParameter("vehicleTypeName");
-			String hPrice = request.getParameter("hourlyPrice");
-			String dPrice = request.getParameter("dailyPrice");
-			if (type == null || type.isEmpty()){
-				errorMessage = "Missing vehicle type";
-			}else if (hPrice == null || hPrice.isEmpty()){
-				errorMessage = "Missing hourly price";
-			}else if (dPrice == null || dPrice.isEmpty()){
-				errorMessage = "Missing daily price";
-			}else{
-				Double hourlyPrice = Double.parseDouble(hPrice);
-				Double dailyPrice = Double.parseDouble(dPrice);
-				if (hourlyPrice < 0 ){
-					errorMessage = "Hourly Pricing must be greater than or equal to zero.";
-				}else if (dailyPrice < 0){
-					errorMessage = "Daily Pricing must be greater than or equal to zero.";
-				}else{
-					ivm.updateVehicleType(vehicleTypeID,type, hourlyPrice, dailyPrice);
-					System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
-					return true;
-				}
-			}
-		}catch(NumberFormatException e){
-			errorMessage = "Error parsing the hourly or daily price entered.";
-		}catch(Exception e){
-			errorMessage = e.getMessage();
-			System.err.println(e.getMessage());
-		}
-		request.setAttribute("errorMessage", errorMessage);
-		return false;	
-	}
-	
-	private int addVehicleType(HttpServletRequest request, IVehicleManager ivm){
-		String errorMessage = "";
-		int vehicleTypeID = 0;
-		try{
-			String type = request.getParameter("vehicleTypeName");
-			String hPrice = request.getParameter("hourlyPrice");
-			String dPrice = request.getParameter("dailyPrice");
-			if (type == null || type.isEmpty()){
-				errorMessage = "Missing vehicle type";
-			}else if (hPrice == null || hPrice.isEmpty()){
-				errorMessage = "Missing hourly price";
-			}else if (dPrice == null || dPrice.isEmpty()){
-				errorMessage = "Missing daily price";
-			}else{
-				Double hourlyPrice = Double.parseDouble(hPrice);
-				Double dailyPrice = Double.parseDouble(dPrice);
-				if (hourlyPrice < 0 ){
-					errorMessage = "Hourly Pricing must be greater than or equal to zero.";
-				}else if (dailyPrice < 9){
-					errorMessage = "Daily Pricing must be greater than or equal to zero.";
-				}else{
-					vehicleTypeID = ivm.addVehicleType(type, hourlyPrice, dailyPrice);
-					System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
-				}
-			}
-		}catch(NumberFormatException e){
-			errorMessage = "Error parsing the hourly or daily price entered.";
-		}catch(Exception e){
-			errorMessage = e.getMessage();
-			System.err.println(e.getMessage());
-		}
-		request.setAttribute("errorMessage", errorMessage);
-		return vehicleTypeID;	
 	}
 
 	private int addVehicle(HttpServletRequest request, IVehicleManager ivm){
