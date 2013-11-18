@@ -38,7 +38,28 @@ public class UserManagement extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		ServletContext ctx = this.getServletContext();
+		RequestDispatcher dispatcher = null;
+		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
+		if (ium == null){
+			ium = new UserDAO();
+		}
+		String errorMessage = "";
+		String userID = request.getParameter("userID");
+		if (userID != null && !userID.isEmpty()){
+			try{
+				int uID = Integer.parseInt(userID);
+				User user = ium.getUser(uID);
+				ctx.setAttribute("user", user);
+				dispatcher = ctx.getRequestDispatcher("/edituser.jsp");
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid userID.";
+			}
+		}else{
+			dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		dispatcher.forward(request,response);
 	}
 
 	/**
@@ -89,7 +110,7 @@ public class UserManagement extends HttpServlet {
 			}else{
 				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
-		}else{
+		}else if (action.equalsIgnoreCase("editUser")){
 
 		}
 		dispatcher.forward(request,response);
@@ -161,6 +182,72 @@ public class UserManagement extends HttpServlet {
 			request.setAttribute("registration_page1", addUser1);
 			return true;
 		}
+		return false;
+	}
+
+	private boolean editUser(HttpServletRequest request,IUserManager ium, User user, boolean isAdmin){
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		String firstName = request.getParameter("firstName");
+		String lastName = request.getParameter("lastName");
+		String email = request.getParameter("email");
+		int id = user.getId();
+		String errorMessage = "";
+		if (username == null || username.isEmpty()){
+			errorMessage = "Missing username";
+		}else if (firstName == null || firstName.isEmpty()){
+			errorMessage = "Missing firstName";
+		}else if (lastName == null || lastName.isEmpty()){
+			errorMessage = "Missing lastName";
+		}else if (email == null || email.isEmpty()){
+			errorMessage = "Missing email";
+		}else if (password == null || password.isEmpty()){
+			errorMessage = "Missing password";
+		}else if (isAdmin){
+			if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
+				return true;
+			}else{
+				errorMessage = "Unable to update the user details.";
+			}
+		}else{
+			String state = request.getParameter("state");
+			String license = request.getParameter("license");
+			String address = request.getParameter("address");
+			String ccType = request.getParameter("ccType");
+			String ccNum = request.getParameter("ccNumber");
+			String ccCode = request.getParameter("ccSecurityCode");
+			String ccExpirationDate = request.getParameter("ccExpirationDate");
+			if (state == null || state.isEmpty()){
+				errorMessage = "Missing state";
+			}else if (license == null || license.isEmpty()){
+				errorMessage = "Missing license";
+			}else if (address == null || address.isEmpty()){
+				errorMessage = "Missing address";
+			}else if (ccType == null || ccType.isEmpty()){
+				errorMessage = "Missing credit card type";
+			}else if (ccNum == null || ccNum.isEmpty()){
+				errorMessage = "Missing credit card number";
+			}else if (ccCode == null || ccCode.isEmpty()){
+				errorMessage = "Missing credit card security code";
+			}else if (ccExpirationDate == null || ccExpirationDate.isEmpty()){
+				errorMessage = "Missing credit card expiration date.";
+			}else{
+				try{
+					int ccNumber = Integer.parseInt(ccNum);
+					int ccSecurityCode = Integer.parseInt(ccCode);
+					if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNumber, ccSecurityCode, ccExpirationDate)){
+						return true;
+					}else{
+						errorMessage = "Unable to update the user details.";
+					}
+				}catch(NumberFormatException e){
+					errorMessage = "Error parsing credit card number or security code.";
+				}catch(Exception e){
+					errorMessage = e.getMessage();
+				}
+			}
+		}
+		request.setAttribute("errorMessage", errorMessage);
 		return false;
 	}
 }

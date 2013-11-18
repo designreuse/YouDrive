@@ -14,4 +14,10 @@ public interface IUserManager {
 	public String deleteMembership(int id);
 	User authenticateUser(String username, String password);
 	ArrayList<User> getAllUsers();
+	boolean updateAdminUser(int id, String username, String password, String firstName,
+			String lastName, String email);
+	boolean updateUser(int id,String username, String password, String firstName,
+			String lastName, String state, String license, String email,
+			String address, String ccType, int ccNumber, int ccSecurityCode,
+			String ccExpirationDate);
 }

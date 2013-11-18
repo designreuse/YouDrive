@@ -19,6 +19,8 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement getUserByUsernameStmt;
 	private PreparedStatement authenticateUserStmt;
 	private PreparedStatement addRegularUserStmt;
+	private PreparedStatement updateAdminUserStmt;
+	private PreparedStatement updateRegularUserStmt;
 	private PreparedStatement addAdminUserStmt;
 	private PreparedStatement deleteUserByUsernameStmt;
 	private PreparedStatement addMembershipStmt;
@@ -41,6 +43,8 @@ public class UserDAO implements IUserManager {
 			addMembershipStmt = conn.prepareStatement("insert into " + Constants.MEMBERSHIP + " values (DEFAULT,?,?,?)" ,Statement.RETURN_GENERATED_KEYS);
 			deleteMembershipStmt = conn.prepareStatement("delete from " + Constants.MEMBERSHIP + " where id = ?"); 
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
+			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
+			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -187,7 +191,7 @@ public class UserDAO implements IUserManager {
 		User user = null;
 		try{
 			getUserStmt.setInt(1,userID);
-			ResultSet rs = authenticateUserStmt.executeQuery();
+			ResultSet rs = getUserStmt.executeQuery();
 			if (rs.next()){
 				int id = rs.getInt("id");
 				String username = rs.getString("username");
@@ -279,5 +283,62 @@ public class UserDAO implements IUserManager {
 			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
+	}
+	
+	@Override
+	public boolean updateAdminUser(int id, String username, String password, String firstName, String lastName, String email){
+		try{
+			updateAdminUserStmt.setString(1,username);
+			updateAdminUserStmt.setString(2, password);
+			updateAdminUserStmt.setString(3, firstName);
+			updateAdminUserStmt.setString(4, lastName);
+			updateAdminUserStmt.setString(5, email);
+			updateAdminUserStmt.setInt(6, id);
+			updateAdminUserStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return false;
+	}
+	
+	/**
+	 * Update user membership into through a different interface
+	 * 
+	 * @param username
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @param state
+	 * @param license
+	 * @param email
+	 * @return
+	 */
+	@Override
+	public boolean updateUser(int id, String username, String password, String firstName, String lastName, String state, String license, String email, String address, String ccType, int ccNumber, int ccSecurityCode, String ccExpirationDate){
+		try{
+			updateRegularUserStmt.setString(1,username);
+			updateRegularUserStmt.setString(2, password);
+			updateRegularUserStmt.setString(3, firstName);
+			updateRegularUserStmt.setString(4, lastName);
+			updateRegularUserStmt.setString(5, state);
+			updateRegularUserStmt.setString(6, license);
+			updateRegularUserStmt.setString(7, email);
+			updateRegularUserStmt.setString(8, address);
+			updateRegularUserStmt.setString(9, ccType);
+			updateRegularUserStmt.setInt(10, ccNumber);
+			updateRegularUserStmt.setInt(11, ccSecurityCode);
+			updateRegularUserStmt.setString(12, ccExpirationDate);
+			updateRegularUserStmt.setInt(13, id);
+			updateRegularUserStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return false;
 	}
 }
