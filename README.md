@@ -22,11 +22,11 @@ Users table
 ===========
 emailAddress and usernames are unique in this table. Admins are only required to provide the following:
 
-a. firstName
-b. lastName
-c. userName
-d. password
-e. emailAddress
+1. firstName
+2. lastName
+3. userName
+4. password
+5. emailAddress
 
 Attribute membershipLevel is linked to the  Memberships table which shows what type of Membership the user has.
 
