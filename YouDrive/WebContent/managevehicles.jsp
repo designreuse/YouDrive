@@ -51,7 +51,7 @@
 					<td><c:out value="${ vehicle.year }" /></td>
 					<td><c:out value="${ vehicle.tag }" /></td>
 					<td><c:out value="${ vehicle.mileage }" /></td>
-					<td><c:out value="${ vehicle.lastServiced }" /></td>
+					<td><fmt:formatDate type="date" value="${vehicle.lastServiced}" /></td>
 					<td><c:out value="${ vehicle.isAvailable() }" /></td>
 					<td><c:out
 							value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>

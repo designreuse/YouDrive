@@ -10,10 +10,18 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$("#lastServiced").datepicker();
+	});
+</script>
 <title>Edit Vehicle Details</title>
 </head>
 <body>
+<h3>Edit Vehicle Details</h3>
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
@@ -42,8 +50,8 @@
 					<input required type="text" id="tag" name="tag" value="${vehicle.tag }" /><br/>
 					<label for="mileage">Mileage:</label>
 					<input required type="text" id="mileage" name="mileage" value="${vehicle.mileage }" /><br/>
-					<label for="lastServiced">Last Serviced:</label>
-					<input required type="text" id="lastServiced" name="lastServiced" value="${vehicle.lastServiced }" /><br/>
+					<label for="lastServiced">Last Serviced:</label>					
+					<input required type="text" id="lastServiced" name="lastServiced" value="<fmt:formatDate type="date" value="${vehicle.lastServiced}" />" /><br/>
 					<label for="vehicleType">Vehicle Type:</label>
 					<select name="vehicleType">
 						<option value="${vehicle.vehicleType }"><c:out value="${vehicleMgr.getVehicleType(vehicle.vehicleType)}"/></option>
@@ -52,7 +60,7 @@
 								<option value="${vehicleType.id }"><c:out value="${vehicleMgr.getVehicleLocation(vehicleType.id)}"/></option>
 							</c:if>
 						</c:forEach>
-					</select>
+					</select><br/>
 					<label for="assignedLocation">Location:</label>
 					<select name="assignedLocation">
 						<option value="${vehicle.assignedLocation }"><c:out value="${vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}"/></option>
@@ -61,7 +69,7 @@
 								<option value="${location.id }"><c:out value="${vehicleMgr.getVehicleLocation(location.id)}"/></option>
 							</c:if>
 						</c:forEach>
-					</select>
+					</select><br/>
 					<input type="hidden" id="action" name="action" value="editVehicle"/>
 					<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>
 					<input type="submit" value="Update" /> <input type="button"

@@ -93,7 +93,7 @@ public class VehicleManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
 			}else{
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
+				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editVehicle")){
 			String vehicleId = request.getParameter("vehicleID");
@@ -165,16 +165,16 @@ public class VehicleManagement extends HttpServlet {
 				Location l = ilm.getLocationById(assignedLocation);
 				if (l != null){
 					int locationCapacity = l.getCapacity();
+					System.out.println("Location capacity: " + locationCapacity);
 					//Don't change vehicle is location is full.
-					if (locationCapacity >= currentCapacity){
+					if (locationCapacity > currentCapacity){
 						vehicleID = ivm.addVehicle(make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation);
 					}else{
 						errorMessage = "This location is full. Select a different location.";
 					}
 				}else{
 					errorMessage = "Unable to retrieve Location object";
-				}
-				
+				}				
 			}
 		}catch(NumberFormatException e){
 			errorMessage = "Error parsing one of the numeric values.";
