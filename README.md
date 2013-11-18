@@ -17,3 +17,18 @@ Folder structure:
 5. *com.youdrive.tests* -- Some junit tests (unfinished)
 6. *com.youdrive.util* -- Contains constants such as the table names in Constants.java and ConnectionManager singleton class to create a single Connection object.
 
+
+Users table
+===========
+emailAddress and usernames are unique in this table. Admins are only required to provide the following:
+
+a. firstName
+b. lastName
+c. userName
+d. password
+e. emailAddress
+
+Attribute membershipLevel is linked to the  Memberships table which shows what type of Membership the user has.
+
+
+
