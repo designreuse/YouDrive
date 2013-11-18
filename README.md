@@ -31,4 +31,15 @@ emailAddress and usernames are unique in this table. Admins are only required to
 Attribute membershipLevel is linked to the  Memberships table which shows what type of Membership the user has.
 
 
+Vehicles table
+==============
+All attributes of this table are required except isAvailable which defaults to 0 or false. This table is linked to the Locations tables via assignedLocation.
 
+
+Locations, VehicleTypes,
+==============================
+All attributes of these table are required (type,hourlyPrice,dailyPrice)
+
+Comments table
+===============
+Linked to the Users table via the author field
