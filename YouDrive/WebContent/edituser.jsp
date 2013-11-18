@@ -30,15 +30,15 @@
 				<form id="editUser" name="editUser" action="UserManagement"
 					method="post">
 					<label for="firstName">First Name:</label> 
-					<input id="firstName" name="firstName" value="${ user.firstName }"/><br />
+					<input required type="text" id="firstName" name="firstName" value="${ user.firstName }"/><br />
 					<label for="lastName">Last Name:</label> 
-					<input id="lastName" name="lastName" value="${ user.lastName }" /><br /> 
+					<input required type="text" id="lastName" name="lastName" value="${ user.lastName }" /><br /> 
 					<label for="email">Email Address:</label> 
-					<input id="email" name="email" value="${ user.email }"/><br />
+					<input required type="email" id="email" name="email" value="${ user.email }"/><br />
 					<label for="username">Username:</label> 
-					<input id="username" name="username" value="${ user.username }"/><br /> 
+					<input required type="text" id="username" name="username" value="${ user.username }"/><br /> 
 					<label for="password">Password:</label>
-					<input id="password" name="password" value="${ user.password }"/><br />
+					<input required type="password" id="password" name="password" value="${ user.password }"/><br />
 					<!-- Don't display extra stuff if user is admin -->
 					<c:if test="${ user.isAdmin() == null}">
 						<label for="address">Address:</label>
@@ -59,7 +59,9 @@
 							<label for="ccSecurityCode">Verification Code:</label>
 							<input id="ccSecurityCode" name="ccSecurityCode" value="${ user.ccSecurityCode }"/><br />
 						</div>
-					</c:if>
+					</c:if>					
+					<input type="hidden" id="id" name="id" value="${user.id }" />
+					<input type="hidden" id="isAdmin" name="isAdmin" value="${user.isAdmin() }" />
 					<input type="hidden" id="action" name="action" value="editUser"/>
 					<input type="submit" value="Update"/>
 					<input type="button" onclick="window.location.replace('manageusers.jsp')" value="Cancel"/>

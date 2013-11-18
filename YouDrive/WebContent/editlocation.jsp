@@ -29,15 +29,15 @@
 			id="editLocation">
 			<c:if test="${location != null }">
 				<label for="locationName">Location Name:</label>
-				<input id="locationName" name="locationName"
+				<input  required type="text"id="locationName" name="locationName"
 					value="<c:out value="${location.name }"/>" />
 				<br />
 				<label for="locationAddress">Location Address:</label>
-				<input id="locationAddress" name="locationAddress"
+				<input  required type="text" id="locationAddress" name="locationAddress"
 					value="<c:out value="${location.address }"/>" />
 				<br />
 				<label for="capacity">Location Capacity:</label>
-				<input id="capacity" name="capacity"
+				<input  required type="text" id="capacity" name="capacity"
 					value="<c:out value="${location.capacity }"/>" />
 				<br />
 				<input type="hidden" name="action" id="action" value="editLocation" />

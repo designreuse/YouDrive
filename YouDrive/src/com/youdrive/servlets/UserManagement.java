@@ -108,10 +108,47 @@ public class UserManagement extends HttpServlet {
 					dispatcher = ctx.getRequestDispatcher("/user.jsp");
 				}
 			}else{
+				request.setAttribute("errorMessage", "Invalid credentials.");
 				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editUser")){
-
+			System.out.println("edituser action");
+			String isAdminStr = request.getParameter("isAdmin");
+			if (isAdminStr == null || isAdminStr.isEmpty()){
+				request.setAttribute("errorMessage", "Unable to determine user type.");
+			}else{
+				boolean isAdmin = false;
+				if (isAdminStr.equalsIgnoreCase("true")){
+					isAdmin = true;
+				}
+				String userID = request.getParameter("id");
+				if (userID == null || userID.isEmpty()){
+					request.setAttribute("errorMessage", "Invalid user.");
+				}else{
+					try{
+						int id = Integer.parseInt(userID);
+						User user = ium.getUser(id);
+						if (user != null){
+							if (editUser(request,ium,user,isAdmin)){
+								request.setAttribute("errorMessage","");
+								dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+							}else{
+								request.setAttribute("user", user);
+								dispatcher = ctx.getRequestDispatcher("/edituser.jsp");
+							}
+						}else{
+							request.setAttribute("errorMessage", "User not found.");
+							dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Invalid user id.");
+						dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+					}catch(Exception e){
+						request.setAttribute("errorMessage", e.getMessage());
+						dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+					}
+				}
+			}
 		}
 		dispatcher.forward(request,response);
 	}

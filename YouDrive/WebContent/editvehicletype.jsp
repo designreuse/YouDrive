@@ -29,15 +29,15 @@
 			name="editVehicleType" id="editVehicleType">
 			<c:if test="${vehicleType != null }">
 				<label for="vehicleTypeName">Vehicle Type:</label>
-				<input id="vehicleTypeName" name="vehicleTypeName"
+				<input required type="text" id="vehicleTypeName" name="vehicleTypeName"
 					value="<c:out value="${vehicleType.type }"/>" />
 				<br />
 				<label for="hourlyPrice">Hourly Price:</label>
-				<input id="hourlyPrice" name="hourlyPrice"
+				<input required type="text" id="hourlyPrice" name="hourlyPrice"
 					value="${vehicleType.hourlyPrice}" />
 				<br />
 				<label for="dailyPrice">Daily Price:</label>
-				<input id="dailyPrice" name="dailyPrice"
+				<input required type="text" id="dailyPrice" name="dailyPrice"
 					value="${vehicleType.dailyPrice}" />
 				<br />
 				<input type="hidden" name="action" id="action"
