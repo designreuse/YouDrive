@@ -82,7 +82,7 @@ public class LocationManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/addlocation.jsp");
 			}else{
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/admin.jsp");
+				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editLocation")){
 			System.out.println("Edit Location action.");
