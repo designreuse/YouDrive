@@ -5,11 +5,29 @@ div.logo {
 	font-size: 10em;
 }
 
+
+div.underlogo{
+	width:550px;
+	margin:0 auto;
+	font-size:4em;
+}
+
+div.body{
+	margin-top:-160px;	
+}
+
 p.error{
 	color:red;		
     text-transform:uppercase;
     font-size:140%;
 }
+
+ol.nav{	
+	padding: 0;
+	margin: 0;
+	text-align: right;
+}
+
 
 #enter{
 	background-color: #1E1E1E;
@@ -21,12 +39,7 @@ p.error{
     box-shadow:-1px 2px #6E6B6A inset;
 }
 
-div.underlogo{
-	width:550px;
-	margin:0 auto;
-	font-size:4em;
-}
-
 caption {
-display: table-caption;
-text-align: center; }
+	display: table-caption;
+	text-align: center;
+}

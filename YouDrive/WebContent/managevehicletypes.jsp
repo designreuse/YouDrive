@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
+<jsp:useBean id="vehicleTypeMgr"
+	class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,38 +13,43 @@
 <title>Manage Vehicle Types</title>
 </head>
 <body>
-<h3>Manage Vehicle Types</h3>
-<ol>
-<li><a href="addvehicle.jsp">Add Vehicle</a></li>
-<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
-<li><a href="addlocation.jsp">Add Location</a></li>
-<li><a href="managevehicles.jsp">Manage Vehicles</a></li>
-<li><a href="managevehicletypes.jsp">Manage Vehicle Types</a></li>
-<li><a href="managelocations.jsp">Manage Locations</a></li>
-<li><a href="manageusers.jsp">Manage Users</a></li>
-</ol>
-<p class="error"><c:out value="${errorMessage }"/></p>
-	<table border="1">
-	<caption>Vehicle Types</caption>
-		<tr>
-			<th>Vehicle Type</th>
-			<th>Hourly Price</th>
-			<th>Daily Price</th>
-			<th>Edit</th>
-		</tr>
-		<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}" var="vehicleType"
-			varStatus="status">
+	<h3>Manage Vehicle Types</h3>
+	<ol class="nav">
+		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
+		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
+		<li><a href="addlocation.jsp">Add Location</a></li>
+		<li><a href="managevehicles.jsp">Manage Vehicles</a></li>
+		<li><a href="managevehicletypes.jsp">Manage Vehicle Types</a></li>
+		<li><a href="managelocations.jsp">Manage Locations</a></li>
+		<li><a href="manageusers.jsp">Manage Users</a></li>
+	</ol>
+	<p class="error">
+		<c:out value="${errorMessage }" />
+	</p>
+	<div class="body">
+		<table border="1">
+			<caption>Vehicle Types</caption>
 			<tr>
-				<td><c:out value="${ vehicleType.type }" /></td>
-				<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}" type="currency" /></td>
-				<td><fmt:formatNumber value="${ vehicleType.dailyPrice}" type="currency" /></td>
-				<c:url value="VehicleTypeManagement" var="url">
-					<c:param name="vehicleTypeID" value="${vehicleType.id}"/>
-				</c:url>
-				<td><a	href="<c:out value="${url }" />">Edit</a>
-				</td>
+				<th>Vehicle Type</th>
+				<th>Hourly Price</th>
+				<th>Daily Price</th>
+				<th>Edit</th>
 			</tr>
-		</c:forEach>
-	</table>
+			<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}"
+				var="vehicleType" varStatus="status">
+				<tr>
+					<td><c:out value="${ vehicleType.type }" /></td>
+					<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}"
+							type="currency" /></td>
+					<td><fmt:formatNumber value="${ vehicleType.dailyPrice}"
+							type="currency" /></td>
+					<c:url value="VehicleTypeManagement" var="url">
+						<c:param name="vehicleTypeID" value="${vehicleType.id}" />
+					</c:url>
+					<td><a href="<c:out value="${url }" />">Edit</a></td>
+				</tr>
+			</c:forEach>
+		</table>
+	</div>
 </body>
 </html>

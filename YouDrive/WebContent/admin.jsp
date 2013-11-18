@@ -12,7 +12,8 @@
 </head>
 <body>
 <h3>YouDrive Admin Portal</h3>
-<ol>
+<p class="error"><c:out value="${errorMessage }" /></p>
+<ol class="nav">
 <li><a href="addvehicle.jsp">Add Vehicle</a></li>
 <li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
 <li><a href="addlocation.jsp">Add Location</a></li>
