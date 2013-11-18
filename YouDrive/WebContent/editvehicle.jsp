@@ -57,7 +57,7 @@
 						<option value="${vehicle.vehicleType }"><c:out value="${vehicleMgr.getVehicleType(vehicle.vehicleType)}"/></option>
 						<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}" var="vehicleType" varStatus="status">
 							<c:if test="${vehicleType.id != vehicle.vehicleType }">
-								<option value="${vehicleType.id }"><c:out value="${vehicleMgr.getVehicleLocation(vehicleType.id)}"/></option>
+								<option value="${vehicleType.id }"><c:out value="${vehicleMgr.getVehicleType(vehicleType.id)}"/></option>
 							</c:if>
 						</c:forEach>
 					</select><br/>

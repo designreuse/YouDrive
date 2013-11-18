@@ -2,8 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO"
-	scope="application" />
+<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
