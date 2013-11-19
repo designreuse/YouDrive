@@ -2,7 +2,6 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,10 +31,11 @@
 		</p>
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+			<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />
 				<table border="1">
 					<caption>All Users</caption>
 					<tr>
-						<th>ID</th>
+						<th class="hidden">ID</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
@@ -46,7 +46,7 @@
 					<c:forEach items="${userMgr.getAllUsers()}" var="user"
 						varStatus="status">
 						<tr>
-							<td><c:out value="${ user.id }" /></td>
+							<td class="hidden"><c:out value="${ user.id }" /></td>
 							<td><c:out value="${ user.firstName}" /> <c:out value="${ user.lastName }" /></td>
 							<td><c:out value="${ user.username}" /></td>
 							<td><c:out value="${ user.email}" /></td>

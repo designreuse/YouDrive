@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.helpers.VehicleTypeDAO;
-import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.interfaces.IVehicleTypeManager;
 import com.youdrive.models.VehicleType;
 
@@ -42,7 +40,7 @@ public class VehicleTypeManagement extends HttpServlet {
 		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
-			ctx.setAttribute("vehicleTypeMgr", ivtm);
+			session.setAttribute("vehicleTypeMgr", ivtm);
 		}		
 		String vehicleTypeID = request.getParameter("vehicleTypeID");
 		if (vehicleTypeID != null && !vehicleTypeID.isEmpty()){
@@ -72,7 +70,7 @@ public class VehicleTypeManagement extends HttpServlet {
 		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
-			ctx.setAttribute("vehicleTypeMgr", ivtm);
+			session.setAttribute("vehicleTypeMgr", ivtm);
 		}	
 		String action = request.getParameter("action");
 		if(action.equalsIgnoreCase("addVehicleType")){

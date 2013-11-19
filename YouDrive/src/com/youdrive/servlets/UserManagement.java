@@ -15,9 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.UserDAO;
-import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
 
@@ -74,6 +72,7 @@ public class UserManagement extends HttpServlet {
 		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
+			session.setAttribute("userMgr", ium);
 		}
 		String action = request.getParameter("action");
 		//TODO replace dispatcher = blah blah with single call at bottom

@@ -31,7 +31,7 @@
 		</p>		
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-			<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="application" />
+			<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
 				<table border="1">
 					<caption>Membership Levels</caption>
 					<tr>

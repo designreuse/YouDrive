@@ -2,8 +2,6 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="vehicleTypeMgr"
-	class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,6 +31,7 @@
 		</p>
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+			<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />
 				<table border="1">		
 					<caption>Vehicle Types</caption>
 					<tr>

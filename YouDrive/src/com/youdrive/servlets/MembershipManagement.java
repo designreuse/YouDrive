@@ -12,11 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.MembershipDAO;
-import com.youdrive.helpers.UserDAO;
 import com.youdrive.interfaces.IMembershipManager;
-import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.Membership;
-import com.youdrive.models.User;
 
 /**
  * Servlet implementation class MembershipManagement
@@ -43,6 +40,7 @@ public class MembershipManagement extends HttpServlet {
 		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
+			session.setAttribute("membershipMgr", imm);
 		}
 		String errorMessage = "", dispatchedPage = "";
 		String membershipID = request.getParameter("membershipID");
@@ -75,7 +73,7 @@ public class MembershipManagement extends HttpServlet {
 		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
-			ctx.setAttribute("membershipMgr", imm);
+			session.setAttribute("membershipMgr", imm);
 		}
 		String errorMessage = "", dispatchedPage = "";
 		String action = request.getParameter("action");

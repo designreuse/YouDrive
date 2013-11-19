@@ -2,7 +2,6 @@ package com.youdrive.servlets;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
@@ -22,7 +21,6 @@ import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
 import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
-import com.youdrive.models.VehicleType;
 
 /**
  * Servlet implementation class VehicleManagement
@@ -30,13 +28,14 @@ import com.youdrive.models.VehicleType;
 @WebServlet("/VehicleManagement")
 public class VehicleManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/YYYY",Locale.getDefault());
+	private SimpleDateFormat sdf;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public VehicleManagement() {
 		super();
+		sdf = new SimpleDateFormat("MM/dd/YYYY",Locale.getDefault());
 		// TODO Auto-generated constructor stub
 	}
 
@@ -50,7 +49,7 @@ public class VehicleManagement extends HttpServlet {
 		IVehicleManager ivm = (VehicleDAO) ctx.getAttribute("vehicleMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
-			ctx.setAttribute("vehicleMgr", ivm);
+			session.setAttribute("vehicleMgr", ivm);
 		}	
 		String vehicleID = request.getParameter("vehicleID");
 		if (vehicleID != null && !vehicleID.isEmpty()){
@@ -82,7 +81,7 @@ public class VehicleManagement extends HttpServlet {
 		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
-			ctx.setAttribute("vehicleMgr", ivm);
+			session.setAttribute("vehicleMgr", ivm);
 		}
 		if (ilm == null){
 			ilm = new LocationDAO();

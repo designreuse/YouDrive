@@ -31,7 +31,7 @@
 		</p>
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-			<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="application" />
+			<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
 				<table border="1">
 					<caption>Locations</caption>
 					<tr>

@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.LocationDAO;
-import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
-import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
 
 /**
@@ -42,6 +40,7 @@ public class LocationManagement extends HttpServlet {
 		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
+			session.setAttribute("userMgr", ilm);
 		}
 		String locationID = request.getParameter("locationID");
 		if (locationID != null && !locationID.isEmpty()){
@@ -69,6 +68,7 @@ public class LocationManagement extends HttpServlet {
 		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
+			session.setAttribute("locationMgr", ilm);
 		}
 		String dispatchedPage = "/admin.jsp";
 		String action = request.getParameter("action");

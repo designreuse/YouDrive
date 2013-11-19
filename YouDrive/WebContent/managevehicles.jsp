@@ -2,7 +2,6 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,7 +30,8 @@
 			<c:out value="${errorMessage }" />
 		</p>
 		<c:choose>
-			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">		
+			<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
 				<table border="1">
 					<caption>Vehicles</caption>
 					<tr>
