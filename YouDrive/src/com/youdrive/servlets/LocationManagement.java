@@ -191,7 +191,11 @@ public class LocationManagement extends HttpServlet {
 				errorMessage = "Missing location capacity";
 			}else{
 				int cap = Integer.parseInt(c);
-				locationID = ilm.addLocation(name, address, cap);
+				if (cap >= 1){
+					locationID = ilm.addLocation(name, address, cap);
+				}else{
+					errorMessage = "Location must be able to hold at least 1 vehicle.";
+				}
 			}
 			System.out.println(locationID+"-"+name+"-"+address+"-"+c);
 		}catch(NumberFormatException e){
