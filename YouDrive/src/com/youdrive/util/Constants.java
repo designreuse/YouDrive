@@ -9,6 +9,7 @@ public class Constants {
 	public static  String username = "demo";
 	public static  String password = "demo";
 
+	public static final String HOME = "http://localhost:8080/YouDrive/";
 	public static final String USERS = "Users";
 	public static final String USERS_ID = "id";
 	public static final String USERS_USERNAME = "username";

@@ -1,5 +1,6 @@
 package com.youdrive.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Vehicle {
@@ -13,6 +14,7 @@ public class Vehicle {
 	boolean isAvailable;
 	int vehicleType;
 	int assignedLocation;
+	ArrayList<Comment> vehicleComments = new ArrayList<Comment>();
 	
 	public Vehicle() {  }
 	
@@ -109,5 +111,13 @@ public class Vehicle {
 
 	public void setAssignedLocation(int assignedLocation) {
 		this.assignedLocation = assignedLocation;
+	}
+	
+	public ArrayList<Comment> getVehicleComments() {
+		return vehicleComments;
+	}
+
+	public void setVehicleComments(ArrayList<Comment> vehicleComments) {
+		this.vehicleComments = vehicleComments;
 	}
 }

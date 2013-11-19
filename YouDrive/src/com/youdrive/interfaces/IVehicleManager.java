@@ -82,4 +82,5 @@ public interface IVehicleManager {
 	public boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
 			int vehicleType, int assignedLocation);
 	public ArrayList<Comment> getVehicleComments(int vehicleID);
+	public  boolean addVehicleComment(int vehicleID, String comment, int author);
 }
