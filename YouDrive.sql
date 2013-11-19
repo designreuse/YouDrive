@@ -27,10 +27,13 @@ CREATE TABLE `Comments` (
   `createdOn` date NOT NULL,
   `comment` text NOT NULL,
   `author` int(11) NOT NULL,
+  `vehicleID` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `author` (`author`),
-  CONSTRAINT `Comments_ibfk_1` FOREIGN KEY (`author`) REFERENCES `Users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `vehicleID` (`vehicleID`),
+  CONSTRAINT `Comments_ibfk_1` FOREIGN KEY (`author`) REFERENCES `Users` (`id`),
+  CONSTRAINT `Comments_ibfk_2` FOREIGN KEY (`vehicleID`) REFERENCES `Vehicles` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +42,7 @@ CREATE TABLE `Comments` (
 
 LOCK TABLES `Comments` WRITE;
 /*!40000 ALTER TABLE `Comments` DISABLE KEYS */;
+INSERT INTO `Comments` VALUES (1,'2013-11-18','This is a test comment.',1,2),(2,'2013-11-18','This is my second comment.',1,2),(3,'2013-11-18','This is a comment for the lambo.',1,1),(4,'2013-11-18','Jane entered some bogus comments.',2,2);
 /*!40000 ALTER TABLE `Comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +227,7 @@ CREATE TABLE `Vehicles` (
   KEY `assignedLocation` (`assignedLocation`),
   CONSTRAINT `Vehicles_ibfk_1` FOREIGN KEY (`vehicleType`) REFERENCES `VehicleTypes` (`id`),
   CONSTRAINT `Vehicles_ibfk_2` FOREIGN KEY (`assignedLocation`) REFERENCES `Locations` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +236,7 @@ CREATE TABLE `Vehicles` (
 
 LOCK TABLES `Vehicles` WRITE;
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
-INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,2,1);
+INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,2,1),(4,'Toyota','Camry',2005,'TYU48965',80000,'2013-11-05',0,1,3),(5,'Dummy','Dummy',2013,'ABCTALKAM',9000,'2013-11-20',0,1,4);
 /*!40000 ALTER TABLE `Vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -245,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-11-18 20:37:27
+-- Dump completed on 2013-11-18 23:33:11
