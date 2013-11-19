@@ -18,14 +18,16 @@
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script type="text/javascript">
-	var searchType = 0;
-	function changeID(id){
-		searchType = id;
-		alert(searchType);
-	}
-	
+	//Equivalent to $( document ).ready(function(){});
 	$(function() {
-		$("#lastServiced").datepicker();
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortVehicleForm').submit();
+		});
 	});
 </script>
 <title>Manage Vehicles</title>
@@ -55,19 +57,19 @@
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">		
 			<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
-			<c:set var="allVehicles" value="${vehicleMgr.getAllVehicles() }"/>
+			<c:set var="allVehicles" value="${vehicleMgr.getAllVehicles() }" scope="session"/>
 				<table border="1">
 					<caption>Vehicles</caption>
 					<tr>
-						<th><a href="#0" onclick="changeID('0')">Make</a></th>
-						<th><a href="#1" onclick="changeID('1')">Model</a></th>
-						<th><a href="#2" onclick="changeID('2')">Year</a></th>
-						<th><a href="#3" onclick="changeID('3')">Tag</a></th>
-						<th><a href="#4" onclick="changeID('4')">Mileage</a></th>
-						<th><a href="#5" onclick="changeID('5')">Last Serviced</a></th>
+						<th><a href="#0" class="navSort">Make</a></th>
+						<th><a href="#1" class="navSort">Model</a></th>
+						<th><a href="#2" class="navSort">Year</a></th>
+						<th><a href="#3" class="navSort">Tag</a></th>
+						<th><a href="#4" class="navSort">Mileage</a></th>
+						<th><a href="#5" class="navSort">Last Serviced</a></th>
 						<th>Is Available</th>
-						<th><a href="#6" onclick="changeID('6')">Vehicle Type</a></th>
-						<th><a href="#7" onclick="changeID('7')">Vehicle Location</a></th>
+						<th><a href="#6" class="navSort">Vehicle Type</a></th>
+						<th><a href="#7" class="navSort">Vehicle Location</a></th>
 						<th>Edit</th>
 					</tr>
 					<c:forEach items="${a:masterSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
@@ -87,7 +89,11 @@
 							<td><a href="<c:out value="${url }" />">Edit</a></td>
 						</tr>
 					</c:forEach>
-				</table>
+				</table>				
+				<form id="sortVehicleForm" name="sortVehicleForm" method="get" action="VehicleManagement">
+					<input type="hidden" id="action" name="action" value="sortVehicle"/>
+					<input type="hidden" id="searchType" name="searchType" value="" />
+				</form>
 			</c:when>
 			<c:otherwise>
 				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

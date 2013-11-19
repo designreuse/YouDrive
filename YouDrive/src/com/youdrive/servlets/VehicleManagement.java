@@ -52,20 +52,31 @@ public class VehicleManagement extends HttpServlet {
 			session.setAttribute("vehicleMgr", ivm);
 		}	
 		String vehicleID = request.getParameter("vehicleID");
+		String searchType = request.getParameter("searchType");
+		String dispatchedPage = "/login.jsp";
 		if (vehicleID != null && !vehicleID.isEmpty()){
 			int vID = Integer.parseInt(vehicleID);
 			Vehicle vehicle = ivm.getVehicle(vID);
 			if (vehicle != null){
 				ctx.setAttribute("vehicle", vehicle);
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/editvehicle.jsp");
+				dispatchedPage = "/editvehicle.jsp";
 			}else{
 				request.setAttribute("errorMessage", "Unable to find Vehicle object.");
-				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+				dispatchedPage = "/managevehicles.jsp";
 			}
-		}else{
-			dispatcher = ctx.getRequestDispatcher("/login.jsp");
+		}else if (searchType != null && !searchType.isEmpty()){
+			int sType = 0;
+			try{
+				sType = Integer.parseInt(searchType);
+			}catch(NumberFormatException e){
+				System.err.println("Passed a non-numeric value.");
+			}finally{
+				request.setAttribute("searchType", sType);
+			}
+			dispatchedPage = "/managevehicles.jsp";
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 

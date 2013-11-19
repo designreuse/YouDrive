@@ -57,6 +57,9 @@ ol.nav{
 	text-align: right;
 }
 
+ol.nav li{
+	/*display:inline;*/
+}
 
 #enter{
 	background-color: #1E1E1E;

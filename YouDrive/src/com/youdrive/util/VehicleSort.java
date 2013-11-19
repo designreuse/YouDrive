@@ -90,6 +90,13 @@ public final class VehicleSort {
 				 });
 				break;
 			default:
+				//Default is: Sort by Make
+				System.out.println("Sort By Make");
+				Collections.sort(vehicles, new Comparator<Vehicle>() {
+				    public int compare(Vehicle o1, Vehicle o2){
+				        return o1.getMake().compareTo(o2.getMake()); // Compare by name, for example
+				    }
+				 });
 		}
 		return vehicles;
 	}
