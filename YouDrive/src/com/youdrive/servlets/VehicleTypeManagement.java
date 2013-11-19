@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.helpers.VehicleTypeDAO;
@@ -37,6 +38,7 @@ public class VehicleTypeManagement extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
@@ -47,7 +49,7 @@ public class VehicleTypeManagement extends HttpServlet {
 			int typeID = Integer.parseInt(vehicleTypeID);
 			VehicleType vType = ivtm.getVehicleType(typeID);
 			if (vType != null){
-				ctx.setAttribute("vehicleType", vType);
+				session.setAttribute("vehicleType", vType);
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
 			}else{
@@ -66,6 +68,7 @@ public class VehicleTypeManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();

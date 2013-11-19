@@ -38,6 +38,7 @@ public class LocationManagement extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
@@ -47,7 +48,7 @@ public class LocationManagement extends HttpServlet {
 			int locID = Integer.parseInt(locationID);
 			Location loc = ilm.getLocationById(locID);
 			if (loc != null){
-				ctx.setAttribute("location", loc);
+				session.setAttribute("location", loc);
 				request.setAttribute("errorMessage","");
 				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
 			}else{
@@ -64,6 +65,7 @@ public class LocationManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();

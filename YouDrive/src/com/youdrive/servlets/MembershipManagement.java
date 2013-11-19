@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.MembershipDAO;
 import com.youdrive.helpers.UserDAO;
@@ -38,6 +39,7 @@ public class MembershipManagement extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
@@ -49,7 +51,7 @@ public class MembershipManagement extends HttpServlet {
 				System.out.println("membership ID found.");
 				int mID = Integer.parseInt(membershipID);
 				Membership membership = imm.getMembership(mID);
-				ctx.setAttribute("membership", membership);
+				session.setAttribute("membership", membership);
 				dispatchedPage = "/editmembership.jsp";
 			}catch(NumberFormatException e){
 				errorMessage = "Invalid membership id.";
@@ -69,6 +71,7 @@ public class MembershipManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
@@ -99,7 +102,7 @@ public class MembershipManagement extends HttpServlet {
 							request.setAttribute("errorMessage", "");
 							dispatchedPage = "/managememberships.jsp";
 						}else{
-							ctx.setAttribute("membership", member);
+							session.setAttribute("membership", member);
 							dispatchedPage = "/editmembership.jsp";
 						}
 					}else{

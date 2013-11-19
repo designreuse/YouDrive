@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.UserDAO;
@@ -40,6 +41,7 @@ public class UserManagement extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
@@ -50,7 +52,7 @@ public class UserManagement extends HttpServlet {
 			try{
 				int uID = Integer.parseInt(userID);
 				User user = ium.getUser(uID);
-				ctx.setAttribute("user", user);
+				session.setAttribute("user", user);
 				dispatcher = ctx.getRequestDispatcher("/edituser.jsp");
 			}catch(NumberFormatException e){
 				errorMessage = "Invalid userID.";
@@ -68,6 +70,7 @@ public class UserManagement extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
 		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
@@ -86,7 +89,7 @@ public class UserManagement extends HttpServlet {
 			}
 		}else if (action.equalsIgnoreCase("registerUser1")){
 			System.out.println("Page 1 of User Registration Action");
-			if (addRegularUserPg1(request,ium,ctx)){
+			if (addRegularUserPg1(request,ium,session,ctx)){
 				request.setAttribute("errorMessage","");				
 				dispatchedPage = "/registration_page2.jsp";
 			}else{
@@ -115,8 +118,8 @@ public class UserManagement extends HttpServlet {
 				}else{
 					dispatchedPage = "/user.jsp";
 				}
-				//Stash logged in user to application context
-				ctx.setAttribute("loggedInUser", user);
+				//Stash logged in user to session context
+				session.setAttribute("loggedInUser", user);
 			}else{
 				request.setAttribute("errorMessage", "Invalid credentials.");
 				dispatchedPage = "/login.jsp";
@@ -206,7 +209,7 @@ public class UserManagement extends HttpServlet {
 		return userID;
 	}
 
-	private boolean addRegularUserPg1(HttpServletRequest request,IUserManager ium, ServletContext ctx){
+	private boolean addRegularUserPg1(HttpServletRequest request,IUserManager ium, HttpSession session, ServletContext ctx){
 		int userID = 0;
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
@@ -240,7 +243,7 @@ public class UserManagement extends HttpServlet {
 				addUser1.put("firstName", firstName);
 				addUser1.put("lastName", lastName);
 				addUser1.put("email", email);
-				ctx.setAttribute("registration_page1", addUser1);
+				session.setAttribute("registration_page1", addUser1);
 				return true;
 			}
 		}
