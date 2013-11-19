@@ -17,9 +17,9 @@
 	</function>
 
 	<function>
-		<name>sortByMake</name>
+		<name>vehicleTypeSort</name>
 		<function-class>com.youdrive.util.SortingUtil</function-class>
-		<function-signature>java.util.ArrayList sortByMake(java.util.ArrayList)</function-signature>
+		<function-signature>java.util.ArrayList vehicleTypeSort(java.util.ArrayList, int)</function-signature>
 	</function>
 	
 	<function>

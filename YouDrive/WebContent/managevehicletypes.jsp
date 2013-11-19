@@ -57,16 +57,16 @@
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
 			<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />
+			<c:set var="allVehicleTypes" value="${vehicleTypeMgr.getAllVehicleTypes() }" scope="session"/>
 				<table border="1">		
 					<caption>Vehicle Types</caption>
 					<tr>
-						<th>Vehicle Type</th>
-						<th>Hourly Price</th>
-						<th>Daily Price</th>
+						<th><a href="#0" class="navSort">Vehicle Type</a></th>
+						<th><a href="#1" class="navSort">Hourly Price</a></th>
+						<th><a href="#2" class="navSort">Daily Price</a></th>
 						<th>Edit</th>
 					</tr>
-					<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}"
-						var="vehicleType" varStatus="status">
+					<c:forEach items="${a:vehicleTypeSort(allVehicleTypes,searchType)}" var="vehicleType" varStatus="status">
 						<tr>
 							<td><c:out value="${ vehicleType.type }" /></td>
 							<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}" type="currency" /></td>
@@ -77,7 +77,11 @@
 							<td><a href="<c:out value="${url }" />">Edit</a></td>
 						</tr>
 					</c:forEach>
-				</table>
+				</table>			
+				<form id="sortVehicleTypeForm" name="sortVehicleTypeForm" method="get" action="VehicleTypeManagement">
+					<input type="hidden" id="action" name="action" value="sortVehicleType"/>
+					<input type="hidden" id="searchType" name="searchType" value="" />
+				</form>
 			</c:when>
 			<c:otherwise>
 				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

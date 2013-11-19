@@ -43,20 +43,33 @@ public class VehicleTypeManagement extends HttpServlet {
 			session.setAttribute("vehicleTypeMgr", ivtm);
 		}		
 		String vehicleTypeID = request.getParameter("vehicleTypeID");
+		String searchType = request.getParameter("searchType");
+		String dispatchedPage = "/index.jsp";
 		if (vehicleTypeID != null && !vehicleTypeID.isEmpty()){
 			int typeID = Integer.parseInt(vehicleTypeID);
 			VehicleType vType = ivtm.getVehicleType(typeID);
 			if (vType != null){
 				session.setAttribute("vehicleType", vType);
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+				dispatchedPage = "/editvehicletype.jsp";
 			}else{
 				request.setAttribute("errorMessage", "Unable to find Vehicle Type object.");
-				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+				dispatchedPage = "/managevehicles.jsp";
 			}
+		}else if (searchType != null && !searchType.isEmpty()){
+			int sType = 0;
+			try{
+				sType = Integer.parseInt(searchType);
+			}catch(NumberFormatException e){
+				System.err.println("Passed a non-numeric value.");
+			}finally{
+				request.setAttribute("searchType", sType);
+			}
+			dispatchedPage = "/managevehicletypes.jsp";
 		}else{
-			dispatcher = ctx.getRequestDispatcher("/index.jsp");
+			dispatchedPage = "/index.jsp";
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 

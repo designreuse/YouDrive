@@ -19,6 +19,12 @@ public final class SortingUtil {
 		return "Hiya, " + name + ".";
 	}
 
+	/**
+	 * Sorting a list of Vehicles
+	 * @param vehicles
+	 * @param sortType
+	 * @return
+	 */
 	public static ArrayList<Vehicle> vehicleSort(ArrayList<Vehicle> vehicles, int sortType){
 		switch(sortType){
 		case(0):
@@ -42,7 +48,7 @@ public final class SortingUtil {
 			//Sort by Year
 			Collections.sort(vehicles, new Comparator<Vehicle>() {
 				public int compare(Vehicle o1, Vehicle o2){
-					return String.valueOf(o1.getLastServiced()).compareTo(String.valueOf(o2.getLastServiced())); // Compare by name, for example
+					return Integer.compare(o1.getYear(),o2.getYear());
 				}
 			});				
 		break;
@@ -58,7 +64,7 @@ public final class SortingUtil {
 			//Sort By Mileage
 			Collections.sort(vehicles, new Comparator<Vehicle>() {
 				public int compare(Vehicle o1, Vehicle o2){
-					return String.valueOf(o1.getMileage()).compareTo(String.valueOf(o2.getMileage())); // Compare by name, for example
+					return Integer.compare(o1.getMileage(),o2.getMileage());
 				}
 			});				
 		break;
@@ -84,8 +90,8 @@ public final class SortingUtil {
 			//Sort by Vehicle Location
 			Collections.sort(vehicles, new Comparator<Vehicle>() {
 				public int compare(Vehicle o1, Vehicle o2){
-					String typeA = ilm.getLocationById(o1.getVehicleType()).getName();
-					String typeB = ilm.getLocationById(o2.getVehicleType()).getName();
+					String typeA = ilm.getLocationById(o1.getAssignedLocation()).getName();
+					String typeB = ilm.getLocationById(o2.getAssignedLocation()).getName();
 					return typeA.compareTo(typeB); // Compare by name, for example
 				}
 			});
@@ -102,6 +108,12 @@ public final class SortingUtil {
 		return vehicles;
 	}
 
+	/**
+	 * Sorting a list of Vehicle types
+	 * @param vehicleTypes
+	 * @param sortType
+	 * @return
+	 */
 	public static ArrayList<VehicleType> vehicleTypeSort(ArrayList<VehicleType> vehicleTypes, int sortType){
 		switch(sortType){
 		case(0):
@@ -116,7 +128,7 @@ public final class SortingUtil {
 			System.out.println("Sort By Hourly Price");
 			Collections.sort(vehicleTypes, new Comparator<VehicleType>() {
 				public int compare(VehicleType o1, VehicleType o2){
-					return String.valueOf(o1.getHourlyPrice()).compareTo(String.valueOf(o2.getHourlyPrice())); // Compare by name, for example
+					return Double.compare(o1.getHourlyPrice(), o2.getHourlyPrice());
 				}
 			});
 			break;
@@ -124,7 +136,7 @@ public final class SortingUtil {
 			System.out.println("Sort By Hourly Price");
 			Collections.sort(vehicleTypes, new Comparator<VehicleType>() {
 				public int compare(VehicleType o1, VehicleType o2){
-					return String.valueOf(o1.getHourlyPrice()).compareTo(String.valueOf(o2.getHourlyPrice())); // Compare by name, for example
+					return Double.compare(o1.getHourlyPrice(), o2.getHourlyPrice());
 				}
 			});
 			break;
