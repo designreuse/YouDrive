@@ -98,7 +98,6 @@ public class VehicleManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editVehicle")){
-			String errorMessage = "";
 			String vehicleId = request.getParameter("vehicleID");
 			if (vehicleId == null || vehicleId.isEmpty()){
 				request.setAttribute("errorMessage", "Invalid vehicle ID.");
@@ -117,18 +116,19 @@ public class VehicleManagement extends HttpServlet {
 							if (user != null){
 								int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
 								if (commentId == 0){
-									errorMessage = "Unable to save comment.";
+									request.setAttribute("errorMessage","Unable to save comment.");
 								}else{
 									//Successfully added comment.
 								}
 							}else{
-								errorMessage = "No user logged in.";
+								request.setAttribute("errorMessage","No user logged in.");
 							}
 						}else{
 							//Continue with editing user.
 						}
 						if (editVehicle(request,ivm,ilm,v)){
 							request.setAttribute("errorMessage", "");
+							session.setAttribute("allVehicles", ivm.getAllVehicles());
 							dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 						}else{
 							request.setAttribute("vehicle", v);

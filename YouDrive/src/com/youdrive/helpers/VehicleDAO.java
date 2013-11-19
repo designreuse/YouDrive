@@ -38,7 +38,7 @@ public class VehicleDAO implements IVehicleManager {
 	public VehicleDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " group by vehicleType");
+			allVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " order by vehicleType");
 			getVehicleStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where id = ?");
 			getVehicleLocationStmt = conn.prepareStatement("select name from " + Constants.LOCATIONS + " where id = ?");
 			getVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES + " where id = ?");
