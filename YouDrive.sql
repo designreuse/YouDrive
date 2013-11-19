@@ -65,7 +65,7 @@ CREATE TABLE `Locations` (
 
 LOCK TABLES `Locations` WRITE;
 /*!40000 ALTER TABLE `Locations` DISABLE KEYS */;
-INSERT INTO `Locations` VALUES (1,'Downtown Location','123 Barbarella Dr, Athens GA 30602',3),(2,'Five Points Location','456 S Milledge Ave, Athens GA 30605',50),(3,'East Campus Location','789 East Campus Rd, Athens GA 30602',2),(4,'West Side Location','865 Barbosa Rd, Athens 30606',100);
+INSERT INTO `Locations` VALUES (1,'Downtown Location','123 East Broadstreet Rd, Athens GA 30602',2),(2,'Five Points Location','456 S Milledge Ave, Athens GA 30605',5),(3,'Westside Location','789 Olympic Drive, Athens GA 30601',100),(4,'Epps Bridge Location','379 Epps Bridge Pkwy, Athens Ga 30601',20);
 /*!40000 ALTER TABLE `Locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,7 +83,7 @@ CREATE TABLE `Memberships` (
   `duration` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,6 +92,7 @@ CREATE TABLE `Memberships` (
 
 LOCK TABLES `Memberships` WRITE;
 /*!40000 ALTER TABLE `Memberships` DISABLE KEYS */;
+INSERT INTO `Memberships` VALUES (1,'6 month plan',150.00,6),(2,'12 month plan',290.00,12),(3,'24 month plan',430.00,24),(4,'Monthly plan',50.00,1);
 /*!40000 ALTER TABLE `Memberships` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,14 +143,14 @@ CREATE TABLE `Users` (
   `password` varchar(255) NOT NULL,
   `firstName` varchar(255) NOT NULL,
   `lastName` varchar(255) NOT NULL,
-  `state` varchar(255) DEFAULT NULL,
+  `state` varchar(3) DEFAULT NULL,
   `license` varchar(255) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `address` text,
   `ccType` varchar(255) DEFAULT NULL,
-  `ccNumber` int(11) DEFAULT NULL,
-  `ccSecurityCode` int(11) DEFAULT NULL,
-  `ccExpirationDate` varchar(6) DEFAULT NULL,
+  `ccNumber` varchar(17) DEFAULT NULL,
+  `ccSecurityCode` varchar(10) DEFAULT NULL,
+  `ccExpirationDate` varchar(7) DEFAULT NULL,
   `isAdmin` tinyint(1) DEFAULT NULL,
   `memberExpiration` date DEFAULT NULL,
   `membershipLevel` int(11) DEFAULT NULL,
@@ -158,7 +159,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `email` (`email`),
   KEY `membershipLevel` (`membershipLevel`),
   CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`membershipLevel`) REFERENCES `Memberships` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +168,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (1,'jane','demo','Jane ','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(2,'james','demo','James','Vaughan',NULL,NULL,'jamesv14@uga.edu',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(3,'trevor','demo','Trevor','Wilson',NULL,NULL,'trevwilson16@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL);
+INSERT INTO `Users` VALUES (1,'jane','test','Jane','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(2,'james','test','James','Vaughan',NULL,NULL,'jamesv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(3,'trevor','test','Trevor','Wilson',NULL,NULL,'trevv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(4,'rod','test','Rod','Rashidi',NULL,NULL,'rod@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL);
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,7 +186,7 @@ CREATE TABLE `VehicleTypes` (
   `dailyPrice` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,7 +195,7 @@ CREATE TABLE `VehicleTypes` (
 
 LOCK TABLES `VehicleTypes` WRITE;
 /*!40000 ALTER TABLE `VehicleTypes` DISABLE KEYS */;
-INSERT INTO `VehicleTypes` VALUES (1,'Regular',120.00,600.00),(2,'Pickup Truck',300.00,1700.00),(3,'Luxury',500.00,3800.00),(4,'Semi',600.00,6000.00);
+INSERT INTO `VehicleTypes` VALUES (1,'Regular ',40.00,200.00),(2,'Midsize',70.00,400.00),(3,'Luxury',150.00,1000.00);
 /*!40000 ALTER TABLE `VehicleTypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,7 +232,7 @@ CREATE TABLE `Vehicles` (
 
 LOCK TABLES `Vehicles` WRITE;
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
-INSERT INTO `Vehicles` VALUES (1,'Hyundai','Elantra',2003,'ABC12345',100000,'2013-11-01',0,1,3),(2,'Lamborghini ','Gallardo',2009,'ABC23456',10000,'2013-11-03',0,3,2),(3,'Oldsmobile','Cutlass Supreme',1997,'POT159',150000,'2012-11-01',0,1,1);
+INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,2,1);
 /*!40000 ALTER TABLE `Vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -244,4 +245,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-11-18 12:15:23
+-- Dump completed on 2013-11-18 20:37:27

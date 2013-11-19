@@ -70,9 +70,7 @@
 						<c:out value="${location.name }" />
 						</td>
 				</c:forEach>
-			</select><br /> <label for="comment">Enter Comments:</label>
-			<textarea name="comment" id="comment"
-				onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea>
+			</select><br /> 
 			<br /> <input type="hidden" name="action" id="addVehicle"
 				value="addVehicle" /> <input type="submit" value="Submit" /> <input
 				type="reset" value="Reset" />
