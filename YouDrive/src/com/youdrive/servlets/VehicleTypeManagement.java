@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.VehicleTypeDAO;
 import com.youdrive.interfaces.IVehicleTypeManager;
+import com.youdrive.models.User;
 import com.youdrive.models.VehicleType;
 
 /**
@@ -21,14 +22,14 @@ import com.youdrive.models.VehicleType;
 @WebServlet("/VehicleTypeManagement")
 public class VehicleTypeManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public VehicleTypeManagement() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public VehicleTypeManagement() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -60,14 +61,22 @@ public class VehicleTypeManagement extends HttpServlet {
 			int sType = 0;
 			try{
 				sType = Integer.parseInt(searchType);
+				request.setAttribute("errorMessage","");
 			}catch(NumberFormatException e){
-				System.err.println("Passed a non-numeric value.");
+				request.setAttribute("errorMessage","Passed a non-numeric value.");
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
 			dispatchedPage = "/managevehicletypes.jsp";
 		}else{
-			dispatchedPage = "/index.jsp";
+			User loggedInUser = (User) session.getAttribute("loggedInUser");
+			if (loggedInUser != null){
+				if (loggedInUser.isAdmin()){
+					dispatchedPage = "/managevehicles.jsp";
+				}else{
+					dispatchedPage = "/user.jsp";
+				}
+			}
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
@@ -120,8 +129,8 @@ public class VehicleTypeManagement extends HttpServlet {
 		}
 		dispatcher.forward(request,response);
 	}
-	
-	
+
+
 	private boolean editVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm, VehicleType vType){
 		String errorMessage = "";
 		int vehicleTypeID = vType.getId();
@@ -163,7 +172,7 @@ public class VehicleTypeManagement extends HttpServlet {
 		request.setAttribute("errorMessage", errorMessage);
 		return false;	
 	}
-	
+
 	private int addVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm){
 		String errorMessage = "";
 		int vehicleTypeID = 0;

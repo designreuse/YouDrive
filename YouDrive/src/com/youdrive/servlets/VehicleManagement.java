@@ -71,10 +71,20 @@ public class VehicleManagement extends HttpServlet {
 				sType = Integer.parseInt(searchType);
 			}catch(NumberFormatException e){
 				System.err.println("Passed a non-numeric value.");
+				request.setAttribute("errorMessage","Passed a non-numeric value.");
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
 			dispatchedPage = "/managevehicles.jsp";
+		}else{
+			User loggedInUser = (User) session.getAttribute("loggedInUser");
+			if (loggedInUser != null){
+				if (loggedInUser.isAdmin()){
+					dispatchedPage = "/managevehicles.jsp";
+				}else{
+					dispatchedPage = "/user.jsp";
+				}
+			}
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);

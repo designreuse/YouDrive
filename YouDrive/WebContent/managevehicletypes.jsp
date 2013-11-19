@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="a" uri="/sortVehicle" %>
+<%@ taglib prefix="a" uri="/sortItems" %>
 <c:choose>
 	<c:when test="${searchType == null}">
 		<c:set var="searchType" value="0"/>

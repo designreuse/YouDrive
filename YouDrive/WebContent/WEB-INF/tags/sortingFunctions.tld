@@ -6,8 +6,8 @@
 
 	<display-name>Vehicle Sorting Functions</display-name>
 	<tlib-version>1.0</tlib-version>
-	<short-name>vehicleSort</short-name>
-	<uri>/SortVehicle</uri>
+	<short-name>sortItems</short-name>
+	<uri>/SortItems</uri>
 
 	<function>
 		<name>hello</name>
@@ -16,6 +16,18 @@
 		</function-signature>
 	</function>
 
+	<function>
+		<name>locationSort</name>
+		<function-class>com.youdrive.util.SortingUtil</function-class>
+		<function-signature>java.util.ArrayList locationSort(java.util.ArrayList, int)</function-signature>
+	</function>
+	
+	<function>
+		<name>userSort</name>
+		<function-class>com.youdrive.util.SortingUtil</function-class>
+		<function-signature>java.util.ArrayList userSort(java.util.ArrayList, int)</function-signature>
+	</function>
+	
 	<function>
 		<name>vehicleTypeSort</name>
 		<function-class>com.youdrive.util.SortingUtil</function-class>

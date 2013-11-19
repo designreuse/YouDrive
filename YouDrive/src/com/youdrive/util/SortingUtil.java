@@ -5,15 +5,20 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.youdrive.helpers.LocationDAO;
+import com.youdrive.helpers.MembershipDAO;
 import com.youdrive.helpers.VehicleTypeDAO;
 import com.youdrive.interfaces.ILocationManager;
+import com.youdrive.interfaces.IMembershipManager;
 import com.youdrive.interfaces.IVehicleTypeManager;
+import com.youdrive.models.Location;
+import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
 import com.youdrive.models.VehicleType;
 
 public final class SortingUtil {
 	private static IVehicleTypeManager ivtm  = new VehicleTypeDAO();
 	private static ILocationManager ilm = new LocationDAO();
+	private static IMembershipManager imm = new MembershipDAO();
 
 	public static String hello(String name) {
 		return "Hiya, " + name + ".";
@@ -147,8 +152,149 @@ public final class SortingUtil {
 					return String.valueOf(o1.getDailyPrice()).compareTo(String.valueOf(o2.getDailyPrice())); // Compare by name, for example
 				}
 			});
-
 		}
 		return vehicleTypes;
+	}
+	
+	/**
+	 * Sort a list of locations
+	 * @param locations
+	 * @param sortType
+	 * @return
+	 */
+	public static ArrayList<Location> locationSort(ArrayList<Location> locations, int sortType){
+		switch(sortType){
+		case(0):
+			System.out.println("Sort By Name");
+			Collections.sort(locations, new Comparator<Location>() {
+				public int compare(Location o1, Location o2){
+					return o1.getName().compareTo(o2.getName()); // Compare by name, for example
+				}
+			});
+			break;
+		case(1):
+			System.out.println("Sort By Address");
+			Collections.sort(locations, new Comparator<Location>() {
+				public int compare(Location o1, Location o2){
+					return o1.getAddress().compareTo(o2.getAddress()); // Compare by name, for example
+				}
+			});
+			break;
+		case(2):
+			System.out.println("Sort By Location Capacity");
+			Collections.sort(locations, new Comparator<Location>() {
+				public int compare(Location o1, Location o2){
+					return Integer.compare(o1.getCapacity(), o2.getCapacity());
+				}
+			});
+			break;
+		default:
+			System.out.println("Sort By Name");
+			Collections.sort(locations, new Comparator<Location>() {
+				public int compare(Location o1, Location o2){
+					return o1.getName().compareTo(o2.getName()); // Compare by name, for example
+				}
+			});
+		}
+		return locations;
+	}
+	
+	/**
+	 * Sort the list of Users
+	 * @param users
+	 * @param sortType
+	 * @return
+	 */
+	public static ArrayList<User> userSort(ArrayList<User> users, int sortType){
+		switch(sortType){
+		case(0):
+			//Sort By Username
+			System.out.println("Sort By Username");
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getUsername().compareTo(o2.getUsername()); // Compare by name, for example
+				}
+			});
+		break;
+		case(1):
+			//Sort By FirstName
+			System.out.println("Sort By FirstName");
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getFirstName().compareTo(o2.getFirstName()); // Compare by name, for example
+				}
+			});
+		break;
+		case(2):
+			//Sort By LastName
+			System.out.println("Sort By LastName");
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getLastName().compareTo(o2.getLastName());
+				}
+			});				
+		break;
+		case(3):
+			//Sort By Email
+			System.out.println("Sort By Email");
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getEmail().compareTo(o2.getEmail()); // Compare by name, for example
+				}
+			});
+		break;
+		case(4):
+			//Sort By State
+			//TODO 
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getState().compareTo(o2.getState());
+				}
+			});				
+		break;
+		case(5):
+			//Sort by License
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getLicense().compareTo(o2.getLicense()); // Compare by name, for example
+				}
+			});				
+		break;
+		case(6):
+			//Sort By Card Type
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getCcType().compareTo(o2.getCcType()); // Compare by name, for example
+				}
+			});
+		break;
+		case(7):
+			//Sort by Membership
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					String typeA = imm.getMembership(o1.getMembershipLevel()).getName();
+					String typeB = imm.getMembership(o2.getMembershipLevel()).getName();
+					return typeA.compareTo(typeB); // Compare by name, for example
+				}
+			});
+		break;
+		case(8):
+			//Sort by Membership Expiration
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getMemberExpiration().compareTo(o2.getMemberExpiration()); // Compare by name, for example
+				}
+			});
+		break;
+		default:
+			//Sort By Username
+			System.out.println("Sort By Username");
+			Collections.sort(users, new Comparator<User>() {
+				public int compare(User o1, User o2){
+					return o1.getUsername().compareTo(o2.getUsername()); // Compare by name, for example
+				}
+			});
+		}
+		return users;
 	}
 }

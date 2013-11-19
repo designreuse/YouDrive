@@ -43,18 +43,33 @@ public class LocationManagement extends HttpServlet {
 			session.setAttribute("userMgr", ilm);
 		}
 		String locationID = request.getParameter("locationID");
+		String searchType = request.getParameter("searchType");
+		String dispatchedPage = "/login.jsp";
 		if (locationID != null && !locationID.isEmpty()){
 			int locID = Integer.parseInt(locationID);
 			Location loc = ilm.getLocationById(locID);
 			if (loc != null){
 				session.setAttribute("location", loc);
 				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/editlocation.jsp");
+				dispatchedPage =  "/editlocation.jsp";
 			}else{
 				request.setAttribute("errorMessage", "Unable to find Location object.");
-				dispatcher = ctx.getRequestDispatcher("/managelocations.jsp");
+				dispatchedPage = "/managelocations.jsp";
 			}
+		}else if (searchType != null && !searchType.isEmpty()){
+			int sType = 0;
+			try{
+				sType = Integer.parseInt(searchType);
+				request.setAttribute("errorMessage","");
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage","Passed a non-numeric value.");
+			}finally{
+				request.setAttribute("searchType", sType);
+			}
+			dispatchedPage = "/managelocations.jsp";
+			
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 

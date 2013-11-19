@@ -2,7 +2,6 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="a" uri="/sortVehicle" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,6 +16,5 @@
 		<a href="login.jsp" title="Login to YouDrive!">Login</a> | <a
 			href="registration_page1.jsp" title="Register For YouDrive">Register</a>
 	</div>
-	<c:out value='${a:hello("Jane")}' />
 </body>
 </html>

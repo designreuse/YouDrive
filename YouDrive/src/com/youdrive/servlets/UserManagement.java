@@ -47,19 +47,40 @@ public class UserManagement extends HttpServlet {
 		}
 		String errorMessage = "";
 		String userID = request.getParameter("userID");
+		String searchType = request.getParameter("searchType");
+		String dispatchedPage = "/login.jsp";
 		if (userID != null && !userID.isEmpty()){
 			try{
 				int uID = Integer.parseInt(userID);
 				User user = ium.getUser(uID);
 				session.setAttribute("user", user);
-				dispatcher = ctx.getRequestDispatcher("/edituser.jsp");
+				dispatchedPage = "/edituser.jsp";
 			}catch(NumberFormatException e){
 				errorMessage = "Invalid userID.";
 			}
+		}else if (searchType != null && !searchType.isEmpty()){
+			//Default sort is by lastname i.e. number 2
+			int sType = 2;
+			try{
+				sType = Integer.parseInt(searchType);
+				request.setAttribute("errorMessage","");
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage","Passed a non-numeric value.");
+			}finally{
+				request.setAttribute("searchType", sType);
+			}
+			dispatchedPage = "/manageusers.jsp";
 		}else{
-			dispatcher = ctx.getRequestDispatcher("/manageusers.jsp");
+			User loggedInUser = (User) session.getAttribute("loggedInUser");
+			if (loggedInUser != null){
+				if (loggedInUser.isAdmin()){
+					dispatchedPage = "/manageusers.jsp";
+				}else{
+					dispatchedPage = "/user.jsp";
+				}
+			}
 		}
-		request.setAttribute("errorMessage", errorMessage);
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 
@@ -107,6 +128,7 @@ public class UserManagement extends HttpServlet {
 				}
 			}else{
 				System.err.println("Empty map coming from registration page 2");
+				request.setAttribute("errorMessage", "Missing registration information from first page.");
 				dispatchedPage = "/registration_page1.jsp";
 			}
 		}else if (action.equalsIgnoreCase("login")){

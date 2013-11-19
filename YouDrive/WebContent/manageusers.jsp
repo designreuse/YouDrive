@@ -2,12 +2,35 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="a" uri="/sortItems" %>
+<c:choose>
+	<c:when test="${searchType == null}">
+		<%-- Default sort is #2 i.e. by last name --%>
+		<c:set var="searchType" value="2"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="searchType" value="${searchType }"/>
+	</c:otherwise>
+</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+	//Equivalent to $( document ).ready(function(){});
+	$(function() {
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortUserForm').submit();
+		});
+	});
+</script>
 <title>Manage Users</title>
 </head>
 <body>
@@ -34,23 +57,23 @@
 		</p>
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-			<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />
+			<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
+			<c:set var="allUsers" value="${userMgr.getAllUsers() }" scope="session"/>
 				<table border="1">
 					<caption>All Users</caption>
 					<tr>
 						<th class="hidden">ID</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
-						<th>Membership Expiration</th>
+						<th><a href="#2" class="navSort">Name</a></th>
+						<th><a href="#0" class="navSort">Username</a></th>
+						<th><a href="#3" class="navSort">Email</a></th>
+						<th><a href="#8" class="navSort">Membership Expiration</a></th>
 						<th>Is Admin</th>
 						<th>Edit</th>
 					</tr>
-					<c:forEach items="${userMgr.getAllUsers()}" var="user"
-						varStatus="status">
+					<c:forEach items="${a:userSort(allUsers,searchType)}" var="user" varStatus="status">
 						<tr>
 							<td class="hidden"><c:out value="${ user.id }" /></td>
-							<td><c:out value="${ user.firstName}" /> <c:out value="${ user.lastName }" /></td>
+							<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
 							<td><c:out value="${ user.username}" /></td>
 							<td><c:out value="${ user.email}" /></td>
 							<td><fmt:formatDate type="date"  value="${user.memberExpiration}" /></td>
@@ -70,7 +93,11 @@
 							<td><a href="<c:out value="${url }" />">Edit</a></td>
 						</tr>
 					</c:forEach>
-				</table>
+				</table>		
+				<form id="sortUserForm" name="sortUserForm" method="get" action="UserManagement">
+					<input type="hidden" id="action" name="action" value="sortUser"/>
+					<input type="hidden" id="searchType" name="searchType" value="" />
+				</form>
 			</c:when>
 			<c:otherwise>
 				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
