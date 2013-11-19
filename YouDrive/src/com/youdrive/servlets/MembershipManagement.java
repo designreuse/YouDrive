@@ -37,7 +37,7 @@ public class MembershipManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
+		IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
 			session.setAttribute("membershipMgr", imm);
@@ -70,7 +70,7 @@ public class MembershipManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IMembershipManager imm = (MembershipDAO) ctx.getAttribute("membershipMgr");
+		IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
 			session.setAttribute("membershipMgr", imm);

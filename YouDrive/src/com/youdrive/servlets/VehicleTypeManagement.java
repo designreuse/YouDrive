@@ -37,7 +37,7 @@ public class VehicleTypeManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
+		IVehicleTypeManager ivtm = (VehicleTypeDAO) session.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
 			session.setAttribute("vehicleTypeMgr", ivtm);
@@ -67,7 +67,7 @@ public class VehicleTypeManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IVehicleTypeManager ivtm = (VehicleTypeDAO) ctx.getAttribute("vehicleTypeMgr");
+		IVehicleTypeManager ivtm = (VehicleTypeDAO) session.getAttribute("vehicleTypeMgr");
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
 			session.setAttribute("vehicleTypeMgr", ivtm);

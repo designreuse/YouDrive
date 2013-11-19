@@ -37,7 +37,7 @@ public class LocationManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
+		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
 			session.setAttribute("userMgr", ilm);
@@ -65,7 +65,7 @@ public class LocationManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
+		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
 		if (ilm == null){
 			ilm = new LocationDAO();
 			session.setAttribute("locationMgr", ilm);

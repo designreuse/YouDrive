@@ -40,7 +40,7 @@ public class UserManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
+		IUserManager ium = (UserDAO) session.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
@@ -70,7 +70,7 @@ public class UserManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
+		IUserManager ium = (UserDAO) session.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);

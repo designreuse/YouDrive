@@ -46,7 +46,7 @@ public class VehicleManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IVehicleManager ivm = (VehicleDAO) ctx.getAttribute("vehicleMgr");
+		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
 			session.setAttribute("vehicleMgr", ivm);
@@ -76,16 +76,15 @@ public class VehicleManagement extends HttpServlet {
 		ServletContext ctx = this.getServletContext();
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
-		IVehicleManager ivm = (VehicleDAO) ctx.getAttribute("vehicleMgr");
-
-		ILocationManager ilm = (LocationDAO) ctx.getAttribute("locationMgr");
+		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
+		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
 			session.setAttribute("vehicleMgr", ivm);
 		}
 		if (ilm == null){
 			ilm = new LocationDAO();
-			ctx.setAttribute("locationMgr", ilm);
+			session.setAttribute("locationMgr", ilm);
 		}
 		String action = request.getParameter("action");
 		//Adding a single vehicle
