@@ -3,21 +3,21 @@ id int not null primary key auto_increment,
 name varchar(255) unique not null, 
 address varchar(255) not null, 
 capacity int not null
-);
+) Engine=InnoDB;
 
 Create table VehicleTypes(
 id int not null primary key auto_increment,
 type varchar(255) unique not null,
 hourlyPrice decimal(10,2) not null,
 dailyPrice decimal(10,2) not null
-);
+) Engine=InnoDB;
 
 create table Memberships(
 id int not null primary key auto_increment,
 name varchar(255) unique not null,
 price decimal(10,2) not null,
 duration int not null
-);
+) Engine=InnoDB;
 
 create table Users(
 id int not null primary key auto_increment,
@@ -37,7 +37,7 @@ isAdmin boolean,
 memberExpiration date,
 membershipLevel int,
 FOREIGN KEY (membershipLevel) references Memberships(id)
-);
+) Engine=InnoDB;
 
 
 Create table Vehicles(
@@ -53,7 +53,7 @@ vehicleType int not null,
 assignedLocation int not null,
 FOREIGN KEY (vehicleType) references VehicleTypes(id),
 FOREIGN KEY (assignedLocation) references Locations(id)
-);
+) Engine=InnoDB;
 
 create table Reservations(
 id int not null primary key auto_increment,
@@ -66,7 +66,7 @@ reservationEnd datetime  not null,
 FOREIGN KEY (customerID) references Users(id),
 FOREIGN KEY (locationID) references Locations(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
-);
+) Engine=InnoDB;
 
 create table Comments(
 id int not null primary key auto_increment,
@@ -76,4 +76,4 @@ author int not null,
 vehicleID int not null,
 FOREIGN KEY (author) references Users(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
-);
+) Engine=InnoDB;

@@ -5,9 +5,9 @@ import java.util.LinkedHashMap;
 
 public class Constants {
 
-	public static final String JDBC_URL = "jdbc:mysql://localhost/YouDrive?autoReconnect=true";
-	public static  String username = "demo";
-	public static  String password = "demo";
+	public static final String JDBC_URL = "jdbc:mysql://localhost:3306/team7";
+	public static  String username = "team7";
+	public static  String password = "overload";
 
 	public static final String HOME = "http://localhost:8080/YouDrive/";
 	public static final String USERS = "Users";
