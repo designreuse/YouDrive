@@ -21,6 +21,12 @@
 			<c:when
 				test="${registration_page1 != null && registration_page1.size() > 0 }">
 				<form id="registerUser" name="registerUser" action="UserManagement" method="post">
+					<label for="membershipLevel">Choose Membership</label>
+					<select required name="membershipLevel">
+					<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
+						<option value="${membership.id }"><fmt:formatNumber value="${ membership.price}" type="currency" /> for <c:out value="${membership.duration }" /> months</option>
+					</c:forEach>
+					</select><br/>
 					<label for="address">Address:</label>
 					<input required type="text" id="address" name="address" /><br /> 
 					<label for="license">Driver's License:</label>
@@ -93,12 +99,6 @@
 					<label	for="ccExpiration">Card Expires:</label> 
 					<input required	type="text" maxlength="7" id="ccExpiration" name="ccExpiration"
 						placeholder="Enter as: MM/YYYY" /><br /> 
-					<label for="membershipLevel">Choose Membership</label>
-					<select name="membershipLevel">
-					<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
-						<option value="${membership.id }"><fmt:formatNumber value="${ membership.price}" type="currency" /> for <c:out value="${membership.duration }" /> months</option>
-					</c:forEach>
-					</select>
 					<input type="hidden" id="action" name="action" value="registerUser2" /> 
 					<input	type="submit" value="Register" /> 
 					<input type="reset" value="Reset" />

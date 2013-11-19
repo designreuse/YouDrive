@@ -19,5 +19,8 @@ public interface IMembershipManager {
 	 * @return
 	 */
 	public String deleteMembership(int id);
-	ArrayList<Membership> getAllMemberships();
+	public ArrayList<Membership> getAllMemberships();
+	public Membership getMembership(int id);
+	public boolean isNameInUse(String name);
+	public boolean updateMembership(int id, String name, double price, int duration);
 }

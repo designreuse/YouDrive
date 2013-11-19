@@ -28,7 +28,7 @@ public class Constants {
 	public static final String USERS_MEMBERSHIP_LEVEL = "membershipLevel";
 
 
-	public static final String MEMBERSHIP = "Membership";
+	public static final String MEMBERSHIP = "Memberships";
 	public static final String MEMBERSHIP_ID = "id";
 	public static final String MEMBERSHIP_NAME = "name";
 	public static final String MEMBERSHIP_PRICE = "price";

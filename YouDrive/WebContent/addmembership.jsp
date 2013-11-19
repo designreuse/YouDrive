@@ -8,10 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>Edit Vehicle Type</title>
+<title>Add Membership</title>
 </head>
-<body>
-	<h3>Edit Vehicle Type</h3>
+<body>	
+	<h3>Add Membership</h3>
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
@@ -28,30 +28,16 @@
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form method="post" action="VehicleTypeManagement"
-			name="editVehicleType" id="editVehicleType">
-			<c:if test="${vehicleType != null }">
-				<label for="vehicleTypeName">Vehicle Type:</label>
-				<input required type="text" id="vehicleTypeName" name="vehicleTypeName"
-					value="<c:out value="${vehicleType.type }"/>" />
-				<br />
-				<label for="hourlyPrice">Hourly Price:</label>
-				<input required type="text" id="hourlyPrice" name="hourlyPrice"
-					value="${vehicleType.hourlyPrice}" />
-				<br />
-				<label for="dailyPrice">Daily Price:</label>
-				<input required type="text" id="dailyPrice" name="dailyPrice"
-					value="${vehicleType.dailyPrice}" />
-				<br />
-				<input type="hidden" name="action" id="action"
-					value="editVehicleType" />
-				<input type="hidden" name="vehicleTypeID" id="vehicleTypeID"
-					value="<c:out value="${vehicleType.id}" />" />
-				<input type="submit" value="Update" />
-				<input type="button"
-					onclick="window.location.replace('managevehicletypes.jsp')"
-					value="Cancel" />
-			</c:if>
+		<form method="post" action="MembershipManagement" name="editMembership" id="editMembership">
+			<label for="membershipLevel">Membership Level:</label>
+			<input  required type="text"id="membershipLevel" name="membershipLevel"/><br />
+			<label for="price">Price:</label>
+			<input  required type="text" id="price" name="price" /><br />
+			<label for="duration">Duration (months):</label>
+			<input  required type="text" id="duration" name="duration" /><br />
+			<input type="hidden" name="action" id="action" value="addMembership" />
+			<input type="submit" value="Add" />
+			<input type="button" onclick="window.location.replace('managememberships.jsp')" value="Cancel" />		
 		</form>
 	</div>
 </body>

@@ -250,6 +250,7 @@ public class UserManagement extends HttpServlet {
 
 	private int addRegularUserPg2(HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
 		int userID = 0;
+		String membershipLevel = request.getParameter("membershipLevel");
 		String address = request.getParameter("address");
 		String state = request.getParameter("state");
 		String license = request.getParameter("license");
@@ -259,7 +260,9 @@ public class UserManagement extends HttpServlet {
 		String ccExpirationDate = request.getParameter("ccExpiration");
 		String errorMessage = "";
 
-		if (address == null || address.isEmpty()){
+		if (membershipLevel == null || membershipLevel.isEmpty()){
+			errorMessage = "Must select a membership level.";
+		}else if (address == null || address.isEmpty()){
 			errorMessage = "Missing address.";
 		}else if(license == null || license.isEmpty()){
 			errorMessage = "Missing license.";
