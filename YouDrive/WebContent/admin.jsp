@@ -12,6 +12,9 @@
 </head>
 <body>
 	<h3>YouDrive Admin Portal</h3>
+	<c:if test="${loggedInUser != null }">
+		<p class="userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
+	</c:if>
 	<p class="error"><c:out value="${errorMessage }" /></p>
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>

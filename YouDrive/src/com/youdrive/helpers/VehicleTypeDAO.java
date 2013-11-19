@@ -35,11 +35,11 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
 			checkVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES  + " where type = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
-			System.out.println("Instantiated VehicleTypesDAO");
+			System.out.println("Instantiated VehicleTypeDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
 		}catch(Exception e){
-			System.err.println("Problem with VehicleDAO constructor: " + e.getClass().getName() + ": " + e.getMessage());
+			System.err.println("Problem with VehicleTypeDAO constructor: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	

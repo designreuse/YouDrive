@@ -43,6 +43,7 @@ public class UserManagement extends HttpServlet {
 		IUserManager ium = (UserDAO) ctx.getAttribute("userMgr");
 		if (ium == null){
 			ium = new UserDAO();
+			session.setAttribute("userMgr", ium);
 		}
 		String errorMessage = "";
 		String userID = request.getParameter("userID");

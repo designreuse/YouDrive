@@ -13,6 +13,9 @@
 </head>
 <body>
 	<h3>Edit Vehicle Type</h3>
+	<c:if test="${loggedInUser != null }">
+		<p class="userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
+	</c:if>
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>

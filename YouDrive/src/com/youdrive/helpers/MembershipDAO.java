@@ -32,6 +32,7 @@ public class MembershipDAO implements IMembershipManager{
 			deleteMembershipStmt = conn.prepareStatement("delete from " + Constants.MEMBERSHIP + " where id = ?"); 
 			checkMembershipNameStmt = conn.prepareStatement("select * from " + Constants.MEMBERSHIP + " where name = ?");
 			updateMembershipStmt = conn.prepareStatement("update " + Constants.MEMBERSHIP + " set name = ?,price = ?,duration = ? where id = ?");
+			System.out.println("Instantiated MembershipDAO");
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){

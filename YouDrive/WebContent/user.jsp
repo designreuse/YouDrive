@@ -11,6 +11,10 @@
 <title>User Management Portal</title>
 </head>
 <body>
+	<h3>User Portal</h3>
+	<c:if test="${loggedInUser != null }">
+		<p class="userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
+	</c:if>
 	<ol class="nav">
 		<li><a href="reservevehicle.jsp">Reserve Vehicle</a></li>
 		<li><a href="returnvehicle.jsp">Return Vehicle</a></li>

@@ -5,13 +5,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" href="css/homepage.css">
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>Edit Membership</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<link rel="stylesheet" href="css/homepage.css">
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<title>Edit Membership</title>
 </head>
 <body>
-<h3>Edit Rental Location</h3>
+	<h3>Edit Rental Location</h3>
+	<c:if test="${loggedInUser != null }">
+		<p class="userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
+	</c:if>
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>

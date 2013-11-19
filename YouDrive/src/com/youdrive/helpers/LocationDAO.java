@@ -26,7 +26,6 @@ public class LocationDAO implements ILocationManager {
 	private PreparedStatement checkLocationNameStmt;
 	private Constants cs = new Constants();
 	private Connection conn = null;
-	private static LocationDAO ldao = null;
 		
 	public LocationDAO(){
 		try{

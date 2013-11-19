@@ -9,8 +9,12 @@ div.logo {
 	display:none;	
 }
 
-div.signup{
-	
+p.userInfo{
+	margin-top:-3em;
+	float:right;
+	font-size:110%;
+    text-transform:uppercase;
+    font-family:Georgia,"Times New Roman", Times, serif}
 }
 
 div.header{
