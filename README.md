@@ -8,6 +8,7 @@ POC for the YouDrive project (part of the Software Engineering class requirement
 3. Go to /admin.jsp to start adding/editing/deleting items.
 4. Alternately, use quick_data.sql to populate the created tables.
 5. jane:test, james:test, trevor:test, rod:test are username:password pairs that are admins
+6. Hosted here: http://uml.cs.uga.edu:8080/Jane_Doe_invest/ (This is not the final URL but just something to make sure the app will run on uml) - 11/18/2013
 
 
 
