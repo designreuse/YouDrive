@@ -2,12 +2,32 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="a" uri="/sortVehicle" %>
+<c:choose>
+	<c:when test="${searchType == null}">
+		<c:set var="searchType" value="0"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="searchType" value="${searchType }"/>
+	</c:otherwise>
+</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+	var searchType = 0;
+	function changeID(id){
+		searchType = id;
+		alert(searchType);
+	}
+	
+	$(function() {
+		$("#lastServiced").datepicker();
+	});
+</script>
 <title>Manage Vehicles</title>
 </head>
 <body>
@@ -35,22 +55,22 @@
 		<c:choose>
 			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">		
 			<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
+			<c:set var="allVehicles" value="${vehicleMgr.getAllVehicles() }"/>
 				<table border="1">
 					<caption>Vehicles</caption>
 					<tr>
-						<th>Make</th>
-						<th>Model</th>
-						<th>Year</th>
-						<th>Tag</th>
-						<th>Mileage</th>
-						<th>Last Serviced</th>
+						<th><a href="#0" onclick="changeID('0')">Make</a></th>
+						<th><a href="#1" onclick="changeID('1')">Model</a></th>
+						<th><a href="#2" onclick="changeID('2')">Year</a></th>
+						<th><a href="#3" onclick="changeID('3')">Tag</a></th>
+						<th><a href="#4" onclick="changeID('4')">Mileage</a></th>
+						<th><a href="#5" onclick="changeID('5')">Last Serviced</a></th>
 						<th>Is Available</th>
-						<th>Vehicle Type</th>
-						<th>Vehicle Location</th>
+						<th><a href="#6" onclick="changeID('6')">Vehicle Type</a></th>
+						<th><a href="#7" onclick="changeID('7')">Vehicle Location</a></th>
 						<th>Edit</th>
 					</tr>
-					<c:forEach items="${vehicleMgr.getAllVehicles()}" var="vehicle"
-						varStatus="status">
+					<c:forEach items="${a:masterSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
 						<tr>
 							<td><c:out value="${ vehicle.make }" /></td>
 							<td><c:out value="${ vehicle.model }" /></td>
