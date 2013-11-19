@@ -28,7 +28,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	public VehicleTypeDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			allVehicleTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES);
+			allVehicleTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES + " order by type");
 			getVehicleTypeStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES + " where id = ?");
 			addVehicleTypeStmt = conn.prepareStatement("insert into " + Constants.VEHICLE_TYPES + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");			

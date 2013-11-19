@@ -33,7 +33,7 @@ public class UserDAO implements IUserManager {
 	public UserDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
-			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by lastName");
+			getAllUsersStmt = conn.prepareStatement("select * from " + Constants.USERS + " order by firstName");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
 			getUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
