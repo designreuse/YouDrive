@@ -11,39 +11,21 @@
 
 	<function>
 		<name>hello</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
+		<function-class>com.youdrive.util.SortingUtil</function-class>
 		<function-signature>java.lang.String hello(java.lang.String)
 		</function-signature>
 	</function>
 
 	<function>
 		<name>sortByMake</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
+		<function-class>com.youdrive.util.SortingUtil</function-class>
 		<function-signature>java.util.ArrayList sortByMake(java.util.ArrayList)</function-signature>
 	</function>
-
-	<function>
-		<name>sortByModel</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
-		<function-signature>java.util.ArrayList sortByModel(java.util.ArrayList)</function-signature>
-	</function>
 	
 	<function>
-		<name>sortByVehicleType</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
-		<function-signature>java.util.ArrayList sortByVehicleType(java.util.ArrayList)</function-signature>
-	</function>
-	
-		<function>
-		<name>sortByVehicleLocation</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
-		<function-signature>java.util.ArrayList sortByVehicleLocation(java.util.ArrayList)</function-signature>
-	</function>
-	
-	<function>
-		<name>masterSort</name>
-		<function-class>com.youdrive.util.VehicleSort</function-class>
-		<function-signature>java.util.ArrayList masterSort(java.util.ArrayList, int)</function-signature>
+		<name>vehicleSort</name>
+		<function-class>com.youdrive.util.SortingUtil</function-class>
+		<function-signature>java.util.ArrayList vehicleSort(java.util.ArrayList, int)</function-signature>
 	</function>
 
 </taglib>

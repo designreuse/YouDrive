@@ -70,9 +70,10 @@
 						<th>Is Available</th>
 						<th><a href="#6" class="navSort">Vehicle Type</a></th>
 						<th><a href="#7" class="navSort">Vehicle Location</a></th>
-						<th>Edit</th>
+						<th>Edit</th> 
 					</tr>
-					<c:forEach items="${a:masterSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
+					<%-- Created a custom EL function to sort the list on demand --%>
+					<c:forEach items="${a:vehicleSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
 						<tr>
 							<td><c:out value="${ vehicle.make }" /></td>
 							<td><c:out value="${ vehicle.model }" /></td>

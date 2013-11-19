@@ -113,6 +113,7 @@ public class UserManagement extends HttpServlet {
 			User user = authenticateUser(request,ium);
 			if (user != null){
 				request.setAttribute("errorMessage","");
+				//Send user to right landing page
 				if (user.isAdmin()){
 					dispatchedPage = "/admin.jsp";
 				}else{

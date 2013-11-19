@@ -10,7 +10,7 @@ import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IVehicleTypeManager;
 import com.youdrive.models.Vehicle;
 
-public final class VehicleSort {
+public final class SortingUtil {
 	private static IVehicleTypeManager ivtm  = new VehicleTypeDAO();
 	private static ILocationManager ilm = new LocationDAO();
 	
@@ -18,7 +18,7 @@ public final class VehicleSort {
         return "Hiya, " + name + ".";
 	}
 	
-	public static ArrayList<Vehicle> masterSort(ArrayList<Vehicle> vehicles, int sortType){
+	public static ArrayList<Vehicle> vehicleSort(ArrayList<Vehicle> vehicles, int sortType){
 		switch(sortType){
 			case(0):
 				//Sort by Make
