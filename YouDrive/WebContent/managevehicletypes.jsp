@@ -25,32 +25,40 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
-	<p class="error">
-		<c:out value="${errorMessage }" />
-	</p>
-	<div class="body">
-		<table border="1">		
-			<caption>Vehicle Types</caption>
-			<tr>
-				<th>Vehicle Type</th>
-				<th>Hourly Price</th>
-				<th>Daily Price</th>
-				<th>Edit</th>
-			</tr>
-			<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}"
-				var="vehicleType" varStatus="status">
-				<tr>
-					<td><c:out value="${ vehicleType.type }" /></td>
-					<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}" type="currency" /></td>
-					<td><fmt:formatNumber value="${ vehicleType.dailyPrice}" type="currency" /></td>
-					<c:url value="VehicleTypeManagement" var="url">
-						<c:param name="vehicleTypeID" value="${vehicleType.id}" />
-					</c:url>
-					<td><a href="<c:out value="${url }" />">Edit</a></td>
-				</tr>
-			</c:forEach>
-		</table>
+	<div class="body">	
+		<p class="error">
+			<c:out value="${errorMessage }" />
+		</p>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<table border="1">		
+					<caption>Vehicle Types</caption>
+					<tr>
+						<th>Vehicle Type</th>
+						<th>Hourly Price</th>
+						<th>Daily Price</th>
+						<th>Edit</th>
+					</tr>
+					<c:forEach items="${vehicleTypeMgr.getAllVehicleTypes()}"
+						var="vehicleType" varStatus="status">
+						<tr>
+							<td><c:out value="${ vehicleType.type }" /></td>
+							<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}" type="currency" /></td>
+							<td><fmt:formatNumber value="${ vehicleType.dailyPrice}" type="currency" /></td>
+							<c:url value="VehicleTypeManagement" var="url">
+								<c:param name="vehicleTypeID" value="${vehicleType.id}" />
+							</c:url>
+							<td><a href="<c:out value="${url }" />">Edit</a></td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

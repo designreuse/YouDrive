@@ -23,38 +23,46 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
 		<c:choose>
-			<c:when test="${membership != null }">
-				<form method="post" action="MembershipManagement" name="editMembership" id="editMembership">
-						<label for="membershipLevel">Membership Level:</label>
-						<input  required type="text"id="membershipLevel" name="membershipLevel"
-							value="<c:out value="${membership.name }"/>" />
-						<br />
-						<label for="price">Price:</label>
-						<input  required type="text" id="price" name="price"
-							value="<c:out value="${membership.price }"/>" />
-						<br />
-						<label for="duration">Duration (months):</label>
-						<input  required type="text" id="duration" name="duration"
-							value="<c:out value="${membership.duration }"/>" />
-						<br />
-						<input type="hidden" name="action" id="action" value="editMembership" />
-						<input type="hidden" name="membershipID" id="membershipID"
-							value="<c:out value="${membership.id}" />" />
-						<input type="submit" value="Update" />
-						<input type="button"
-							onclick="window.location.replace('managememberships.jsp')"
-							value="Cancel" />
-					
-				</form>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<c:choose>
+					<c:when test="${membership != null }">
+						<form method="post" action="MembershipManagement" name="editMembership" id="editMembership">
+								<label for="membershipLevel">Membership Level:</label>
+								<input  required type="text"id="membershipLevel" name="membershipLevel"
+									value="<c:out value="${membership.name }"/>" />
+								<br />
+								<label for="price">Price:</label>
+								<input  required type="text" id="price" name="price"
+									value="<c:out value="${membership.price }"/>" />
+								<br />
+								<label for="duration">Duration (months):</label>
+								<input  required type="text" id="duration" name="duration"
+									value="<c:out value="${membership.duration }"/>" />
+								<br />
+								<input type="hidden" name="action" id="action" value="editMembership" />
+								<input type="hidden" name="membershipID" id="membershipID"
+									value="<c:out value="${membership.id}" />" />
+								<input type="submit" value="Update" />
+								<input type="button"
+									onclick="window.location.replace('managememberships.jsp')"
+									value="Cancel" />
+							
+						</form>
+					</c:when>
+					<c:otherwise>
+						<p class="error">Member object not found.</p>
+					</c:otherwise>
+				</c:choose>
 			</c:when>
 			<c:otherwise>
-				<p class="error">Member object not found.</p>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
 			</c:otherwise>
 		</c:choose>
 	</div>

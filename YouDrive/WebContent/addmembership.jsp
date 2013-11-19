@@ -23,22 +23,30 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form method="post" action="MembershipManagement" name="editMembership" id="editMembership">
-			<label for="membershipLevel">Membership Level:</label>
-			<input  required type="text"id="membershipLevel" name="membershipLevel"/><br />
-			<label for="price">Price:</label>
-			<input  required type="text" id="price" name="price" /><br />
-			<label for="duration">Duration (months):</label>
-			<input  required type="text" id="duration" name="duration" /><br />
-			<input type="hidden" name="action" id="action" value="addMembership" />
-			<input type="submit" value="Add" />
-			<input type="button" onclick="window.location.replace('managememberships.jsp')" value="Cancel" />		
-		</form>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<form method="post" action="MembershipManagement" name="editMembership" id="editMembership">
+					<label for="membershipLevel">Membership Level:</label>
+					<input  required type="text"id="membershipLevel" name="membershipLevel"/><br />
+					<label for="price">Price:</label>
+					<input  required type="text" id="price" name="price" /><br />
+					<label for="duration">Duration (months):</label>
+					<input  required type="text" id="duration" name="duration" /><br />
+					<input type="hidden" name="action" id="action" value="addMembership" />
+					<input type="submit" value="Add" />
+					<input type="button" onclick="window.location.replace('managememberships.jsp')" value="Cancel" />		
+				</form>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

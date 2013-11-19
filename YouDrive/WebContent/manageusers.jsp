@@ -24,47 +24,55 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
-<div class="body">
+	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<table border="1">
-			<caption>All Users</caption>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>Username</th>
-				<th>Email</th>
-				<th>Membership Expiration</th>
-				<th>Is Admin</th>
-				<th>Edit</th>
-			</tr>
-			<c:forEach items="${userMgr.getAllUsers()}" var="user"
-				varStatus="status">
-				<tr>
-					<td><c:out value="${ user.id }" /></td>
-					<td><c:out value="${ user.firstName}" /> <c:out value="${ user.lastName }" /></td>
-					<td><c:out value="${ user.username}" /></td>
-					<td><c:out value="${ user.email}" /></td>
-					<td><fmt:formatDate type="date"  value="${user.memberExpiration}" /></td>
-					<td>
-						<c:choose>
-						<c:when test="${ user.isAdmin() == null }">
-							<input type="checkbox" disabled name="isAdmin" id="isAdmin"/>
-						</c:when>
-						<c:otherwise>
-							<input type="checkbox" name="isAdmin" id="isAdmin" disabled checked />
-						</c:otherwise>
-						</c:choose>
-					</td>
-					<c:url value="UserManagement" var="url">
-						<c:param name="userID" value="${user.id}" />
-					</c:url>
-					<td><a href="<c:out value="${url }" />">Edit</a></td>
-				</tr>
-			</c:forEach>
-		</table>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<table border="1">
+					<caption>All Users</caption>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Username</th>
+						<th>Email</th>
+						<th>Membership Expiration</th>
+						<th>Is Admin</th>
+						<th>Edit</th>
+					</tr>
+					<c:forEach items="${userMgr.getAllUsers()}" var="user"
+						varStatus="status">
+						<tr>
+							<td><c:out value="${ user.id }" /></td>
+							<td><c:out value="${ user.firstName}" /> <c:out value="${ user.lastName }" /></td>
+							<td><c:out value="${ user.username}" /></td>
+							<td><c:out value="${ user.email}" /></td>
+							<td><fmt:formatDate type="date"  value="${user.memberExpiration}" /></td>
+							<td>
+								<c:choose>
+								<c:when test="${ user.isAdmin() == null }">
+									<input type="checkbox" disabled name="isAdmin" id="isAdmin"/>
+								</c:when>
+								<c:otherwise>
+									<input type="checkbox" name="isAdmin" id="isAdmin" disabled checked />
+								</c:otherwise>
+								</c:choose>
+							</td>
+							<c:url value="UserManagement" var="url">
+								<c:param name="userID" value="${user.id}" />
+							</c:url>
+							<td><a href="<c:out value="${url }" />">Edit</a></td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 </div>
 </body>
 </html>

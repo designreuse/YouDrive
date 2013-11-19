@@ -13,6 +13,21 @@ div.signup{
 	
 }
 
+div.header{
+	background-color: #B0171F;
+	color: #ffffff;
+}
+
+div.login{	
+	width:550px;
+	margin:0 auto;
+	font-size:2em;
+}
+
+div.login input[type=submit]{
+	margin-left:12em;	
+}
+
 div.underlogo{
 	width:550px;
 	margin:0 auto;

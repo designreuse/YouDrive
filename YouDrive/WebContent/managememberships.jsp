@@ -2,7 +2,6 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="application" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,33 +23,42 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
-		</p>
-		<table border="1">
-			<caption>Membership Levels</caption>
-			<tr>
-				<th class="hidden">ID</th>
-				<th>Name</th>
-				<th>Price</th>
-				<th>Duration (months)</th>
-				<th>Edit</th>
-			</tr>
-			<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
-				<tr>
-					<td class="hidden"><c:out value="${ membership.id }" /></td>
-					<td><c:out value="${ membership.name }" /></td>
-					<td><fmt:formatNumber value="${ membership.price}" type="currency" /></td>
-					<td><c:out value="${ membership.duration}" /></td>
-					<c:url value="MembershipManagement" var="url">
-						<c:param name="membershipID" value="${membership.id}" />
-					</c:url>
-					<td><a href="<c:out value="${url }" />">Edit</a></td>
-				</tr>
-			</c:forEach>
-		</table>
+		</p>		
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+			<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="application" />
+				<table border="1">
+					<caption>Membership Levels</caption>
+					<tr>
+						<th class="hidden">ID</th>
+						<th>Name</th>
+						<th>Price</th>
+						<th>Duration (months)</th>
+						<th>Edit</th>
+					</tr>
+					<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
+						<tr>
+							<td class="hidden"><c:out value="${ membership.id }" /></td>
+							<td><c:out value="${ membership.name }" /></td>
+							<td><fmt:formatNumber value="${ membership.price}" type="currency" /></td>
+							<td><c:out value="${ membership.duration}" /></td>
+							<c:url value="MembershipManagement" var="url">
+								<c:param name="membershipID" value="${membership.id}" />
+							</c:url>
+							<td><a href="<c:out value="${url }" />">Edit</a></td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

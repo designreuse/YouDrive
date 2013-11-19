@@ -19,6 +19,7 @@ import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
+import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
 import com.youdrive.models.VehicleType;
 
@@ -96,6 +97,7 @@ public class VehicleManagement extends HttpServlet {
 				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}
 		}else if (action.equalsIgnoreCase("editVehicle")){
+			String errorMessage = "";
 			String vehicleId = request.getParameter("vehicleID");
 			if (vehicleId == null || vehicleId.isEmpty()){
 				request.setAttribute("errorMessage", "Invalid vehicle ID.");
@@ -106,6 +108,24 @@ public class VehicleManagement extends HttpServlet {
 					Vehicle v = ivm.getVehicle(vID);
 					//Ensure a vehicle exists in db
 					if (v != null){
+						//Check for comment and add.
+						String comment = request.getParameter("comment");
+						if (comment != null && !comment.isEmpty()){
+							//Get logged in user
+							User user = (User) ctx.getAttribute("loggedInUser");
+							if (user != null){
+								int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
+								if (commentId == 0){
+									errorMessage = "Unable to save comment.";
+								}else{
+									//Successfully added comment.
+								}
+							}else{
+								errorMessage = "No user logged in.";
+							}
+						}else{
+							//Continue with editing user.
+						}
 						if (editVehicle(request,ivm,ilm,v)){
 							request.setAttribute("errorMessage", "");
 							dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");

@@ -23,37 +23,44 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		
-		<c:if test="${location != null }">
-			<form method="post" action="LocationManagement" name="editLocation"
-				id="editLocation">
-					<label for="locationName">Location Name:</label>
-					<input  required type="text"id="locationName" name="locationName"
-						value="<c:out value="${location.name }"/>" />
-					<br />
-					<label for="locationAddress">Location Address:</label>
-					<input  required type="text" id="locationAddress" name="locationAddress"
-						value="<c:out value="${location.address }"/>" />
-					<br />
-					<label for="capacity">Location Capacity:</label>
-					<input  required type="text" id="capacity" name="capacity"
-						value="<c:out value="${location.capacity }"/>" />
-					<br />
-					<input type="hidden" name="action" id="action" value="editLocation" />
-					<input type="hidden" name="locationID" id="locationID"
-						value="<c:out value="${location.id}" />" />
-					<input type="submit" value="Update" />
-					<input type="button"
-						onclick="window.location.replace('managelocations.jsp')"
-						value="Cancel" />
-				
-			</form>
-		</c:if>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<c:if test="${location != null }">
+					<form method="post" action="LocationManagement" name="editLocation"
+						id="editLocation">
+							<label for="locationName">Location Name:</label>
+							<input  required type="text"id="locationName" name="locationName"
+								value="<c:out value="${location.name }"/>" />
+							<br />
+							<label for="locationAddress">Location Address:</label>
+							<input  required type="text" id="locationAddress" name="locationAddress"
+								value="<c:out value="${location.address }"/>" />
+							<br />
+							<label for="capacity">Location Capacity:</label>
+							<input  required type="text" id="capacity" name="capacity"
+								value="<c:out value="${location.capacity }"/>" />
+							<br />
+							<input type="hidden" name="action" id="action" value="editLocation" />
+							<input type="hidden" name="locationID" id="locationID"
+								value="<c:out value="${location.id}" />" />
+							<input type="submit" value="Update" />
+							<input type="button"
+								onclick="window.location.replace('managelocations.jsp')"
+								value="Cancel" />
+						
+					</form>
+				</c:if>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

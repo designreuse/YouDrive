@@ -127,8 +127,6 @@ public class UserDAO implements IUserManager {
 		return userID;
 	}
 
-
-
 	@Override
 	public User authenticateUser(String username, String password){
 		User user = null;
@@ -137,9 +135,21 @@ public class UserDAO implements IUserManager {
 			authenticateUserStmt.setString(2,password);
 			ResultSet rs = authenticateUserStmt.executeQuery();
 			if (rs.next()){
-				user = new User();
-				user.setId(rs.getInt("id"));
-				user.setAdmin(rs.getBoolean("isAdmin"));
+				int id = rs.getInt("id");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String state = rs.getString("state");
+				String license = rs.getString("license");
+				String email = rs.getString("email");
+				String address = rs.getString("address");
+				String ccType = rs.getString("ccType");
+				String ccNumber = rs.getString("ccNumber");
+				int ccSecurityCode = rs.getInt("ccSecurityCode");
+				String ccExpirationDate = rs.getString("ccExpirationDate");
+				boolean isAdmin = rs.getBoolean("isAdmin");
+				Date memberExpiration = rs.getDate("memberExpiration");
+				int membershipLevel = rs.getInt("membershipLevel");
+				user = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
 				return user;
 			}
 		}catch(SQLException e){

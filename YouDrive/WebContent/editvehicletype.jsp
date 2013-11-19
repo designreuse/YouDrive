@@ -24,31 +24,39 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form method="post" action="VehicleTypeManagement"
-			name="editVehicleType" id="editVehicleType">
-			<c:if test="${vehicleType != null }">
-				<label for="vehicleTypeName">Vehicle Type:</label>
-				<input required type="text" id="vehicleTypeName" name="vehicleTypeName" value="<c:out value="${vehicleType.type }"/>" />
-				<br />
-				<label for="hourlyPrice">Hourly Price:</label>
-				<input required type="text" id="hourlyPrice" name="hourlyPrice" value="${vehicleType.hourlyPrice}" />
-				<br />
-				<label for="dailyPrice">Daily Price:</label>
-				<input required type="text" id="dailyPrice" name="dailyPrice" value="${vehicleType.dailyPrice}" />
-				<br />
-				<input type="hidden" name="action" id="action" value="editVehicleType" />
-				<input type="hidden" name="vehicleTypeID" id="vehicleTypeID" value="<c:out value="${vehicleType.id}" />" />
-				<input type="submit" value="Update" />
-				<input type="button"
-					onclick="window.location.replace('managevehicletypes.jsp')"
-					value="Cancel" />
-			</c:if>
-		</form>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<form method="post" action="VehicleTypeManagement"
+					name="editVehicleType" id="editVehicleType">
+					<c:if test="${vehicleType != null }">
+						<label for="vehicleTypeName">Vehicle Type:</label>
+						<input required type="text" id="vehicleTypeName" name="vehicleTypeName" value="<c:out value="${vehicleType.type }"/>" />
+						<br />
+						<label for="hourlyPrice">Hourly Price:</label>
+						<input required type="text" id="hourlyPrice" name="hourlyPrice" value="${vehicleType.hourlyPrice}" />
+						<br />
+						<label for="dailyPrice">Daily Price:</label>
+						<input required type="text" id="dailyPrice" name="dailyPrice" value="${vehicleType.dailyPrice}" />
+						<br />
+						<input type="hidden" name="action" id="action" value="editVehicleType" />
+						<input type="hidden" name="vehicleTypeID" id="vehicleTypeID" value="<c:out value="${vehicleType.id}" />" />
+						<input type="submit" value="Update" />
+						<input type="button"
+							onclick="window.location.replace('managevehicletypes.jsp')"
+							value="Cancel" />
+					</c:if>
+				</form>				
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

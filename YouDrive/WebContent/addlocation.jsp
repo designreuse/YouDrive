@@ -23,21 +23,29 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
-		</p>
-		<form id="addLocation" name="addLocation" action="LocationManagement"
-			method="post">
-			<label for="locationName">Location Name:</label> <input
-				id="locationName" name="locationName" type="text" /><br /> <label
-				for="locationAddress">Address:</label> <input id="locationAddress"
-				name="locationAddress" type="text" /><br /> <label for="capacity">Capacity:</label>
-			<input id="capacity" name="capacity" type="text" /><br /> <input
-				type="hidden" id="action" name="action" value="addLocation" /> <input
-				type="submit" value="Submit" /> <input type="reset" value="Reset" />
-		</form>
+		</p>		
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<form id="addLocation" name="addLocation" action="LocationManagement"
+					method="post">
+					<label for="locationName">Location Name:</label> <input
+						id="locationName" name="locationName" type="text" /><br /> <label
+						for="locationAddress">Address:</label> <input id="locationAddress"
+						name="locationAddress" type="text" /><br /> <label for="capacity">Capacity:</label>
+					<input id="capacity" name="capacity" type="text" /><br /> <input
+						type="hidden" id="action" name="action" value="addLocation" /> <input
+						type="submit" value="Submit" /> <input type="reset" value="Reset" />
+				</form>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

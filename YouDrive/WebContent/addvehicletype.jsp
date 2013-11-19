@@ -23,22 +23,30 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form id="addVehicleType" name="addVehicleType"
-			action="VehicleTypeManagement" method="post">
-			<label for="vehicleTypeName">Vehicle Type Name:</label> <input
-				id="vehicleTypeName" name="vehicleTypeName" type="text" /><br /> <label
-				for="hourlyPrice">Hourly Price:</label> <input id="hourlyPrice"
-				name="hourlyPrice" type="text" /><br /> <label for="dailyPrice">Daily
-				Price:</label> <input id="dailyPrice" name="dailyPrice" type="text" /><br />
-			<input type="hidden" name="action" id="action" value="addVehicleType" />
-			<input type="submit" value="Submit" /> <input type="reset"
-				value="Reset" />
-		</form>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<form id="addVehicleType" name="addVehicleType"
+					action="VehicleTypeManagement" method="post">
+					<label for="vehicleTypeName">Vehicle Type Name:</label> <input
+						id="vehicleTypeName" name="vehicleTypeName" type="text" /><br /> <label
+						for="hourlyPrice">Hourly Price:</label> <input id="hourlyPrice"
+						name="hourlyPrice" type="text" /><br /> <label for="dailyPrice">Daily
+						Price:</label> <input id="dailyPrice" name="dailyPrice" type="text" /><br />
+					<input type="hidden" name="action" id="action" value="addVehicleType" />
+					<input type="submit" value="Submit" /> <input type="reset"
+						value="Reset" />
+				</form>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

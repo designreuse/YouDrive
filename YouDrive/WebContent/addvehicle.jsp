@@ -23,10 +23,6 @@
 </head>
 <body>
 	<h3>Add Vehicle</h3>
-	<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO"
-		scope="application" />
-	<jsp:useBean id="vehicleTypeDAO"
-		class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
 	<ol class="nav">
 		<li><a href="addvehicle.jsp">Add Vehicle</a></li>
 		<li><a href="addvehicletype.jsp">Add Vehicle Type</a></li>
@@ -38,44 +34,58 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
-
 	<div class="body">
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form id="addVehicle" name="addVehicle" action="VehicleManagement"
-			method="post">
-			<label for="make">Make:</label> <input name="make" id="make"
-				type="text" /><br /> <label for="model">Model:</label> <input
-				name="model" id="model" type="text" /><br /> <label for="year">Year:</label>
-			<input name="year" id="year" type="text" /><br /> <label for="tag">Vehicle
-				Tag:</label> <input name="tag" id="tag" type="text" /><br /> <label
-				for="mileage">Vehicle Mileage:</label> <input name="mileage"
-				id="mileage" type="text" /><br /> <label for="lastServiced">Last
-				Serviced Date:</label> <input name="lastServiced" id="lastServiced"
-				type="text" /><br /> <label for="vehicleType">Vehicle
-				Type:</label> <select name="vehicleType">
-				<c:forEach items="${vehicleTypeDAO.getAllVehicleTypes()}"
-					var="vehicleType" varStatus="status">
-					<option value="<c:out value="${ vehicleType.id }" />">
-						<c:out value="${vehicleType.type }" />
-						</td>
-				</c:forEach>
-			</select><br /> <label for="assignedLocation">Vehicle Location:</label> <select
-				name="vehicleLocation">
-				<c:forEach items="${locationDAO.getAllLocations()}" var="location"
-					varStatus="status">
-					<option value="<c:out value="${ location.id }" />">
-						<c:out value="${location.name }" />
-						</td>
-				</c:forEach>
-			</select><br /> 
-			<br /> <input type="hidden" name="action" id="addVehicle"
-				value="addVehicle" /> <input type="submit" value="Submit" /> <input
-				type="reset" value="Reset" />
-
-		</form>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO"	scope="application" />
+				<jsp:useBean id="vehicleTypeDAO" class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
+				<form id="addVehicle" name="addVehicle" action="VehicleManagement"	method="post">
+					<label for="make">Make:</label> 
+					<input required name="make" id="make"type="text" /><br /> 
+					<label for="model">Model:</label> 
+					<input required name="model" id="model" type="text" /><br /> 
+					<label for="year">Year:</label>
+					<input required name="year" id="year" type="text" /><br /> 
+					<label for="tag">Vehicle Tag:</label> 
+					<input required name="tag" id="tag" type="text" /><br /> 
+					<label for="mileage">Vehicle Mileage:</label> 
+					<input required name="mileage" id="mileage" type="text" /><br /> 
+					<label for="lastServiced">Last Serviced Date:</label> 
+					<input required name="lastServiced" id="lastServiced" type="text" /><br /> 
+					<label for="vehicleType">Vehicle Type:</label> 
+					<select required name="vehicleType">
+						<c:forEach items="${vehicleTypeDAO.getAllVehicleTypes()}"
+							var="vehicleType" varStatus="status">
+							<option value="<c:out value="${ vehicleType.id }" />">
+								<c:out value="${vehicleType.type }" />
+							</option>
+						</c:forEach>
+					</select><br /> 
+					<label for="assignedLocation">Vehicle Location:</label> 
+					<select required name="vehicleLocation">
+						<c:forEach items="${locationDAO.getAllLocations()}" var="location"
+							varStatus="status">
+							<option value="<c:out value="${ location.id }" />">
+								<c:out value="${location.name }" />
+							</option>
+						</c:forEach>
+					</select><br /> 
+					<br /> 
+					<input type="hidden" name="action" id="addVehicle" value="addVehicle" /> 
+					<input type="submit" value="Submit" /> 
+					<input type="reset" value="Reset" />
+		
+				</form>
+			</c:when>
+			<c:otherwise>
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>

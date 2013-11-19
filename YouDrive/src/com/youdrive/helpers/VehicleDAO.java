@@ -48,7 +48,7 @@ public class VehicleDAO implements IVehicleManager {
 			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
 			updateVehicleStmt = conn.prepareStatement("update " + Constants.VEHICLES + " set make = ?, model = ?, year = ?,tag=?,mileage=?,lastServiced=?,vehicleType=?,assignedLocation=? where id = ?");
 			getVehicleCommentsStmt = conn.prepareStatement("select * from Comments where vehicleID = ?");
-			addVehicleCommentStmt = conn.prepareStatement("insert into Comments values (DEFAULT,?,?,?,?)");
+			addVehicleCommentStmt = conn.prepareStatement("insert into Comments values (DEFAULT,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -180,7 +180,7 @@ public class VehicleDAO implements IVehicleManager {
 			addVehicleStmt.setDate(6,sd);
 			addVehicleStmt.setInt(7, vehicleType);
 			addVehicleStmt.setInt(8, assignedLocation);
-			vehicleID = addVehicleStmt.executeUpdate();
+			addVehicleStmt.executeUpdate();
 			ResultSet rs = addVehicleStmt.getGeneratedKeys();
 			if (rs.next()){
 				vehicleID = rs.getInt(1);
@@ -287,7 +287,8 @@ public class VehicleDAO implements IVehicleManager {
 	}
 	
 	@Override
-	public boolean addVehicleComment(int vehicleID, String comment, int author){
+	public int addVehicleComment(int vehicleID, String comment, int author){
+		int commentID = 0;
 		try{
 			java.util.Date d = Calendar.getInstance().getTime();
 			java.sql.Date sd = new java.sql.Date(d.getTime());
@@ -296,12 +297,15 @@ public class VehicleDAO implements IVehicleManager {
 			addVehicleCommentStmt.setInt(3, author);
 			addVehicleCommentStmt.setInt(4, vehicleID);
 			addVehicleCommentStmt.executeUpdate();
-			return true;
+			ResultSet rs = addVehicleCommentStmt.getGeneratedKeys();
+			if (rs.next()){
+				commentID = rs.getInt(1);
+			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with addVehicleComment method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
-		return false;
+		return commentID;
 	}
 }

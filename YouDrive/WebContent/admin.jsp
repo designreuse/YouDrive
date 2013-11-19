@@ -24,6 +24,14 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
+	<div class="body">
+		<c:choose>
+			<c:when test="${loggedInUser == null || !loggedInUser.isAdmin() }">
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</c:when>
+		</c:choose>
+	</div>
 </body>
 </html>

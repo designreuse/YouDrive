@@ -11,15 +11,17 @@
 <title>Login to YouDrive!</title>
 </head>
 <body>
-	<c:out value="${errorMessage }" />
-	<form id="userLogin" name="userLogin" action="UserManagement" method="post">
-		<label for="username">Username:</label> 
-		<input required type="text"	id="username" name="username" /><br /> 
-		<label for="password">Password:</label>
-		<input required type="password" id="password" name="password" /><br />
-		<input type="hidden" id="action" name="action" value="login" /> 
-		<input type="submit" value="Submit" /> <input type="reset" value="Reset" />
-	</form>
-
+	<div class="logo">YouDrive</div>
+	<div class="login">
+		<c:out value="${errorMessage }" />
+		<form id="userLogin" name="userLogin" action="UserManagement" method="post">
+			<label for="username">Username:</label> 
+			<input required type="text"	id="username" name="username" /><br /> 
+			<label for="password">Password:</label>
+			<input required type="password" id="password" name="password" /><br />
+			<input type="hidden" id="action" name="action" value="login" /> 
+			<input type="submit" value="Submit" /> <input type="reset" value="Reset" />
+		</form>
+	</div>
 </body>
 </html>

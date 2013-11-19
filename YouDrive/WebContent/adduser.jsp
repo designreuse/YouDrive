@@ -23,27 +23,36 @@
 		<li><a href="managelocations.jsp">Manage Locations</a></li>
 		<li><a href="managememberships.jsp">Manage Memberships</a></li>
 		<li><a href="manageusers.jsp">Manage Users</a></li>
+		<li><a href="logout.jsp">Logout</a></li>
 	</ol>
-	<div class="body">
-	
+	<div class="body">	
 		<p class="error">
 			<c:out value="${errorMessage }" />
 		</p>
-		<form id="addUser" name="addUser" action="UserManagement"
-			method="post">
-			<label for="firstName">First Name:</label> 
-			<input required	type="text" id="firstName" name="firstName" /><br /> 
-			<label for="lastName">Last Name:</label> 
-			<input required type="text"	id="lastName" name="lastName" /><br /> 
-			<label for="email">Email Address:</label> 
-			<input required type="email" id="email" name="email" /><br />
-			<label for="username">Username:</label> 
-			<input required type="text"	id="username" name="username" /><br /> 
-			<label for="password">Password:</label>
-			<input required type="password" id="password" name="password" /><br />
-			<input type="hidden" id="action" name="action" value="addAdmin" /> 
-			<input type="submit" value="Submit" /> <input type="reset" value="Reset" />
-		</form>
+		<c:choose>
+			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+				<form id="addUser" name="addUser" action="UserManagement"
+					method="post">
+					<label for="firstName">First Name:</label> 
+					<input required	type="text" id="firstName" name="firstName" /><br /> 
+					<label for="lastName">Last Name:</label> 
+					<input required type="text"	id="lastName" name="lastName" /><br /> 
+					<label for="email">Email Address:</label> 
+					<input required type="email" id="email" name="email" /><br />
+					<label for="username">Username:</label> 
+					<input required type="text"	id="username" name="username" /><br /> 
+					<label for="password">Password:</label>
+					<input required type="password" id="password" name="password" /><br />
+					<input type="hidden" id="action" name="action" value="addAdmin" /> 
+					<input type="submit" value="Submit" /> <input type="reset" value="Reset" />
+				</form>
+			</c:when>
+			<c:otherwise>
+			<p class="error">
+				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+			</p>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 </html>
