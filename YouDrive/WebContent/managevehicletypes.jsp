@@ -2,12 +2,34 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="a" uri="/sortVehicle" %>
+<c:choose>
+	<c:when test="${searchType == null}">
+		<c:set var="searchType" value="0"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="searchType" value="${searchType }"/>
+	</c:otherwise>
+</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+	//Equivalent to $( document ).ready(function(){});
+	$(function() {
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortVehicleTypeForm').submit();
+		});
+	});
+</script>
 <title>Manage Vehicle Types</title>
 </head>
 <body>
