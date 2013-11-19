@@ -32,7 +32,7 @@ Implementation Notes:
 
 Known Issues:
 
-1. managevehicles.jsp doesn't display the correct number of vehicles after adding a vehicle. Really weird bug because the vehicle is added to the database but just isn't showing up. Suspecting the session object needs refreshing.
+1. <strike>managevehicles.jsp doesn't display the correct number of vehicles after adding a vehicle.</strike> Dumb error: used group by instead of order by
 2. regular user creation not working yet.
 
 
