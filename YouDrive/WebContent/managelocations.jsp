@@ -36,7 +36,8 @@
 				<th class="hidden">ID</th>
 				<th>Location Name</th>
 				<th>Location Address</th>
-				<th>Location Capacity</th>
+				<th>Max Capacity</th>
+				<th>Current Capacity</th>
 				<th>Edit</th>
 			</tr>
 			<c:forEach items="${locationMgr.getAllLocations()}" var="location"
@@ -46,6 +47,7 @@
 					<td><c:out value="${ location.name }" /></td>
 					<td><c:out value="${ location.address}" /></td>
 					<td><c:out value="${ location.capacity}" /></td>
+					<td><c:out value="${ locationMgr.getCurrentCapacity(location.id)}" /></td>
 					<c:url value="LocationManagement" var="url">
 						<c:param name="locationID" value="${location.id}" />
 					</c:url>

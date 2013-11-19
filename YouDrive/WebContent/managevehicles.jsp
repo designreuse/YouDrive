@@ -55,10 +55,8 @@
 					<td><c:out value="${ vehicle.mileage }" /></td>
 					<td><fmt:formatDate type="date" value="${vehicle.lastServiced}" /></td>
 					<td><c:out value="${ vehicle.isAvailable() }" /></td>
-					<td><c:out
-							value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
-					<td><c:out
-							value="${ vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}" /></td>
+					<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
+					<td><c:out value="${ vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}" /></td>
 					<c:url value="VehicleManagement" var="url">
 						<c:param name="vehicleID" value="${vehicle.id}" />
 					</c:url>

@@ -17,6 +17,9 @@
 	$(function() {
 		$("#lastServiced").datepicker();
 	});
+	function setbg(color) {
+		document.getElementById("comment").style.background = color
+	}
 </script>
 <title>Edit Vehicle Details</title>
 </head>
@@ -73,6 +76,10 @@
 							</c:if>
 						</c:forEach>
 					</select><br/>
+					<a href="viewcomments.jsp">View Comments</a><br/>
+					<label for="comment">Enter Comments:</label>
+					<textarea name="comment" id="comment" onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>
+				
 					<input type="hidden" id="action" name="action" value="editVehicle"/>
 					<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>
 					<input type="submit" value="Update" /> <input type="button"

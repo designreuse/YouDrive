@@ -73,5 +73,7 @@ id int not null primary key auto_increment,
 createdOn date not null,
 comment text not null,
 author int not null,
-FOREIGN KEY (author) references Users(id)
+vehicleID int not null,
+FOREIGN KEY (author) references Users(id),
+FOREIGN KEY (vehicleID) references Vehicles(id)
 );

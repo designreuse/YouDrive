@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.models.Comment;
 import com.youdrive.models.Vehicle;
 import com.youdrive.models.VehicleType;
 import com.youdrive.util.ConnectionManager;
@@ -27,6 +28,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehicleTypeStmt;
 	private PreparedStatement getVehiclesByLocationIdStmt;
 	private PreparedStatement getVehiclesByLocationNameStmt;
+	private PreparedStatement getVehicleCommentsStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = new Constants();
 	private Connection conn;
@@ -43,6 +45,7 @@ public class VehicleDAO implements IVehicleManager {
 			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
 			updateVehicleStmt = conn.prepareStatement("update " + Constants.VEHICLES + " set make = ?, model = ?, year = ?,tag=?,mileage=?,lastServiced=?,vehicleType=?,assignedLocation=? where id = ?");
+			getVehicleCommentsStmt = conn.prepareStatement("select * from Comments where vehicleID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -261,5 +264,22 @@ public class VehicleDAO implements IVehicleManager {
 			System.err.println("Problem with updateVehicle method: " + e.getClass().getName() + ": " + e.getMessage());		
 		}
 		return false;
+	}
+	
+	@Override
+	public ArrayList<Comment> getVehicleComments(int vehicleID){
+		ArrayList<Comment> results = new ArrayList<Comment>();
+		try{
+			getVehicleCommentsStmt.setInt(1, vehicleID);
+			ResultSet rs = getVehicleCommentsStmt.executeQuery();
+			while (rs.next()){
+				results.add(new Comment(rs.getInt("id"),rs.getDate("createdOn"),rs.getString("comment"),rs.getInt("author"),rs.getInt("vehicleID")));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getVehicleComments method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
 	}
 }

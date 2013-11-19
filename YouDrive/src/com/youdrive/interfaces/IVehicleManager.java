@@ -3,6 +3,7 @@ package com.youdrive.interfaces;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.youdrive.models.Comment;
 import com.youdrive.models.Vehicle;
 import com.youdrive.models.VehicleType;
 
@@ -80,4 +81,5 @@ public interface IVehicleManager {
 	 */
 	public boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
 			int vehicleType, int assignedLocation);
+	public ArrayList<Comment> getVehicleComments(int vehicleID);
 }

@@ -8,6 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/homepage.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
 <title>Edit Vehicle Type</title>
 </head>
 <body>
@@ -32,21 +33,16 @@
 			name="editVehicleType" id="editVehicleType">
 			<c:if test="${vehicleType != null }">
 				<label for="vehicleTypeName">Vehicle Type:</label>
-				<input required type="text" id="vehicleTypeName" name="vehicleTypeName"
-					value="<c:out value="${vehicleType.type }"/>" />
+				<input required type="text" id="vehicleTypeName" name="vehicleTypeName" value="<c:out value="${vehicleType.type }"/>" />
 				<br />
 				<label for="hourlyPrice">Hourly Price:</label>
-				<input required type="text" id="hourlyPrice" name="hourlyPrice"
-					value="${vehicleType.hourlyPrice}" />
+				<input required type="text" id="hourlyPrice" name="hourlyPrice" value="${vehicleType.hourlyPrice}" />
 				<br />
 				<label for="dailyPrice">Daily Price:</label>
-				<input required type="text" id="dailyPrice" name="dailyPrice"
-					value="${vehicleType.dailyPrice}" />
+				<input required type="text" id="dailyPrice" name="dailyPrice" value="${vehicleType.dailyPrice}" />
 				<br />
-				<input type="hidden" name="action" id="action"
-					value="editVehicleType" />
-				<input type="hidden" name="vehicleTypeID" id="vehicleTypeID"
-					value="<c:out value="${vehicleType.id}" />" />
+				<input type="hidden" name="action" id="action" value="editVehicleType" />
+				<input type="hidden" name="vehicleTypeID" id="vehicleTypeID" value="<c:out value="${vehicleType.id}" />" />
 				<input type="submit" value="Update" />
 				<input type="button"
 					onclick="window.location.replace('managevehicletypes.jsp')"
