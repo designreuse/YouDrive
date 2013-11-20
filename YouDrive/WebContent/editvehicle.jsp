@@ -16,6 +16,11 @@
 <script type="text/javascript">
 	$(function() {
 		$("#lastServiced").datepicker();
+		
+		<%-- Triggers form submission to retrieve comments
+		$("#comments").click(function(){
+			$("#vehicleCommentsForm").submit();
+		});--%>
 	});
 	function setbg(color) {
 		document.getElementById("comment").style.background = color
@@ -81,7 +86,7 @@
 									</c:if>
 								</c:forEach>
 							</select><br/>
-							<a href="viewcomments.jsp">View Comments</a><br/>
+							<a href="viewcomments.jsp" id="comments">View Comments</a><br/>
 							<label for="comment">Enter Comments:</label>
 							<textarea name="comment" id="comment" onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>	
 							<input type="hidden" id="action" name="action" value="editVehicle"/>
@@ -90,6 +95,11 @@
 								onclick="window.location.replace('managevehicles.jsp')"
 								value="Cancel" />
 						</form>
+						<%-- Submit this form when user clicks viewcomments.jsp link 
+						<form method="get" action="VehicleManagement" id="vehicleCommentsForm" name="vehicleCommentsForm">
+							<input type="hidden" id="action" name="action" value="viewComments" />
+							<input type="hidden" id="vehicle_id" name="vehicle_id" value="${ vehicle.id}" />
+						</form>--%>
 					</c:when>
 				</c:choose>
 			</c:when>

@@ -2,6 +2,7 @@ package com.youdrive.servlets;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
+
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
@@ -21,6 +23,7 @@ import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
 import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
+import com.youdrive.models.Comment;
 
 /**
  * Servlet implementation class VehicleManagement
@@ -53,8 +56,10 @@ public class VehicleManagement extends HttpServlet {
 		}	
 		String vehicleID = request.getParameter("vehicleID");
 		String searchType = request.getParameter("searchType");
+		String viewComments = request.getParameter("viewComments");
 		String dispatchedPage = "/login.jsp";
 		if (vehicleID != null && !vehicleID.isEmpty()){
+			System.out.println("getting vehicle details.");
 			int vID = Integer.parseInt(vehicleID);
 			Vehicle vehicle = ivm.getVehicle(vID);
 			if (vehicle != null){
@@ -66,6 +71,7 @@ public class VehicleManagement extends HttpServlet {
 				dispatchedPage = "/managevehicles.jsp";
 			}
 		}else if (searchType != null && !searchType.isEmpty()){
+			System.out.println("Performing sorting action.");
 			int sType = 0;
 			try{
 				sType = Integer.parseInt(searchType);
@@ -76,6 +82,20 @@ public class VehicleManagement extends HttpServlet {
 				request.setAttribute("searchType", sType);
 			}
 			dispatchedPage = "/managevehicles.jsp";
+		}else if (viewComments != null && !viewComments.isEmpty()){
+			System.out.println("Retrieving comments.");
+			try{
+				int vID = Integer.parseInt(viewComments);
+				Vehicle v = ivm.getVehicle(vID);
+				ArrayList<Comment> allComments = ivm.getVehicleComments(vID);
+				v.setVehicleComments(allComments);
+				session.setAttribute("vehicleComments", allComments);
+				session.setAttribute("vehicle", v);
+				dispatchedPage = "/viewcomments.jsp";
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage","Invalid parameter request.");
+				dispatchedPage = "/managevehicles.jsp";
+			}
 		}else{
 			User loggedInUser = (User) session.getAttribute("loggedInUser");
 			if (loggedInUser != null){

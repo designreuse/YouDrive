@@ -67,10 +67,10 @@
 						<th><a href="#3" class="navSort">Tag</a></th>
 						<th><a href="#4" class="navSort">Mileage</a></th>
 						<th><a href="#5" class="navSort">Last Serviced</a></th>
-						<th>Is Available</th>
 						<th><a href="#6" class="navSort">Vehicle Type</a></th>
 						<th><a href="#7" class="navSort">Vehicle Location</a></th>
 						<th>Edit</th> 
+						<th>Notes</th>
 					</tr>
 					<%-- Created a custom EL function to sort the list on demand --%>
 					<c:forEach items="${a:vehicleSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
@@ -81,13 +81,16 @@
 							<td><c:out value="${ vehicle.tag }" /></td>
 							<td><c:out value="${ vehicle.mileage }" /></td>
 							<td><fmt:formatDate type="date" value="${vehicle.lastServiced}" /></td>
-							<td><c:out value="${ vehicle.isAvailable() }" /></td>
 							<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
 							<td><c:out value="${ vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}" /></td>
 							<c:url value="VehicleManagement" var="url">
 								<c:param name="vehicleID" value="${vehicle.id}" />
 							</c:url>
 							<td><a href="<c:out value="${url }" />">Edit</a></td>
+							<c:url value="VehicleManagement" var="url">
+								<c:param name="viewComments" value="${vehicle.id}" />
+							</c:url>
+							<td><a href="<c:out value="${url }" />">View</a></td>
 						</tr>
 					</c:forEach>
 				</table>				
