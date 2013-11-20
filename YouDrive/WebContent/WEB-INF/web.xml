@@ -8,14 +8,18 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 
+
+	<error-page>
+		<!-- Missing login -->
+		<error-code>404</error-code>
+		<location>/404.jsp</location>
+	</error-page>
+
+	<!-- taglib info needed. -->
 	<jsp-config>
 		<taglib>
-			<taglib-uri>
-				/sortItems
-			</taglib-uri>
-			<taglib-location>
-				/WEB-INF/tags/sortingFunctions.tld
-			</taglib-location>
+			<taglib-uri>/sortItems</taglib-uri>
+			<taglib-location>/WEB-INF/tags/sortingFunctions.tld</taglib-location>
 		</taglib>
 	</jsp-config>
 </web-app>

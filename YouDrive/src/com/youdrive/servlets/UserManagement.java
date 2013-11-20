@@ -99,96 +99,101 @@ public class UserManagement extends HttpServlet {
 		String action = request.getParameter("action");
 		//TODO replace dispatcher = blah blah with single call at bottom
 		String dispatchedPage = "/index.jsp";
-		if (action.equalsIgnoreCase("addAdmin")){
-			System.out.println("addAdmin Action");
-			int userID = addAdminUser(request,ium);
-			if (userID != 0){
-				request.setAttribute("errorMessage","");
-				dispatchedPage = "/admin.jsp";
-			}else{
-				dispatchedPage = "/adduser.jsp";
-			}
-		}else if (action.equalsIgnoreCase("registerUser1")){
-			System.out.println("Page 1 of User Registration Action");
-			if (addRegularUserPg1(request,ium,session,ctx)){
-				request.setAttribute("errorMessage","");				
-				dispatchedPage = "/registration_page2.jsp";
-			}else{
-				dispatchedPage = "/registration_page1.jsp";
-			}
-		}else if (action.equalsIgnoreCase("registerUser2")){
-			//Second page of Registration
-			@SuppressWarnings("unchecked")
-			HashMap<String,String> pg1 = (LinkedHashMap<String, String>) session.getAttribute("registration_page1");
-			if (pg1 != null && !pg1.isEmpty()){				
-				int userID = addRegularUserPg2(request,ium,pg1);
-				if (userID == 0){
-					dispatchedPage = "/registration_page1.jsp";
-				}else{
-					dispatchedPage = "/user.jsp";
-				}
-			}else{
-				System.err.println("Empty map coming from registration page 2");
-				request.setAttribute("errorMessage", "Missing registration information from first page.");
-				dispatchedPage = "/registration_page1.jsp";
-			}
-		}else if (action.equalsIgnoreCase("login")){
-			User user = authenticateUser(request,ium);
-			if (user != null){
-				request.setAttribute("errorMessage","");
-				//Send user to right landing page
-				if (user.isAdmin()){
+		if (action != null && !action.isEmpty()){
+			if (action.equalsIgnoreCase("addAdmin")){
+				System.out.println("addAdmin Action");
+				int userID = addAdminUser(request,ium);
+				if (userID != 0){
+					request.setAttribute("errorMessage","");
 					dispatchedPage = "/admin.jsp";
 				}else{
-					dispatchedPage = "/user.jsp";
+					dispatchedPage = "/adduser.jsp";
 				}
-				//Stash logged in user to session context
-				session.setAttribute("loggedInUser", user);
-			}else{
-				request.setAttribute("errorMessage", "Invalid credentials.");
-				dispatchedPage = "/login.jsp";
-			}
-		}else if (action.equalsIgnoreCase("AdminEditUser")){
-			System.out.println("admin edituser action");
-			String isAdminStr = request.getParameter("isAdmin");
-			//TODO fix this
-			if (isAdminStr == null || isAdminStr.isEmpty()){
-				request.setAttribute("errorMessage", "Unable to determine user type.");
-				dispatchedPage = "/manageusers.jsp";
-			}else{
-				boolean isAdmin = false;
-				if (isAdminStr.equalsIgnoreCase("true")){
-					isAdmin = true;
+			}else if (action.equalsIgnoreCase("registerUser1")){
+				System.out.println("Page 1 of User Registration Action");
+				if (addRegularUserPg1(request,ium,session,ctx)){
+					request.setAttribute("errorMessage","");				
+					dispatchedPage = "/registration_page2.jsp";
+				}else{
+					dispatchedPage = "/registration_page1.jsp";
 				}
-				String userID = request.getParameter("id");
-				if (userID == null || userID.isEmpty()){
-					request.setAttribute("errorMessage", "Invalid user.");
+			}else if (action.equalsIgnoreCase("registerUser2")){
+				//Second page of Registration
+				@SuppressWarnings("unchecked")
+				HashMap<String,String> pg1 = (LinkedHashMap<String, String>) session.getAttribute("registration_page1");
+				if (pg1 != null && !pg1.isEmpty()){				
+					int userID = addRegularUserPg2(request,ium,pg1);
+					if (userID == 0){
+						dispatchedPage = "/registration_page1.jsp";
+					}else{
+						dispatchedPage = "/user.jsp";
+					}
+				}else{
+					System.err.println("Empty map coming from registration page 2");
+					request.setAttribute("errorMessage", "Missing registration information from first page.");
+					dispatchedPage = "/registration_page1.jsp";
+				}
+			}else if (action.equalsIgnoreCase("login")){
+				User user = authenticateUser(request,ium);
+				if (user != null){
+					request.setAttribute("errorMessage","");
+					//Send user to right landing page
+					if (user.isAdmin()){
+						dispatchedPage = "/admin.jsp";
+					}else{
+						dispatchedPage = "/user.jsp";
+					}
+					//Stash logged in user to session context
+					session.setAttribute("loggedInUser", user);
+				}else{
+					request.setAttribute("errorMessage", "Invalid credentials.");
+					dispatchedPage = "/login.jsp";
+				}
+			}else if (action.equalsIgnoreCase("AdminEditUser")){
+				System.out.println("admin edituser action");
+				String isAdminStr = request.getParameter("isAdmin");
+				//TODO fix this
+				if (isAdminStr == null || isAdminStr.isEmpty()){
+					request.setAttribute("errorMessage", "Unable to determine user type.");
 					dispatchedPage = "/manageusers.jsp";
 				}else{
-					try{
-						int id = Integer.parseInt(userID);
-						User user = ium.getUser(id);
-						if (user != null){
-							if (editUser(request,ium,user,isAdmin)){
-								request.setAttribute("errorMessage","");
-								dispatchedPage = "/manageusers.jsp";
+					boolean isAdmin = false;
+					if (isAdminStr.equalsIgnoreCase("true")){
+						isAdmin = true;
+					}
+					String userID = request.getParameter("id");
+					if (userID == null || userID.isEmpty()){
+						request.setAttribute("errorMessage", "Invalid user.");
+						dispatchedPage = "/manageusers.jsp";
+					}else{
+						try{
+							int id = Integer.parseInt(userID);
+							User user = ium.getUser(id);
+							if (user != null){
+								if (editUser(request,ium,user,isAdmin)){
+									request.setAttribute("errorMessage","");
+									dispatchedPage = "/manageusers.jsp";
+								}else{
+									request.setAttribute("user", user);
+									dispatchedPage = "/edituser.jsp";
+								}
 							}else{
-								request.setAttribute("user", user);
-								dispatchedPage = "/edituser.jsp";
+								request.setAttribute("errorMessage", "User not found.");
+								dispatchedPage = "/manageusers.jsp";
 							}
-						}else{
-							request.setAttribute("errorMessage", "User not found.");
+						}catch(NumberFormatException e){
+							request.setAttribute("errorMessage", "Invalid user id.");
+							dispatchedPage = "/manageusers.jsp";
+						}catch(Exception e){
+							request.setAttribute("errorMessage", e.getMessage());
 							dispatchedPage = "/manageusers.jsp";
 						}
-					}catch(NumberFormatException e){
-						request.setAttribute("errorMessage", "Invalid user id.");
-						dispatchedPage = "/manageusers.jsp";
-					}catch(Exception e){
-						request.setAttribute("errorMessage", e.getMessage());
-						dispatchedPage = "/manageusers.jsp";
 					}
 				}
 			}
+		}else{
+			request.setAttribute("errorMessage", "Invalid POST request.");
+			dispatchedPage = "/login.jsp";
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);

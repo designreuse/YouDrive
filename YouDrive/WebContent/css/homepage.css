@@ -3,6 +3,7 @@ div.logo {
 	color: #ffffff;
 	text-align: center;
 	font-size: 10em;
+	margin-top:-38px;
 }
 
 .hidden{
@@ -34,6 +35,7 @@ div.login input[type=submit]{
 
 div.underlogo{
 	width:550px;
+	text-align:center;
 	margin:0 auto;
 	font-size:4em;
 }
@@ -46,7 +48,7 @@ div.body{
 }
 
 p.error{
-	color:red;		
+	color:#B0171F;		
     text-transform:uppercase;
     font-size:140%;
 }
