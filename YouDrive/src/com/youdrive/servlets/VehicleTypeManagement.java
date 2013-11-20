@@ -95,37 +95,42 @@ public class VehicleTypeManagement extends HttpServlet {
 			session.setAttribute("vehicleTypeMgr", ivtm);
 		}	
 		String action = request.getParameter("action");
-		if(action.equalsIgnoreCase("addVehicleType")){
-			//adding a vehicle type
-			int id = addVehicleType(request,ivtm);
-			if (id == 0){
-				System.err.println("Problem saving vehicle type to db.");
-				dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
-			}else{
-				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
-			}
-		}else if (action.equalsIgnoreCase("editVehicleType")){
-			System.out.println("editVehicleType action");
-			String errorMessage = "";
-			VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
-			if (vType == null){
-				String vehicleType = request.getParameter("vehicleTypeID");
-				if (vehicleType ==  null || vehicleType.isEmpty()){
-					errorMessage = "No vehicle type requested.";
+		if (action != null && !action.isEmpty()){
+			if(action.equalsIgnoreCase("addVehicleType")){
+				//adding a vehicle type
+				int id = addVehicleType(request,ivtm);
+				if (id == 0){
+					System.err.println("Problem saving vehicle type to db.");
+					dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
 				}else{
-					int vehicleTypeID = Integer.parseInt(vehicleType);
-					vType = ivtm.getVehicleType(vehicleTypeID);
-				}
-			}else{				
-				if (editVehicleType(request,ivtm,vType)){
-					request.setAttribute("errorMessage", "");
+					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
-				}else{
-					request.setAttribute("vehicleType", vType);
-					dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+				}
+			}else if (action.equalsIgnoreCase("editVehicleType")){
+				System.out.println("editVehicleType action");
+				String errorMessage = "";
+				VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
+				if (vType == null){
+					String vehicleType = request.getParameter("vehicleTypeID");
+					if (vehicleType ==  null || vehicleType.isEmpty()){
+						errorMessage = "No vehicle type requested.";
+					}else{
+						int vehicleTypeID = Integer.parseInt(vehicleType);
+						vType = ivtm.getVehicleType(vehicleTypeID);
+					}
+				}else{				
+					if (editVehicleType(request,ivtm,vType)){
+						request.setAttribute("errorMessage", "");
+						dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
+					}else{
+						request.setAttribute("vehicleType", vType);
+						dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
+					}
 				}
 			}
+		}else{
+			request.setAttribute("errorMessage", "Unknown POST request");
+			dispatcher = ctx.getRequestDispatcher("/login.jsp");
 		}
 		dispatcher.forward(request,response);
 	}

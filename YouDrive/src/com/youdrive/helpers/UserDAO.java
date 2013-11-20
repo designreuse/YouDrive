@@ -26,9 +26,8 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement checkEmailStmt;
 	private PreparedStatement deleteUserByUsernameStmt;
 
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
-	private static LocationDAO ldao = null;
 
 	public UserDAO(){
 		try{

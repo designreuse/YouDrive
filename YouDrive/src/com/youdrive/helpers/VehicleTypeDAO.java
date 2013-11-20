@@ -22,7 +22,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	private PreparedStatement allVehicleTypesStmt;
 	private PreparedStatement checkVehicleTypeStmt;
 	private SimpleDateFormat sdf;
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 	private Connection conn;
 	
 	public VehicleTypeDAO(){

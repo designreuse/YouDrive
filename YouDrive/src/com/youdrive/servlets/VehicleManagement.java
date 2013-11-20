@@ -63,7 +63,7 @@ public class VehicleManagement extends HttpServlet {
 			int vID = Integer.parseInt(vehicleID);
 			Vehicle vehicle = ivm.getVehicle(vID);
 			if (vehicle != null){
-				ctx.setAttribute("vehicle", vehicle);
+				session.setAttribute("vehicle", vehicle);
 				request.setAttribute("errorMessage","");
 				dispatchedPage = "/editvehicle.jsp";
 			}else{
@@ -129,62 +129,67 @@ public class VehicleManagement extends HttpServlet {
 		}
 		String action = request.getParameter("action");
 		//Adding a single vehicle
-		if (action.equalsIgnoreCase("addVehicle")){
-			int id = addVehicle(request,ivm,ilm);
-			if (id == 0){
-				System.err.println("Problem saving vehicle to db.");
-				dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
-			}else{
-				request.setAttribute("errorMessage","");
-				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
-			}
-		}else if (action.equalsIgnoreCase("editVehicle")){
-			String vehicleId = request.getParameter("vehicleID");
-			if (vehicleId == null || vehicleId.isEmpty()){
-				request.setAttribute("errorMessage", "Invalid vehicle ID.");
-				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
-			}else{
-				try{
-					int vID = Integer.parseInt(vehicleId);
-					Vehicle v = ivm.getVehicle(vID);
-					//Ensure a vehicle exists in db
-					if (v != null){
-						//Check for comment and add.
-						String comment = request.getParameter("comment");
-						if (comment != null && !comment.isEmpty()){
-							//Get logged in user
-							User user = (User) ctx.getAttribute("loggedInUser");
-							if (user != null){
-								int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
-								if (commentId == 0){
-									request.setAttribute("errorMessage","Unable to save comment.");
-								}else{
-									//Successfully added comment.
-								}
-							}else{
-								request.setAttribute("errorMessage","No user logged in.");
-							}
-						}else{
-							//Continue with editing user.
-						}
-						if (editVehicle(request,ivm,ilm,v)){
-							request.setAttribute("errorMessage", "");
-							session.setAttribute("allVehicles", ivm.getAllVehicles());
-							dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
-						}else{
-							request.setAttribute("vehicle", v);
-							dispatcher = ctx.getRequestDispatcher("/editvehicle.jsp");
-						}
-					}else{
-						request.setAttribute("errorMessage", "Unable to retrieve Vehicle object.");
-						dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
-					}
-				}catch(NumberFormatException e){
-					request.setAttribute("errorMessage","Invalid vehicle ID format.");
+		if (action != null && !action.isEmpty()){
+			if (action.equalsIgnoreCase("addVehicle")){
+				int id = addVehicle(request,ivm,ilm);
+				if (id == 0){
+					System.err.println("Problem saving vehicle to db.");
+					dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
+				}else{
+					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 				}
+			}else if (action.equalsIgnoreCase("editVehicle")){
+				String vehicleId = request.getParameter("vehicleID");
+				if (vehicleId == null || vehicleId.isEmpty()){
+					request.setAttribute("errorMessage", "Invalid vehicle ID.");
+					dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+				}else{
+					try{
+						int vID = Integer.parseInt(vehicleId);
+						Vehicle v = ivm.getVehicle(vID);
+						//Ensure a vehicle exists in db
+						if (v != null){
+							//Check for comment and add.
+							String comment = request.getParameter("comment");
+							if (comment != null && !comment.isEmpty()){
+								//Get logged in user
+								User user = (User) ctx.getAttribute("loggedInUser");
+								if (user != null){
+									int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
+									if (commentId == 0){
+										request.setAttribute("errorMessage","Unable to save comment.");
+									}else{
+										//Successfully added comment.
+									}
+								}else{
+									request.setAttribute("errorMessage","No user logged in.");
+								}
+							}else{
+								//Continue with editing user.
+							}
+							if (editVehicle(request,ivm,ilm,v)){
+								request.setAttribute("errorMessage", "");
+								session.setAttribute("allVehicles", ivm.getAllVehicles());
+								dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+							}else{
+								request.setAttribute("vehicle", v);
+								dispatcher = ctx.getRequestDispatcher("/editvehicle.jsp");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Unable to retrieve Vehicle object.");
+							dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage","Invalid vehicle ID format.");
+						dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
+					}
+				}
+			}else{
+				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
 		}else{
+			request.setAttribute("errorMessage", "Unknown POST request");
 			dispatcher = ctx.getRequestDispatcher("/login.jsp");
 		}
 		dispatcher.forward(request,response);

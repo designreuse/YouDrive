@@ -118,8 +118,9 @@ public class UserManagement extends HttpServlet {
 			}
 		}else if (action.equalsIgnoreCase("registerUser2")){
 			//Second page of Registration
-			HashMap<String,String> pg1 = (LinkedHashMap<String, String>) ctx.getAttribute("registration_page1");
-			if (pg1 != null && !pg1.isEmpty()){
+			@SuppressWarnings("unchecked")
+			HashMap<String,String> pg1 = (LinkedHashMap<String, String>) session.getAttribute("registration_page1");
+			if (pg1 != null && !pg1.isEmpty()){				
 				int userID = addRegularUserPg2(request,ium,pg1);
 				if (userID == 0){
 					dispatchedPage = "/registration_page1.jsp";
@@ -193,6 +194,12 @@ public class UserManagement extends HttpServlet {
 		dispatcher.forward(request,response);
 	}
 
+	/**
+	 * Returns the User object if successfully logged in and null otherwise
+	 * @param request
+	 * @param ium
+	 * @return
+	 */
 	private User authenticateUser(HttpServletRequest request,IUserManager ium){
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
@@ -207,6 +214,13 @@ public class UserManagement extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * adding an admin user to the system
+	 * Return the userid if successful and false otherwise
+	 * @param request
+	 * @param ium
+	 * @return
+	 */
 	private int addAdminUser(HttpServletRequest request,IUserManager ium){
 		int userID = 0;
 		String username = request.getParameter("username");
@@ -232,6 +246,16 @@ public class UserManagement extends HttpServlet {
 		return userID;
 	}
 
+	/**
+	 * First page of adding a user to the system
+	 * Returns true if this page is successful and stashes
+	 * a HashMap of the variables entered into a session variable for use in the final step on page 2
+	 * @param request
+	 * @param ium
+	 * @param session
+	 * @param ctx
+	 * @return
+	 */
 	private boolean addRegularUserPg1(HttpServletRequest request,IUserManager ium, HttpSession session, ServletContext ctx){
 		int userID = 0;
 		String username = request.getParameter("username");
@@ -242,15 +266,15 @@ public class UserManagement extends HttpServlet {
 		String errorMessage = "";
 		HashMap<String,String> addUser1 = new LinkedHashMap<String,String>();
 		if (username == null || username.isEmpty()){
-			request.setAttribute("errorMessage", "Missing username");
+			errorMessage = "Missing username";
 		}else if (password == null || password.isEmpty()){
-			request.setAttribute("errorMessage", "Missing password");
+			errorMessage = "Missing password";
 		}else if (firstName == null || firstName.isEmpty()){
-			request.setAttribute("errorMessage", "Missing first name");
+			errorMessage = "Missing first name";
 		}else if (lastName == null || lastName.isEmpty()){
-			request.setAttribute("errorMessage", "Missing last name");
+			errorMessage = " Missing last name";
 		}else if (email == null || email.isEmpty()){
-			request.setAttribute("errorMessage", "Missing email address");
+			errorMessage = "Missing email address";
 		}else{
 			boolean isUsernameInUse = ium.isUsernameInUse(username);
 			boolean isEmailInUse = ium.isEmailInUse(email);
@@ -267,6 +291,7 @@ public class UserManagement extends HttpServlet {
 				addUser1.put("lastName", lastName);
 				addUser1.put("email", email);
 				session.setAttribute("registration_page1", addUser1);
+				System.out.println("added registration_page1 to session.");
 				return true;
 			}
 		}
@@ -274,6 +299,14 @@ public class UserManagement extends HttpServlet {
 		return false;
 	}
 
+	/**
+	 * Second registration page for the user to complete registration
+	 * Returns the user's id if successfully to system and 0 otherwise.
+	 * @param request
+	 * @param ium
+	 * @param page1_details
+	 * @return
+	 */
 	private int addRegularUserPg2(HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
 		int userID = 0;
 		String membershipLevel = request.getParameter("membershipLevel");
@@ -305,6 +338,7 @@ public class UserManagement extends HttpServlet {
 		}else{
 			try{
 				int ccCode = Integer.parseInt(ccSecurityCode);
+				int memberLevel = Integer.parseInt(membershipLevel);
 				if (validateCreditCard(ccNumber)){
 					ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 					if (!expDates.isEmpty()){
@@ -315,6 +349,7 @@ public class UserManagement extends HttpServlet {
 						user.setCcSecurityCode(ccCode);
 						user.setState(state);
 						user.setLicense(license);
+						user.setMembershipLevel(memberLevel);
 						user.setFirstName(page1_details.get("firstName"));
 						user.setLastName(page1_details.get("lastName"));
 						user.setEmail(page1_details.get("email"));
@@ -322,6 +357,7 @@ public class UserManagement extends HttpServlet {
 						user.setPassword(page1_details.get("password"));
 						user.setAdmin(false);
 						userID = ium.addUser(user);
+						errorMessage = "";
 					}else{
 						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}
@@ -329,7 +365,7 @@ public class UserManagement extends HttpServlet {
 					errorMessage = "Invalid credit card number; Must be 16 digits.";
 				}
 			}catch(NumberFormatException e){
-				errorMessage = "Invalid format for the security code. Should be a number.";
+				errorMessage = "Invalid format for the security code or invalid membership level selected.";
 			}
 		}
 		request.setAttribute("errorMessage", errorMessage);
@@ -408,7 +444,9 @@ public class UserManagement extends HttpServlet {
 	}
 
 	/**
-	 * 
+	 * Validate the expiration date entered i.e. must be later than current month if it expires in current year or 
+	 * must expire >= any number of years before the current year
+	 * Returns a list of 2 numbers if successful and an empty list otherwise.
 	 * @param code
 	 * @return
 	 */

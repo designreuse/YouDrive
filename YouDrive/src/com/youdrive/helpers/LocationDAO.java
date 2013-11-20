@@ -24,7 +24,7 @@ public class LocationDAO implements ILocationManager {
 	private PreparedStatement getVehiclesByLocationStmt;
 	private PreparedStatement updateLocationStmt;
 	private PreparedStatement checkLocationNameStmt;
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
 		
 	public LocationDAO(){

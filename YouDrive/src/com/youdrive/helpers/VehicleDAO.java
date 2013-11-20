@@ -32,7 +32,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehicleCommentsStmt;
 	private PreparedStatement addVehicleCommentStmt;
 	private SimpleDateFormat sdf;
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 	private Connection conn;
 
 	public VehicleDAO(){

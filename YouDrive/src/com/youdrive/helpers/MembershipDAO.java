@@ -20,7 +20,7 @@ public class MembershipDAO implements IMembershipManager{
 	private PreparedStatement getMembershipStmt;
 	private PreparedStatement checkMembershipNameStmt;
 	private PreparedStatement updateMembershipStmt;
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
 	
 	public MembershipDAO(){

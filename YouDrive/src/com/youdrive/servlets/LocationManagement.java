@@ -21,14 +21,14 @@ import com.youdrive.models.Location;
 @WebServlet("/LocationManagement")
 public class LocationManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public LocationManagement() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public LocationManagement() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -67,7 +67,7 @@ public class LocationManagement extends HttpServlet {
 				request.setAttribute("searchType", sType);
 			}
 			dispatchedPage = "/managelocations.jsp";
-			
+
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
@@ -87,35 +87,40 @@ public class LocationManagement extends HttpServlet {
 		}
 		String dispatchedPage = "/admin.jsp";
 		String action = request.getParameter("action");
-		if (action.equalsIgnoreCase("addLocation")){
-			System.out.println("addLocation action.");
-			int id = addLocation(request,ilm);
-			if (id == 0){
-				dispatchedPage = "/addlocation.jsp";
-			}else{
-				request.setAttribute("errorMessage","");
-				dispatchedPage = "/managelocations.jsp";
+		if (action != null && !action.isEmpty()){
+			if (action.equalsIgnoreCase("addLocation")){
+				System.out.println("addLocation action.");
+				int id = addLocation(request,ilm);
+				if (id == 0){
+					dispatchedPage = "/addlocation.jsp";
+				}else{
+					request.setAttribute("errorMessage","");
+					dispatchedPage = "/managelocations.jsp";
+				}
+			}else if (action.equalsIgnoreCase("editLocation")){
+				System.out.println("Edit Location action.");
+				Location loc = (Location) ctx.getAttribute("location");
+				if (loc == null){
+					System.out.println("Location object not found in request object so instantiating one.");
+					String locationID = request.getParameter("locationID");
+					int locID = Integer.parseInt(locationID);
+					loc = ilm.getLocationById(locID);
+				}
+				if (editLocation(request,ilm,loc)){
+					//Set update message
+					System.out.println("Location updated.");
+					request.setAttribute("errorMessage", "");	
+					dispatchedPage = "/managelocations.jsp";			
+				}else{
+					request.setAttribute("location", loc);
+					dispatchedPage = "/editlocation.jsp";
+				}
+			}else if (action.equalsIgnoreCase("deleteLocation")){
+
 			}
-		}else if (action.equalsIgnoreCase("editLocation")){
-			System.out.println("Edit Location action.");
-			Location loc = (Location) ctx.getAttribute("location");
-			if (loc == null){
-				System.out.println("Location object not found in request object so instantiating one.");
-				String locationID = request.getParameter("locationID");
-				int locID = Integer.parseInt(locationID);
-				loc = ilm.getLocationById(locID);
-			}
-			if (editLocation(request,ilm,loc)){
-				//Set update message
-				System.out.println("Location updated.");
-				request.setAttribute("errorMessage", "");	
-				dispatchedPage = "/managelocations.jsp";			
-			}else{
-				request.setAttribute("location", loc);
-				dispatchedPage = "/editlocation.jsp";
-			}
-		}else if (action.equalsIgnoreCase("deleteLocation")){
-			
+		}else{
+			request.setAttribute("errorMessage", "Unknown POST request");
+			dispatchedPage =  "/login.jsp";
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
@@ -169,7 +174,7 @@ public class LocationManagement extends HttpServlet {
 		request.setAttribute("errorMessage", errorMessage);
 		return false;
 	}
-	
+
 	/**
 	 * Adding a Location
 	 * @param request

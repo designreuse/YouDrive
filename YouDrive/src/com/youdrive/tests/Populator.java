@@ -16,7 +16,7 @@ public class Populator {
 	private static ILocationManager ilm = new LocationDAO();
 	private PreparedStatement truncateLocationStmt;
 	private Connection conn;
-	private Constants cs = new Constants();
+	private Constants cs = Constants.getInstance();
 
 	public Populator(){
 		try{

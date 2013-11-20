@@ -21,14 +21,14 @@ import com.youdrive.models.Membership;
 @WebServlet("/MembershipManagement")
 public class MembershipManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MembershipManagement() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public MembershipManagement() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -75,50 +75,55 @@ public class MembershipManagement extends HttpServlet {
 			imm = new MembershipDAO();
 			session.setAttribute("membershipMgr", imm);
 		}
-		String errorMessage = "", dispatchedPage = "";
+		String dispatchedPage = "";
 		String action = request.getParameter("action");
-		if (action.equalsIgnoreCase("addMembership")){
-			int membershipID = addMembership(request,imm);
-			if (membershipID == 0){
-				//Add membership failed
-				dispatchedPage = "/admin.jsp";
-			}else{
-				dispatchedPage = "/managememberships.jsp";				
-			}
-		}else if (action.equalsIgnoreCase("editMembership")){
-			System.out.println("Editmembership action");
-			String id = request.getParameter("membershipID");
-			if (id == null || id.isEmpty()){
-				request.setAttribute("errorMessage", "Invalid membership object.");
-				dispatchedPage = "/managememberships.jsp";
-			}else{
-				try{
-					int membershipID = Integer.parseInt(id);
-					Membership member = imm.getMembership(membershipID);
-					if (member != null){
-						if (editMembership(request,imm,member)){
-							request.setAttribute("errorMessage", "");
-							dispatchedPage = "/managememberships.jsp";
+		if (action != null && !action.isEmpty()){
+			if (action.equalsIgnoreCase("addMembership")){
+				int membershipID = addMembership(request,imm);
+				if (membershipID == 0){
+					//Add membership failed
+					dispatchedPage = "/admin.jsp";
+				}else{
+					dispatchedPage = "/managememberships.jsp";				
+				}
+			}else if (action.equalsIgnoreCase("editMembership")){
+				System.out.println("Editmembership action");
+				String id = request.getParameter("membershipID");
+				if (id == null || id.isEmpty()){
+					request.setAttribute("errorMessage", "Invalid membership object.");
+					dispatchedPage = "/managememberships.jsp";
+				}else{
+					try{
+						int membershipID = Integer.parseInt(id);
+						Membership member = imm.getMembership(membershipID);
+						if (member != null){
+							if (editMembership(request,imm,member)){
+								request.setAttribute("errorMessage", "");
+								dispatchedPage = "/managememberships.jsp";
+							}else{
+								session.setAttribute("membership", member);
+								dispatchedPage = "/editmembership.jsp";
+							}
 						}else{
-							session.setAttribute("membership", member);
-							dispatchedPage = "/editmembership.jsp";
+							request.setAttribute("errorMessage", "Membership object not found.");
+							dispatchedPage = "/managememberships.jsp";
 						}
-					}else{
-						request.setAttribute("errorMessage", "Membership object not found.");
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Invalid membership id type");
+						dispatchedPage = "/managememberships.jsp";
+					}catch(Exception e){
+						request.setAttribute("errorMessage", e.getMessage());
 						dispatchedPage = "/managememberships.jsp";
 					}
-				}catch(NumberFormatException e){
-					request.setAttribute("errorMessage", "Invalid membership id type");
-					dispatchedPage = "/managememberships.jsp";
-				}catch(Exception e){
-					request.setAttribute("errorMessage", e.getMessage());
-					dispatchedPage = "/managememberships.jsp";
 				}
+			}else if (action.equalsIgnoreCase("deleteMembership")){
+
+			}else{
+				dispatchedPage = "/index.jsp";
 			}
-		}else if (action.equalsIgnoreCase("deleteMembership")){
-			
 		}else{
-			dispatchedPage = "/index.jsp";
+			request.setAttribute("errorMessage", "Unknown POST request");
+			dispatchedPage = "/login.jsp";
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
@@ -162,7 +167,7 @@ public class MembershipManagement extends HttpServlet {
 		request.setAttribute("errorMessage", errorMessage);
 		return membershipID;
 	}
-	
+
 	private boolean editMembership(HttpServletRequest request,IMembershipManager imm, Membership membership){
 		String name = request.getParameter("membershipLevel");
 		String price = request.getParameter("price");
@@ -200,9 +205,9 @@ public class MembershipManagement extends HttpServlet {
 		request.setAttribute("errorMessage", errorMessage);
 		return false;
 	}
-	
+
 	private boolean deleteMembership(HttpServletRequest request,IMembershipManager imm, Membership membership){
-		
+
 		return false;
 	}
 }

@@ -1,7 +1,10 @@
 package com.youdrive.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+
+import org.json.JSONObject;
 
 public class Constants {
 
@@ -34,19 +37,19 @@ public class Constants {
 	public static final String MEMBERSHIP_NAME = "name";
 	public static final String MEMBERSHIP_PRICE = "price";
 	public static final String MEMBERSHIP_DURATION = "duration";
-	
+
 	public static final String LOCATIONS = "Locations";
 	public static final String LOCATIONS_ID = "id";
 	public static final String LOCATIONS_NAME = "name";
 	public static final String LOCATIONS_ADDRESS = "address";
 	public static final String LOCATIONS_CAPACITY = "capacity";
-	
+
 	public static final String COMMENTS = "Comments";
 	public static final String COMMENTS_ID = "id";
 	public static final String COMMENTS_CREATED_ON = "createdOn";
 	public static final String COMMENTS_COMMENT = "comment";
 	public static final String COMMENTS_AUTHOR = "author";
-	
+
 	public static final String RESERVATIONS = "Reservations";
 	public static final String RESERVATIONS_ID = "id";
 	public static final String RESERVATIONS_CUSTOMER_ID = "customerID";
@@ -55,14 +58,14 @@ public class Constants {
 	public static final String RESERVATIONS_PICKUP_TIME = "timePickup";
 	public static final String RESERVATIONS_START_TIME = "reservationStart";
 	public static final String RESERVATIONS_END_TIME = "reservationEnd";
-	
-	
+
+
 	public static final String VEHICLE_TYPES = "VehicleTypes";
 	public static final String VEHICLE_TYPES_ID = "id";
 	public static final String VEHICLE_TYPES_TYPE = "type";
 	public static final String VEHICLE_TYPES_HOURLY_PRICE = "hourlyPrice";
 	public static final String VEHICLE_TYPES_DAILY_PRICE = "dailyPrice";
-	
+
 	public static final String VEHICLES = "Vehicles";
 	public static final String VEHICLES_ID = "id";
 	public static final String VEHICLES_MAKE = "make";
@@ -77,17 +80,47 @@ public class Constants {
 
 	//MySQL Database
 	public static HashMap<Integer,String> errorCodes = new LinkedHashMap<Integer,String>();
+	private static Constants instance = null;
 
-	public Constants(){
+	private Constants(){
 		initializeErrors();
 	}
 
+	public static Constants getInstance(){
+		if (instance == null){
+			instance = new Constants();
+		}
+		return instance;
+	}
+	
 	public void initializeErrors(){
-		errorCodes.put(1062, "DUPLICATE_KEY_FOUND");
-		errorCodes.put(1216, "CHILD_RECORD_FOUND");
-		errorCodes.put(1217, "PARENT_RECORD_NOT_FOUND");
-		errorCodes.put(1048, "NULL_VALUE_FOUND");
-		errorCodes.put(1205, "RECORD_HAS_BEEN_LOCKED");
+		try {
+			JsonParsing p = new JsonParsing();
+			JSONObject codes = p.getErrorCodes();
+			//Iterate through object
+			Iterator<?> keys = codes.keys();
+
+			while(keys.hasNext()){
+				final String errorCode = (String)keys.next();
+				final Object obj = codes.get(errorCode);
+				int eCode = Integer.parseInt(errorCode);
+				errorCodes.put(eCode,obj.toString());
+				/*if(obj instanceof JSONObject){
+					final String errorExplanation = codes.getString(errorCode);
+					System.out.println(errorCode + " => " + errorExplanation);
+					int eCode = Integer.parseInt(errorCode);
+					errorCodes.put(eCode,errorExplanation);
+				}*/
+			}
+			System.out.println(errorCodes.size() + " items in map.");
+		} catch (Exception e){
+			errorCodes.put(1062, "DUPLICATE_KEY_FOUND");
+			errorCodes.put(1216, "CHILD_RECORD_FOUND");
+			errorCodes.put(1217, "PARENT_RECORD_NOT_FOUND");
+			errorCodes.put(1048, "NULL_VALUE_FOUND");
+			errorCodes.put(1205, "RECORD_HAS_BEEN_LOCKED");
+			System.err.println("Error getting JSONObject of codes.");
+		}
 	}
 
 	public String getError(int code){
