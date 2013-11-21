@@ -35,7 +35,9 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="http://localhost:8080/YouDrive">Home</a></li>
+					<c:if test="${loggedInUser != null && loggedInUser.isAdmin() }">
+						<li class="active"><a href="admin.jsp">Home</a></li>
+					</c:if>
 					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
 				</ul>
 				<c:if test="${loggedInUser != null }">

@@ -112,6 +112,7 @@
 										</tr>
 									</c:forEach>
 								</table>
+								<button type="button" onclick="window.history.back()" class="btn btn-primary">Go Back</button> 
 							</div>
 						</c:when>
 						<c:otherwise>
