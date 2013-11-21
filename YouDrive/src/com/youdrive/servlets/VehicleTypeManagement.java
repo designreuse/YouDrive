@@ -96,47 +96,55 @@ public class VehicleTypeManagement extends HttpServlet {
 			session.setAttribute("vehicleTypeMgr", ivtm);
 		}	
 		String action = request.getParameter("action");
+		String dispatchedPage = "/managevehicletypes.jsp";
 		if (action != null && !action.isEmpty()){
 			if(action.equalsIgnoreCase("addVehicleType")){
 				//adding a vehicle type
 				int id = addVehicleType(request,ivtm);
 				if (id == 0){
 					System.err.println("Problem saving vehicle type to db.");
-					dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
+					dispatchedPage = "/addvehicletype.jsp";
 				}else{
 					request.setAttribute("errorMessage","");
-					dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
+					dispatchedPage = "/managevehicletypes.jsp";
 				}
 			}else if (action.equalsIgnoreCase("editVehicleType")){
 				System.out.println("editVehicleType action");
 				String errorMessage = "";
-				VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
+				VehicleType vType = (VehicleType)session.getAttribute("vehicleType");
 				if (vType == null){
 					String vehicleType = request.getParameter("vehicleTypeID");
 					if (vehicleType ==  null || vehicleType.isEmpty()){
 						errorMessage = "No vehicle type requested.";
 					}else{
+						//Create vehicle type object
 						int vehicleTypeID = Integer.parseInt(vehicleType);
 						vType = ivtm.getVehicleType(vehicleTypeID);
 					}
-				}else{				
-					if (editVehicleType(request,ivtm,vType)){
-						request.setAttribute("errorMessage", "");
-						dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
-					}else{
-						request.setAttribute("vehicleType", vType);
-						dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
-					}
+				}
+				if (editVehicleType(request,ivtm,vType)){
+					request.setAttribute("errorMessage", "");
+					dispatchedPage = "/managevehicletypes.jsp";
+				}else{
+					request.setAttribute("vehicleType", vType);
+					dispatchedPage = "/editvehicletype.jsp";
 				}
 			}
 		}else{
 			request.setAttribute("errorMessage", "Unknown POST request");
-			dispatcher = ctx.getRequestDispatcher("/login.jsp");
+			dispatchedPage = "/login.jsp";
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 
-
+	/**
+	 * Edit a vehicle type.
+	 * @param request
+	 * @param ivtm
+	 * @param vType
+	 * @return
+	 */
 	private boolean editVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm, VehicleType vType){
 		String errorMessage = "";
 		int vehicleTypeID = vType.getId();
@@ -160,6 +168,7 @@ public class VehicleTypeManagement extends HttpServlet {
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
 				}else{
 					boolean isTypeInUse = ivtm.isTypeInUse(type);
+					//If the vehicle type has not been created OR the type is unchanged.
 					if (!isTypeInUse || type.equalsIgnoreCase(vType.getType())){
 						ivtm.updateVehicleType(vehicleTypeID,type, hourlyPrice, dailyPrice);
 						System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
@@ -179,6 +188,12 @@ public class VehicleTypeManagement extends HttpServlet {
 		return false;	
 	}
 
+	/**
+	 * Adding a Vehicle type
+	 * @param request
+	 * @param ivtm
+	 * @return
+	 */
 	private int addVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm){
 		String errorMessage = "";
 		int vehicleTypeID = 0;
