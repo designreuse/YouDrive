@@ -154,10 +154,11 @@ public class VehicleManagement extends HttpServlet {
 							String comment = request.getParameter("comment");
 							if (comment != null && !comment.isEmpty()){
 								//Get logged in user
-								User user = (User) ctx.getAttribute("loggedInUser");
+								User user = (User) session.getAttribute("loggedInUser");
 								if (user != null){
 									int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
 									if (commentId == 0){
+										System.err.println("Unable to save comment.");
 										request.setAttribute("errorMessage","Unable to save comment.");
 									}else{
 										//Successfully added comment.
@@ -166,9 +167,9 @@ public class VehicleManagement extends HttpServlet {
 									request.setAttribute("errorMessage","No user logged in.");
 								}
 							}else{
-								//Continue with editing user.
+								System.err.println("User object in session is null.");
 							}
-							if (editVehicle(request,ivm,ilm,v)){
+							if (editVehicle(session,request,ivm,ilm,v)){
 								request.setAttribute("errorMessage", "");
 								session.setAttribute("allVehicles", ivm.getAllVehicles());
 								dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
@@ -257,7 +258,7 @@ public class VehicleManagement extends HttpServlet {
 		return vehicleID;	
 	}
 
-	private boolean editVehicle(HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm,Vehicle vehicle){
+	private boolean editVehicle(HttpSession session, HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm,Vehicle vehicle){
 		String errorMessage = "";
 		int vehicleID = vehicle.getId();
 		try{

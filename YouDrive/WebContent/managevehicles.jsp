@@ -116,11 +116,11 @@
 											<c:url value="VehicleManagement" var="url">
 												<c:param name="vehicleID" value="${vehicle.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />">Edit</a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 											<c:url value="VehicleManagement" var="url">
 												<c:param name="viewComments" value="${vehicle.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />">View</a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
