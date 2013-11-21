@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+    pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="a" uri="/sortItems" %>
 <c:choose>
 	<c:when test="${searchType == null}">
-		<c:set var="searchType" value="0"/>
+		<%-- Default sort is #2 i.e. by last name --%>
+		<c:set var="searchType" value="2"/>
 	</c:when>
 	<c:otherwise>
 		<c:set var="searchType" value="${searchType }"/>
@@ -27,25 +28,20 @@
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-	<title>Edit Rental Location</title>
-	<script type="text/javascript">
-		//Equivalent to $( document ).ready(function(){});
-		$(function() {
-			/* When user clicks a clickable table header, the href value which corresponds to the sorting type requested
-			is obtained, a hidden input field is updated with this value and the hidden form is submitted.
-			HACKY method but it works. I wish I could directly update the JSP variable from JavaScript but
-			this method updates the JSP variable by going through GET*/
-			$('.navSort').click(function(){
-				//Get href value
-				//Set hidden input field
-				//Submit form which reloads the page
-				searchValue = $(this).attr('href').substring(1);
-				document.getElementById("searchType").value = searchValue;
-				$('#sortLocationForm').submit();
-			});
+<script type="text/javascript">
+	//Equivalent to $( document ).ready(function(){});
+	$(function() {
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortUserForm').submit();
 		});
-	</script>
-<title>Manage Locations</title>
+	});
+</script>
+<title>Manage Customers</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -91,35 +87,43 @@
 					</p>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />			
-						<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
+						<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
+						<c:set var="allCustomers" value="${userMgr.getAllCustomers() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
-										<th><a href="#0" class="navSort">Location Name</a></th>
-										<th><a href="#1" class="navSort">Location Address</a></th>
-										<th><a href="#2" class="navSort">Max Capacity</a></th>
-										<th>Current Capacity</th>
+										<th><a href="#2" class="navSort">Name</a></th>
+										<th><a href="#0" class="navSort">Username</a></th>
+										<th><a href="#3" class="navSort">Email</a></th>
+										<th>Is Admin</th>
 										<th>Edit</th>
 									</tr>
-									<c:forEach items="${a:locationSort(allLocations,searchType)}" var="location"
-										varStatus="status">
-										<tr id="${ location.id}">
-											<td><c:out value="${ location.name }" /></td>
-											<td><c:out value="${ location.address}" /></td>
-											<td><c:out value="${ location.capacity}" /></td>
-											<td><c:out value="${ locationMgr.getCurrentCapacity(location.id)}" /></td>
-											<c:url value="LocationManagement" var="url">
-												<c:param name="locationID" value="${location.id}" />
+									<c:forEach items="${a:userSort(allUsers,searchType)}" var="user" varStatus="status">
+										<tr id="${ user.id}">
+											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
+											<td><c:out value="${ user.username}" /></td>
+											<td><c:out value="${ user.email}" /></td>
+											<td>
+												<c:choose>
+												<c:when test="${ user.isAdmin() == null }">
+													<input type="checkbox" disabled name="isAdmin" id="isAdmin"/>
+												</c:when>
+												<c:otherwise>
+													<input type="checkbox" name="isAdmin" id="isAdmin" disabled checked />
+												</c:otherwise>
+												</c:choose>
+											</td>
+											<c:url value="UserManagement" var="url">
+												<c:param name="userID" value="${user.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 										</tr>
 									</c:forEach>
-								</table>
+								</table>	
 							</div>
-							<%-- Hidden form which gets submitted when user clicks on a clickable table heading --%>			
-							<form id="sortLocationForm" name="sortLocationForm" method="get" action="LocationManagement">
-								<input type="hidden" id="action" name="action" value="sortLocation"/>
+							<%-- Hidden form which gets submitted when user clicks on a clickable table heading --%>	
+							<form id="sortUserForm" name="sortUserForm" method="get" action="UserManagement">
+								<input type="hidden" id="action" name="action" value="sortUser"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 							</form>
 						</c:when>
@@ -143,9 +147,9 @@
 		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
 		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
-		            <a class="list-group-item active" href="managelocations.jsp">Manage Locations</a>
+		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item active" href="manageusers.jsp">Manage Users</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

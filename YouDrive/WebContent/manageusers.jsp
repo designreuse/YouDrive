@@ -88,20 +88,18 @@
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
 						<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
-						<c:set var="allUsers" value="${userMgr.getAllUsers() }" scope="session"/>
+						<c:set var="allAdmins" value="${userMgr.getAllAdmins() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
-										<th class="hidden">ID</th>
 										<th><a href="#2" class="navSort">Name</a></th>
 										<th><a href="#0" class="navSort">Username</a></th>
 										<th><a href="#3" class="navSort">Email</a></th>
 										<th>Is Admin</th>
 										<th>Edit</th>
 									</tr>
-									<c:forEach items="${a:userSort(allUsers,searchType)}" var="user" varStatus="status">
-										<tr>
-											<td class="hidden"><c:out value="${ user.id }" /></td>
+									<c:forEach items="${a:userSort(allAdmins,searchType)}" var="user" varStatus="status">
+										<tr id="${ user.id}">
 											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
 											<td><c:out value="${ user.username}" /></td>
 											<td><c:out value="${ user.email}" /></td>
@@ -118,7 +116,7 @@
 											<c:url value="UserManagement" var="url">
 												<c:param name="userID" value="${user.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />">Edit</a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	

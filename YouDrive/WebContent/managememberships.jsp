@@ -77,22 +77,20 @@
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
-										<th class="hidden">ID</th>
 										<th>Name</th>
 										<th>Price</th>
 										<th>Duration (months)</th>
 										<th>Edit</th>
 									</tr>
 									<c:forEach items="${membershipMgr.getAllMemberships()}" var="membership" varStatus="status">
-										<tr>
-											<td class="hidden"><c:out value="${ membership.id }" /></td>
+										<tr id="${ membership.id}">
 											<td><c:out value="${ membership.name }" /></td>
 											<td><fmt:formatNumber value="${ membership.price}" type="currency" /></td>
 											<td><c:out value="${ membership.duration}" /></td>
 											<c:url value="MembershipManagement" var="url">
 												<c:param name="membershipID" value="${membership.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />">Edit</a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>

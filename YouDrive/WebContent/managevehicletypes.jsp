@@ -97,14 +97,14 @@
 										<th>Edit</th>
 									</tr>
 									<c:forEach items="${a:vehicleTypeSort(allVehicleTypes,searchType)}" var="vehicleType" varStatus="status">
-										<tr>
+										<tr id="${ vehicleType.id}">
 											<td><c:out value="${ vehicleType.type }" /></td>
 											<td><fmt:formatNumber value="${ vehicleType.hourlyPrice}" type="currency" /></td>
 											<td><fmt:formatNumber value="${ vehicleType.dailyPrice}" type="currency" /></td>
 											<c:url value="VehicleTypeManagement" var="url">
 												<c:param name="vehicleTypeID" value="${vehicleType.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />">Edit</a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
