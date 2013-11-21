@@ -72,7 +72,7 @@
 									<label for="locationAddress">Address:</label> 
 									<input id="locationAddress" name="locationAddress" type="text" /><br /> 
 									<label for="capacity">Capacity:</label>
-									<input id="capacity" name="capacity" type="text" /><br /> 
+									<input id="capacity" name="capacity" type="number" min="1" /><br /> 
 									<input type="hidden" id="action" name="action" value="addLocation" />
 									<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
 									<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>

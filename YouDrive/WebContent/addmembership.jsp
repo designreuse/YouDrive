@@ -69,9 +69,12 @@
 									<label for="membershipLevel">Membership Level:</label>
 									<input  required type="text"id="membershipLevel" name="membershipLevel"/><br />
 									<label for="price">Price:</label>
-									<input  required type="text" id="price" name="price" /><br />
+									<div class="input-group">
+									  <span class="input-group-addon">USD $</span>
+									  <input  required class="form-control" type="text" id="price" name="price" /><br />
+									</div>									
 									<label for="duration">Duration (months):</label>
-									<input  required type="text" id="duration" name="duration" /><br />
+									<input  required type="number" min="1" id="duration" name="duration" /><br />
 									<input type="hidden" name="action" id="action" value="addMembership" />
 									<button type="submit" class="btn btn-primary btn-lg btn-block">Add</button>
 									<button type="reset" onclick="window.location.replace('managememberships.jsp')" class="btn btn-default btn-lg btn-block">Cancel</button>

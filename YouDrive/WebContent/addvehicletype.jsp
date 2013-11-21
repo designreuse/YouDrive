@@ -69,9 +69,15 @@
 									<label for="vehicleTypeName">Vehicle Type Name:</label>
 									<input id="vehicleTypeName" name="vehicleTypeName" type="text" /><br /> 
 									<label for="hourlyPrice">Hourly Price:</label>
-									<input id="hourlyPrice" name="hourlyPrice" type="text" /><br />
+									<div class="input-group">
+									  <span class="input-group-addon">USD $</span>
+									  <input  required class="form-control" id="hourlyPrice" name="hourlyPrice" type="text" /><br />
+									</div>
 									<label for="dailyPrice">Daily Price:</label> 
-									<input id="dailyPrice" name="dailyPrice" type="text" /><br />
+									<div class="input-group">
+									  <span class="input-group-addon">USD $</span>
+									  <input  required class="form-control" id="dailyPrice" name="dailyPrice" type="text" /><br />
+									</div><br/>
 									<input type="hidden" name="action" id="action" value="addVehicleType" />									
 									<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
 									<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>
