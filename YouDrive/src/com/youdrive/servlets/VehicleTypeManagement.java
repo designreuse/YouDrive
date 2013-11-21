@@ -58,6 +58,7 @@ public class VehicleTypeManagement extends HttpServlet {
 				dispatchedPage = "/managevehicles.jsp";
 			}
 		}else if (searchType != null && !searchType.isEmpty()){
+			//Simple sets the right search type integer which the managevehicles.jsp page uses to sort the list
 			int sType = 0;
 			try{
 				sType = Integer.parseInt(searchType);
@@ -199,8 +200,13 @@ public class VehicleTypeManagement extends HttpServlet {
 				}else if (dailyPrice < 9){
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
 				}else{
-					vehicleTypeID = ivtm.addVehicleType(type, hourlyPrice, dailyPrice);
-					System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+					boolean isTypeInUse = ivtm.isTypeInUse(type);
+					if (!isTypeInUse){
+						vehicleTypeID = ivtm.addVehicleType(type, hourlyPrice, dailyPrice);
+						System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+					}else{
+						errorMessage = "Vehicle type already in use.";
+					}
 				}
 			}
 		}catch(NumberFormatException e){

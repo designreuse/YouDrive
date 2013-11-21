@@ -82,7 +82,7 @@ public class MembershipManagement extends HttpServlet {
 				int membershipID = addMembership(request,imm);
 				if (membershipID == 0){
 					//Add membership failed
-					dispatchedPage = "/admin.jsp";
+					dispatchedPage = "/addmembership.jsp";
 				}else{
 					dispatchedPage = "/managememberships.jsp";				
 				}
