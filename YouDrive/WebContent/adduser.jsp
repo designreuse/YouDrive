@@ -9,9 +9,26 @@
 <link rel="stylesheet" href="css/homepage.css">
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" href="css/signin.css">
+<link href="css/offcanvas.css" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/offcanvas.js"></script>
 <title>Create a Customer/Admin</title>
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+<style>
+body {
+	padding-top: 60px;
+}
+
+.starter-template {
+	padding: 40px 15px;
+	text-align: center;
+}
+</style>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -35,77 +52,100 @@
 		</div>
 		<!-- /.container -->
 	</div>
-	
-	
-	<h3 class="page_title">Admin - Add User</h3>
-	<c:if test="${loggedInUser != null }">
-		<p class="userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
-	</c:if>
-	<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-		<div class="list-group">
-            <a class="list-group-item active" href="addvehicle.jsp">Add Vehicle</a>
-            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
-            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
-            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
-            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
-            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
-            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
-            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
-            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
-            <a class="list-group-item" href="logout.jsp">Logout</a>
-          </div>
-    </div>
-    <div class="container">
-	
-		<p class="error">
-			<c:out value="${errorMessage }" />
-		</p>
-		<c:choose>
-			<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-			<div class="forms">
-				<form class="form-horizontal" id="addUser" name="addUser" action="UserManagement" method="post">
-					<label for="firstName">First Name:</label> 
-					<input required	type="text" id="firstName" name="firstName" /><br /> 
-					<label for="lastName" >Last Name:</label> 
-					<input required type="text" id="lastName" name="lastName" /><br /> 
-					<label for="email">Email Address:</label> 
-					<input required type="email" id="email" name="email" /><br />
-					<label for="username">Username:</label> 
-					<input required type="text"	id="username" name="username" /><br /> 
-					<label for="password">Password:</label>
-					<input required type="password" id="password" name="password" /><br />
-					<input type="hidden" id="action" name="action" value="addAdmin" /> 
-					<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
-					<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>
-				</form>
-			</div>
-			</c:when>
-			<c:otherwise>
-			<p class="error">
-				<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
-			</p>
-			</c:otherwise>
-		</c:choose>
-	</div>
+	<!-- /.navbar -->
 
-	<!-- Modal -->
-	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="aboutModalLabel">About YouDrive</h4>
+	<div class="container">
+
+		<div class="row row-offcanvas row-offcanvas-right">
+
+			<div class="col-xs-12 col-sm-9">
+				<p class="pull-right visible-xs">
+					<button type="button" class="btn btn-primary btn-xs"
+						data-toggle="offcanvas">Toggle nav</button>
+				</p>
+				<div class="row">
+				<p class="error">
+					<c:out value="${errorMessage }" />
+				</p>
+				<c:choose>
+					<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+						<div class="forms">
+							<form class="form-signin" id="addUser" name="addUser" action="UserManagement" method="post">
+								<label for="firstName">First Name:</label> 
+								<input required	type="text" id="firstName" name="firstName" /><br /> 
+								<label for="lastName" >Last Name:</label> 
+								<input required type="text" id="lastName" name="lastName" /><br /> 
+								<label for="email">Email Address:</label> 
+								<input required type="email" id="email" name="email" /><br />
+								<label for="username">Username:</label> 
+								<input required type="text"	id="username" name="username" /><br /> 
+								<label for="password">Password:</label>
+								<input required type="password" id="password" name="password" /><br />
+								<input type="hidden" id="action" name="action" value="addAdmin" /> 
+								<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+								<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>
+							</form>
+						</div>
+					</c:when>
+						<c:otherwise>
+						<p class="error">
+							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
+						</p>
+						</c:otherwise>
+					</c:choose>
 				</div>
-				<div class="modal-body">Group Project by Jane Ullah, James Vaughan, Rod Rashidi and Trevor Wilson.</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+				<!--/row-->
+			</div>
+			<!--/span-->
+
+			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar"
+				role="navigation">
+				<div class="list-group">
+		            <a class="list-group-item active" href="addvehicle.jsp">Add Vehicle</a>
+		            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
+		            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
+		            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
+		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
+		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
+		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
+		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
+		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
+		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
-			<!-- /.modal-content -->
+			<!--/span-->
 		</div>
-		<!-- /.modal-dialog -->
+		<!--/row-->
+
+		<hr>
+
+		<footer>
+			<p>&copy; Company 2013</p>
+		</footer>
+
+	</div>
+	<!--/.container-->
+	<!-- Modal -->
+	<d iv class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+		aria-labelledby="aboutModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="aboutModalLabel">About YouDrive</h4>
+			</div>
+			<div class="modal-body">Group Project by Jane Ullah, James
+				Vaughan, Rod Rashidi and Trevor Wilson.</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
 </body>
