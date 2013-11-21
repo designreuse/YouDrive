@@ -77,7 +77,8 @@
 					<a class="list-group-item active">Navigation</a>
 		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle Type</a>
-		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>
+		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
+		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
 			<!--/span-->

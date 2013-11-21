@@ -99,8 +99,9 @@
 										<th><a href="#5" class="navSort">Last Serviced</a></th>
 										<th><a href="#6" class="navSort">Vehicle Type</a></th>
 										<th><a href="#7" class="navSort">Vehicle Location</a></th>
-										<th>Edit</th> 
 										<th>Notes</th>
+										<th>Edit</th> 
+										<th>Delete</th>
 									</tr>
 									<%-- Created a custom EL function to sort the list on demand --%>
 									<c:forEach items="${a:vehicleSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
@@ -121,6 +122,7 @@
 												<c:param name="viewComments" value="${vehicle.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
@@ -152,7 +154,8 @@
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
+		            <a class="list-group-item" href="managecustomers.jsp">Manage Customers</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

@@ -95,28 +95,21 @@
 										<th><a href="#2" class="navSort">Name</a></th>
 										<th><a href="#0" class="navSort">Username</a></th>
 										<th><a href="#3" class="navSort">Email</a></th>
-										<th>Is Admin</th>
+										<th><a href="#8" class="navSort">Membership Expiration</a></th>
 										<th>Edit</th>
+										<th>Delete</th>
 									</tr>
-									<c:forEach items="${a:userSort(allUsers,searchType)}" var="user" varStatus="status">
+									<c:forEach items="${a:userSort(allCustomers,searchType)}" var="user" varStatus="status">
 										<tr id="${ user.id}">
 											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
 											<td><c:out value="${ user.username}" /></td>
 											<td><c:out value="${ user.email}" /></td>
-											<td>
-												<c:choose>
-												<c:when test="${ user.isAdmin() == null }">
-													<input type="checkbox" disabled name="isAdmin" id="isAdmin"/>
-												</c:when>
-												<c:otherwise>
-													<input type="checkbox" name="isAdmin" id="isAdmin" disabled checked />
-												</c:otherwise>
-												</c:choose>
-											</td>
+											<td><c:out value="${ user.memberExpiration}"/></td>
 											<c:url value="UserManagement" var="url">
-												<c:param name="userID" value="${user.id}" />
+												<c:param name="customerID" value="${user.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
@@ -149,7 +142,8 @@
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item active" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
+		            <a class="list-group-item active" href="managecustomers.jsp">Manage Customers</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

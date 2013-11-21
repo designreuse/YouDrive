@@ -95,6 +95,7 @@
 										<th><a href="#1" class="navSort">Hourly Price</a></th>
 										<th><a href="#2" class="navSort">Daily Price</a></th>
 										<th>Edit</th>
+										<th>Delete</th>
 									</tr>
 									<c:forEach items="${a:vehicleTypeSort(allVehicleTypes,searchType)}" var="vehicleType" varStatus="status">
 										<tr id="${ vehicleType.id}">
@@ -105,6 +106,7 @@
 												<c:param name="vehicleTypeID" value="${vehicleType.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
@@ -136,7 +138,8 @@
 		            <a class="list-group-item active" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
+		            <a class="list-group-item" href="managecustomers.jsp">Manage Customers</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

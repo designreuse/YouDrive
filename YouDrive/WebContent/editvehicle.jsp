@@ -156,7 +156,8 @@
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
+		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
+		            <a class="list-group-item" href="managecustomers.jsp">Manage Customers</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

@@ -132,6 +132,8 @@ public class UserManagement extends HttpServlet {
 					if (userID == 0){
 						dispatchedPage = "/registration_page1.jsp";
 					}else{
+						User user = ium.getUser(userID);
+						session.setAttribute("loggedInUser", user);
 						dispatchedPage = "/user.jsp";
 					}
 				}else{
