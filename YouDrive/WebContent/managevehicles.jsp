@@ -104,13 +104,13 @@
 									</tr>
 									<%-- Created a custom EL function to sort the list on demand --%>
 									<c:forEach items="${a:vehicleSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
-										<tr>
+										<tr id="${vehicle.id }">
 											<td><c:out value="${ vehicle.make }" /></td>
 											<td><c:out value="${ vehicle.model }" /></td>
 											<td><c:out value="${ vehicle.year }" /></td>
 											<td><c:out value="${ vehicle.tag }" /></td>
 											<td><c:out value="${ vehicle.mileage }" /></td>
-											<td><fmt:formatDate type="date" value="${vehicle.lastServiced}" /></td>
+											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
 											<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
 											<td><c:out value="${ vehicleMgr.getVehicleLocation(vehicle.assignedLocation)}" /></td>
 											<c:url value="VehicleManagement" var="url">

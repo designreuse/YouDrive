@@ -175,6 +175,7 @@ public class VehicleDAO implements IVehicleManager {
 			addVehicleStmt.setInt(3, year);
 			addVehicleStmt.setString(4, tag);
 			addVehicleStmt.setInt(5, mileage);
+			//java.sql.Date sd = java.sql.Date.valueOf(lastServiced);
 			java.util.Date d = sdf.parse(lastServiced);
 			java.sql.Date sd = new java.sql.Date(d.getTime());
 			addVehicleStmt.setDate(6,sd);
@@ -255,6 +256,7 @@ public class VehicleDAO implements IVehicleManager {
 			updateVehicleStmt.setInt(3, year);
 			updateVehicleStmt.setString(4, tag);
 			updateVehicleStmt.setInt(5,mileage);
+			//java.sql.Date sd = java.sql.Date.valueOf(lastServiced);
 			java.util.Date d = sdf.parse(lastServiced);
 			java.sql.Date sd = new java.sql.Date(d.getTime());
 			updateVehicleStmt.setDate(6,sd);

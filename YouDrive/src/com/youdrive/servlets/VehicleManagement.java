@@ -300,6 +300,15 @@ public class VehicleManagement extends HttpServlet {
 						int locationCapacity = l.getCapacity();
 						//Don't change vehicle is location is full.
 						if (locationCapacity > currentCapacity){
+							int dateLength = lastServiced.length();
+							//By default, the date is shown on the form with hh:mm:ss
+							//this code snippet truncated it to the first 11 characters which is parseable
+							System.out.println("Length: " + dateLength + " form Date:" + lastServiced);
+							if (dateLength != 11){
+								System.out.println("form Date:" + lastServiced);
+								lastServiced = lastServiced.substring(0,10);
+								System.out.println("formatted Date:" + lastServiced);
+							}
 							if (!(ivm.updateVehicle(vehicleID,make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation))){
 								errorMessage = "Could not update Vehicle details.";
 							}else{
@@ -313,6 +322,15 @@ public class VehicleManagement extends HttpServlet {
 					}
 				}else{
 					//Location isn't being changed.
+					int dateLength = lastServiced.length();
+					//By default, the date is shown on the form with hh:mm:ss
+					//this code snippet truncated it to the first 11 characters which is parseable
+					System.out.println("Length: " + dateLength + " form Date:" + lastServiced);
+					if (dateLength != 11){
+						System.out.println("form Date:" + lastServiced);
+						lastServiced = lastServiced.substring(0,10);
+						System.out.println("formatted Date:" + lastServiced);
+					}
 					if (ivm.updateVehicle(vehicleID,make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation)){
 						return true;
 					}else{

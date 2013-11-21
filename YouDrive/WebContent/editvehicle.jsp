@@ -98,7 +98,7 @@
 										<label for="mileage">Mileage:</label>
 										<input required type="text" id="mileage" name="mileage" value="${vehicle.mileage }" /><br/>
 										<label for="lastServiced">Last Serviced:</label>					
-										<input required type="text" id="lastServiced" name="lastServiced" value="${vehicle.lastServiced}" /><br/>
+										<input required type="text" id="lastServiced" name="lastServiced" value="<fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" />" /><br/>
 										<label for="vehicleType">Vehicle Type:</label>
 										<select name="vehicleType">
 											<option value="${vehicle.vehicleType }"><c:out value="${vehicleMgr.getVehicleType(vehicle.vehicleType)}"/></option>
