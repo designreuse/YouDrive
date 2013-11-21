@@ -110,7 +110,8 @@
 											</option>
 										</c:forEach>
 									</select><br /> 
-									<br /> 
+									<label for="comment">Enter Comments:</label><br/>
+									<textarea  class="form-control" rows="3" name="comment" id="comment"></textarea><br/>	
 									<input type="hidden" name="action" id="addVehicle" value="addVehicle" /> 								
 									<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
 									<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>						

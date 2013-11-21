@@ -119,7 +119,7 @@
 										</select><br/>
 										<a href="viewcomments.jsp" id="comments">View Comments</a><br/>
 										<label for="comment">Enter Comments:</label><br/>
-										<textarea  class="form-control" rows="3" name="comment" id="comment" onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>	
+										<textarea  class="form-control" rows="3" name="comment" id="comment"></textarea><br/>	
 										<input type="hidden" id="action" name="action" value="editVehicle"/>
 										<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>							
 										<button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>

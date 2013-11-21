@@ -136,6 +136,27 @@ public class VehicleManagement extends HttpServlet {
 					System.err.println("Problem saving vehicle to db.");
 					dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
 				}else{
+					//Add comment to database
+					String comment = request.getParameter("comment");
+					if (comment != null && !comment.isEmpty()){
+						//Get logged in user
+						User user = (User) session.getAttribute("loggedInUser");
+						if (user != null){
+							int commentId = ivm.addVehicleComment(id, comment, user.getId());
+							if (commentId == 0){
+								System.err.println("Unable to save comment.");
+								request.setAttribute("errorMessage","Unable to save comment but vehicle was created.");
+							}else{
+								//Successfully added comment.
+								System.out.println("Added vehicle and created comment.");
+							}
+						}else{
+							request.setAttribute("errorMessage","No user logged in.");
+							System.err.println("User somehow got logged out during comment saving after vehicle was created");
+						}
+					}else{
+						System.err.println("User object in session is null.");
+					}
 					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 				}
