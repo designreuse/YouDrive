@@ -98,12 +98,12 @@
 				<div class="list-group">
 					<a class="list-group-item">Navigation</a>
 		            <a class="list-group-item" href="addvehicle.jsp">Add Vehicle</a>
-		            <a class="list-group-item active" href="addvehicletype.jsp">Add Vehicle Type</a>
+		            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
 		            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
 		            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
 		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
 		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
-		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
+		            <a class="list-group-item active" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
 		            <a class="list-group-item" href="manageusers.jsp">Manage Users</a>
