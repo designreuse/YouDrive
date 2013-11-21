@@ -10,6 +10,10 @@ div.logo {
 	display:none;	
 }
 
+h3.page_title{
+	margin-left:10em;
+}
+
 p.userInfo{
 	margin-top:-3em;
 	float:right;
@@ -31,6 +35,16 @@ div.login{
 
 div.login input[type=submit]{
 	margin-left:12em;	
+}
+
+div.forms{
+	width:550px;
+	margin:0 auto;
+	font-size:2em;
+}
+
+div.forms input[type=submit]{
+	margin-left:6em;	
 }
 
 div.underlogo{

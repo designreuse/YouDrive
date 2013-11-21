@@ -251,7 +251,16 @@ public class UserManagement extends HttpServlet {
 		}else if (email == null || email.isEmpty()){
 			errorMessage = "Missing email";
 		}else{
-			userID = ium.addAdminUser(username, password, firstName, lastName, email);
+			boolean isUsernameInUse = ium.isUsernameInUse(username);
+			boolean isEmailInUse = ium.isEmailInUse(email);
+			if (isUsernameInUse){
+				errorMessage = "This username is already in use.";
+			}else if (isEmailInUse){
+				errorMessage = "This email address is already in use.";
+			}else{	
+				userID = ium.addAdminUser(username, password, firstName, lastName, email);
+				errorMessage = "";
+			}
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return userID;
@@ -293,8 +302,7 @@ public class UserManagement extends HttpServlet {
 				errorMessage = "This username is already in use.";
 			}else if (isEmailInUse){
 				errorMessage = "This email address is already in use.";
-			}else{			
-				request.setAttribute("errorMessage","");
+			}else{				
 				//Stash user into into map and send in request object
 				addUser1.put("username",username);
 				addUser1.put("password", password);
@@ -303,6 +311,7 @@ public class UserManagement extends HttpServlet {
 				addUser1.put("email", email);
 				session.setAttribute("registration_page1", addUser1);
 				System.out.println("added registration_page1 to session.");
+				request.setAttribute("errorMessage","");
 				return true;
 			}
 		}
