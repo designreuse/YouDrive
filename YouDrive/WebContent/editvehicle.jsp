@@ -84,10 +84,11 @@
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
 							<c:choose>
 								<c:when test="${vehicle != null }">
+									<div class="forms">
 									<form class="well" id="editVehicle" name="editVehicle" action="VehicleManagement"
 										method="post">
 										<label for="make">Make:</label>
-										<input required type="text" id="make" name="make" value="${vehicle.make }" /><br/>
+										<input required type="text" id="make" name="make" value="${vehicle.make }"/><br/>
 										<label for="model">Model:</label>
 										<input required type="text" id="model" name="model" value="${vehicle.model }" /><br/>
 										<label for="year">Year:</label>
@@ -117,14 +118,14 @@
 											</c:forEach>
 										</select><br/>
 										<a href="viewcomments.jsp" id="comments">View Comments</a><br/>
-										<label for="comment">Enter Comments:</label>
-										<textarea name="comment" id="comment" onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>	
+										<label for="comment">Enter Comments:</label><br/>
+										<textarea  class="form-control" rows="3" name="comment" id="comment" onfocus="this.value=''; setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>	
 										<input type="hidden" id="action" name="action" value="editVehicle"/>
-										<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>
-										<input type="submit" value="Update" /> <input type="button"
-											onclick="window.location.replace('managevehicles.jsp')"
-											value="Cancel" />
+										<input type="hidden" id="vehicleID" name="vehicleID" value="${vehicle.id }"/>							
+										<button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>
+										<button type="button" onclick="window.location.replace('managevehicles.jsp')" class="btn btn-default btn-lg btn-block">Cancel</button>
 									</form>
+									</div>
 									<%-- Submit this form when user clicks viewcomments.jsp link --%>
 									<form method="get" action="VehicleManagement" id="vehicleCommentsForm" name="vehicleCommentsForm">
 										<input type="hidden" id="action" name="action" value="viewComments" />
@@ -146,12 +147,12 @@
 				role="navigation">
 				<div class="list-group">
 					<a class="list-group-item">Navigation</a>
-		            <a class="list-group-item active" href="addvehicle.jsp">Add Vehicle</a>
+		            <a class="list-group-item" href="addvehicle.jsp">Add Vehicle</a>
 		            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
 		            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
 		            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
 		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
-		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
+		            <a class="list-group-item active" href="managevehicles.jsp">Manage Vehicles</a>
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
 		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
