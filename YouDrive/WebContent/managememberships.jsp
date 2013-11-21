@@ -74,7 +74,6 @@
 						<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
-									<caption>Membership Levels</caption>
 									<tr>
 										<th class="hidden">ID</th>
 										<th>Name</th>
@@ -137,7 +136,7 @@
 	<!--/.container-->
 	
 		<!-- Modal -->
-	<d iv class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
 		aria-labelledby="aboutModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">

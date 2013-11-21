@@ -95,7 +95,7 @@
 	
 	
 	<!-- Modal -->
-	<d iv class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
 		aria-labelledby="aboutModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
