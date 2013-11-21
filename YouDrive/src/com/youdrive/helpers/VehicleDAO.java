@@ -255,7 +255,9 @@ public class VehicleDAO implements IVehicleManager {
 			updateVehicleStmt.setInt(3, year);
 			updateVehicleStmt.setString(4, tag);
 			updateVehicleStmt.setInt(5,mileage);
-			updateVehicleStmt.setString(6, lastServiced);
+			java.util.Date d = sdf.parse(lastServiced);
+			java.sql.Date sd = new java.sql.Date(d.getTime());
+			updateVehicleStmt.setDate(6,sd);
 			updateVehicleStmt.setInt(7, vehicleType);
 			updateVehicleStmt.setInt(8, assignedLocation);
 			updateVehicleStmt.setInt(9, id);

@@ -1,24 +1,26 @@
 package com.youdrive.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class User {
-	int id;
-	String username;
-	String password;
-	String firstName;
-	String lastName;
-	String state;
-	String license;
-	String email;
-	String address;
-	String ccType;
-	String ccNumber;
-	int ccSecurityCode;
-	String ccExpirationDate;
-	boolean isAdmin;
-	Date memberExpiration;
-	int membershipLevel;
+public class User implements Serializable{
+	private static final long serialVersionUID = 8015514732999869774L;
+	private int id;
+	private String username;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private String state;
+	private String license;
+	private String email;
+	private String address;
+	private String ccType;
+	private String ccNumber;
+	private int ccSecurityCode;
+	private String ccExpirationDate;
+	private boolean isAdmin;
+	private Date memberExpiration;
+	private int membershipLevel;
 	
 	public User(){ 	}
 	

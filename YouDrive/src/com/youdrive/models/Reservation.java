@@ -1,5 +1,9 @@
 package com.youdrive.models;
 
-public class Reservation {
+import java.io.Serializable;
+
+public class Reservation  implements Serializable{
+
+	private static final long serialVersionUID = -2727445271306115604L;
 
 }

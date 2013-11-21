@@ -1,6 +1,10 @@
 package com.youdrive.models;
 
-public class VehicleType {
+import java.io.Serializable;
+
+public class VehicleType implements Serializable{
+
+	private static final long serialVersionUID = 8558530741720110456L;
 	private int id;
 	private String type;
 	private double hourlyPrice;

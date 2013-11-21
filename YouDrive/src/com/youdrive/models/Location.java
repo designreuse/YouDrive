@@ -1,10 +1,16 @@
 package com.youdrive.models;
 
-public class Location {
-	int id;
-	String name;
-	String address;
-	int capacity;
+import java.io.Serializable;
+
+public class Location implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3897603068272627502L;
+	private int id;
+	private String name;
+	private String address;
+	private int capacity;
 	
 	public Location(int id, String name, String address, int capacity){
 		this.id = id;

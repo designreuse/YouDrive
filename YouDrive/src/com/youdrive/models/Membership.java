@@ -1,6 +1,9 @@
 package com.youdrive.models;
 
-public class Membership {
+import java.io.Serializable;
+
+public class Membership implements Serializable{
+	private static final long serialVersionUID = -6890011903343601105L;
 	private int id;
 	private String name;
 	private double price;
