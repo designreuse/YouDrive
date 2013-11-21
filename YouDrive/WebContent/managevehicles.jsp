@@ -99,8 +99,8 @@
 										<th><a href="#5" class="navSort">Last Serviced</a></th>
 										<th><a href="#6" class="navSort">Vehicle Type</a></th>
 										<th><a href="#7" class="navSort">Vehicle Location</a></th>
-										<th>Notes</th>
-										<th>Edit</th> 
+										<th>Edit</th>
+										<th>Notes</th> 
 										<th>Delete</th>
 									</tr>
 									<%-- Created a custom EL function to sort the list on demand --%>

@@ -6,16 +6,6 @@ import com.youdrive.models.User;
 
 public interface IUserManager {
 	/**
-	 * Adding an admin user
-	 * @param username
-	 * @param password
-	 * @param firstName
-	 * @param lastName
-	 * @param email
-	 * @return
-	 */
-	public int addAdmin(String username, String password, String firstName, String lastName, String email);
-	/**
 	 * Adding a regular User and returns the user's id
 	 * @param p
 	 * @return
@@ -106,5 +96,6 @@ public interface IUserManager {
 	 * @return
 	 */
 	public ArrayList<User> getAllCustomers();
+	public User getCustomer(int uID);
 	
 }

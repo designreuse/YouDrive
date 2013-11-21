@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
@@ -17,6 +18,7 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement getAllAdminsStmt;
 	private PreparedStatement getAllCustomersStmt;
 	private PreparedStatement getUserStmt;
+	private PreparedStatement getCustomerStmt;
 	private PreparedStatement getUserByUsernameStmt;
 	private PreparedStatement authenticateUserStmt;
 	private PreparedStatement addRegularUserStmt;
@@ -37,8 +39,8 @@ public class UserDAO implements IUserManager {
 			getAllCustomersStmt = conn.prepareStatement("select * from " + Constants.USERS + " where isAdmin = 0 order by firstName");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
 			getUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
-			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)",Statement.RETURN_GENERATED_KEYS);
-			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT)",Statement.RETURN_GENERATED_KEYS);
+			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
@@ -54,28 +56,6 @@ public class UserDAO implements IUserManager {
 	}
 
 	@Override
-	public int addAdmin(String username, String password, String firstName,String lastName, String email) {
-		int userID = 0;
-		try{
-			addRegularUserStmt.setString(1, username);
-			addRegularUserStmt.setString(2, password);
-			addRegularUserStmt.setString(3, firstName);
-			addRegularUserStmt.setString(4, lastName);
-			addRegularUserStmt.setString(5, email);
-			addRegularUserStmt.executeUpdate();
-			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
-			if (rs.next()){
-				userID = rs.getInt(1);
-			}
-		}catch(SQLException e){
-			System.err.println(cs.getError(e.getErrorCode()));
-		}catch(Exception e){
-			System.err.println("Problem with addAdmin method: " + e.getClass().getName() + ": " + e.getMessage());			
-		}
-		return userID;
-	}
-
-	@Override
 	public int addAdminUser(String username, String password, String firstName, String lastName, String email) {
 		int userID = 0;
 		try{
@@ -84,6 +64,9 @@ public class UserDAO implements IUserManager {
 			addAdminUserStmt.setString(3,firstName);
 			addAdminUserStmt.setString(4,lastName);
 			addAdminUserStmt.setString(5,email);
+			java.util.Date d = Calendar.getInstance().getTime();
+			java.sql.Date creationdate = new java.sql.Date(d.getTime());
+			addAdminUserStmt.setDate(6, creationdate);
 			addAdminUserStmt.executeUpdate();
 			ResultSet rs = addAdminUserStmt.getGeneratedKeys();
 			if (rs.next()){
@@ -115,6 +98,7 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt.setString(12, p.getCcExpirationDate());
 			addRegularUserStmt.setDate(13, p.getMemberExpiration());
 			addRegularUserStmt.setInt(14, p.getMembershipLevel());
+			addRegularUserStmt.setDate(14, p.getDateCreated());
 			userID = addRegularUserStmt.executeUpdate();
 			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
 			if (rs.next()){
@@ -379,5 +363,11 @@ public class UserDAO implements IUserManager {
 			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
+	}
+
+	@Override
+	public User getCustomer(int uID) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

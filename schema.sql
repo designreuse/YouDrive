@@ -36,6 +36,7 @@ ccExpirationDate varchar(7),
 isAdmin boolean,
 memberExpiration date,
 membershipLevel int,
+registrationDate date not null,
 FOREIGN KEY (membershipLevel) references Memberships(id)
 ) Engine=InnoDB;
 

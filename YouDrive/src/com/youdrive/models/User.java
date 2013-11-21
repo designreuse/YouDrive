@@ -20,6 +20,7 @@ public class User implements Serializable{
 	private String ccExpirationDate;
 	private boolean isAdmin;
 	private Date memberExpiration;
+	private Date dateCreated;
 	private int membershipLevel;
 	
 	public User(){ 	}
@@ -178,5 +179,13 @@ public class User implements Serializable{
 	}
 	public void setMembershipLevel(int membershipLevel) {
 		this.membershipLevel = membershipLevel;
+	}
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 }

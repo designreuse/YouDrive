@@ -54,6 +54,7 @@ public class UserManagement extends HttpServlet {
 		String errorMessage = "";
 		String userID = request.getParameter("userID");
 		String searchType = request.getParameter("searchType");
+		String customerID = request.getParameter("customerID");
 		String dispatchedPage = "/login.jsp";
 		if (userID != null && !userID.isEmpty()){
 			try{
@@ -76,6 +77,15 @@ public class UserManagement extends HttpServlet {
 				request.setAttribute("searchType", sType);
 			}
 			dispatchedPage = "/manageusers.jsp";
+		}else if(customerID != null && !customerID.isEmpty()){
+			try{
+				int uID = Integer.parseInt(customerID);
+				User user = ium.getCustomer(uID);
+				session.setAttribute("user", user);
+				dispatchedPage = "/edituser.jsp";
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid userID.";
+			}
 		}else{
 			User loggedInUser = (User) session.getAttribute("loggedInUser");
 			if (loggedInUser != null){
@@ -377,6 +387,9 @@ public class UserManagement extends HttpServlet {
 						user.setEmail(page1_details.get("email"));
 						user.setUsername(page1_details.get("username"));
 						user.setPassword(page1_details.get("password"));
+						java.util.Date d = Calendar.getInstance().getTime();
+						java.sql.Date creationdate = new java.sql.Date(d.getTime());
+						user.setDateCreated(creationdate);
 						user.setAdmin(false);
 						userID = ium.addUser(user);
 						errorMessage = "";
