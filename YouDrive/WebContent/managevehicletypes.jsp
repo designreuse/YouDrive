@@ -19,9 +19,13 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -38,7 +42,23 @@
 			document.getElementById("searchType").value = searchValue;
 			$('#sortVehicleTypeForm').submit();
 		});
+		
 	});
+	
+	/* submit the hidden form to delete the vehicle but need to confirm with user first*/
+	function getVehicleTypeID(vehicleTypeID, vehicleType){
+		// confirm dialog
+		alertify.confirm("You are about to delete " + vehicleType + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+		    if (e) {
+		    	console.log("OK clicked.");
+				document.getElementById("vehicleTypeID").value = vehicleTypeID;
+				$('#deleteVehicleTypeForm').submit();
+		    } else {
+		        console.log("Cancel clicked.");
+		    }
+		});
+		console.log(vehicleTypeID);
+	}
 </script>
 <title>Manage Vehicle Types</title>
 </head>
@@ -106,14 +126,21 @@
 												<c:param name="vehicleTypeID" value="${vehicleType.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><span onclick="getVehicleTypeID('${vehicleType.id}','${vehicleType.type }')" class="glyphicon glyphicon-trash"></span></td>
 										</tr>
 									</c:forEach>
 								</table>
 							</div>			
+							<%-- Hidden form for sorting the vehicle types --%>
 							<form id="sortVehicleTypeForm" name="sortVehicleTypeForm" method="get" action="VehicleTypeManagement">
 								<input type="hidden" id="action" name="action" value="sortVehicleType"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
+							
+							<%-- Hidden form for deleting the vehicle type --%>
+							<form id="deleteVehicleTypeForm" name="deleteVehicleTypeForm" method="post" action="VehicleTypeManagement">
+								<input type="hidden" id="action" name="action" value="deleteVehicleType"/>
+								<input type="hidden" id="vehicleTypeID" name="vehicleTypeID" value="" />
 							</form>
 						</c:when>
 						<c:otherwise>

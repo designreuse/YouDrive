@@ -3,7 +3,7 @@ INSERT INTO `Locations` VALUES (1,'Downtown Location','123 East Broadstreet Rd, 
 INSERT INTO `Memberships` VALUES (1,'6 month plan',150.00,6),(2,'12 month plan',290.00,12),(3,'24 month plan',430.00,24),(4,'Monthly plan',50.00,1);
 
 
-INSERT INTO `Users` VALUES (1,'jane','test','Jane','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(2,'james','test','James','Vaughan',NULL,NULL,'jamesv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(3,'trevor','test','Trevor','Wilson',NULL,NULL,'trevv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL),(4,'rod','test','Rod','Rashidi',NULL,NULL,'rod@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL);
+INSERT INTO `Users` VALUES (1,'jane','test','Jane','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NOW()),(2,'james','test','James','Vaughan',NULL,NULL,'jamesv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NOW()),(3,'trevor','test','Trevor','Wilson',NULL,NULL,'trevv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NOW()),(4,'rod','test','Rod','Rashidi',NULL,NULL,'rod@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NOW());
 
 INSERT INTO `VehicleTypes` VALUES (1,'Regular ',40.00,200.00),(2,'Midsize',70.00,400.00),(3,'Luxury',150.00,1000.00);
 

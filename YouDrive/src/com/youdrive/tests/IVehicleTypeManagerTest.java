@@ -44,5 +44,15 @@ public class IVehicleTypeManagerTest {
 		type = ivtm.isTypeInUse("Regular Car");
 		assertEquals("Regular Car is not use",false,type);
 	}
+	
+	@Test
+	public void testTypeCount(){
+		int result = ivtm.getCountOfVehicleType(1);
+		assertEquals("type Count",1,result);
+		result = ivtm.getCountOfVehicleType(2);
+		assertEquals("type Count",0,result);
+		result = ivtm.getCountOfVehicleType(3);
+		assertEquals("type count",2,result);
+	}
 
 }

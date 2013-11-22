@@ -10,7 +10,7 @@ public interface IVehicleTypeManager {
 	 * @param type
 	 * @return
 	 */
-	public String deleteVehicleType(String type);
+	public String deleteVehicleType(int typeID);
 	/**
 	 * Adding a vehicle type to the system and return the type id. 
 	 * Returns 0 if unsuccessful
@@ -42,6 +42,19 @@ public interface IVehicleTypeManager {
 	 * @return boolean
 	 */
 	public boolean updateVehicleType(int vehicleTypeID, String type, Double hourlyPrice, Double dailyPrice);
+	/**
+	 * Returns true if the type name is already taken
+	 * and false otherwise
+	 * @param type
+	 * @return
+	 */
 	public boolean isTypeInUse(String type);
+	/**
+	 * Returns the number of vehicles of the vehicle type requested
+	 * Return 0 if none and -1 in case of an error
+	 * @param typeID
+	 * @return
+	 */
+	public int getCountOfVehicleType(int typeID);
 
 }

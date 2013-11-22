@@ -129,6 +129,32 @@ public class VehicleTypeManagement extends HttpServlet {
 					request.setAttribute("vehicleType", vType);
 					dispatchedPage = "/editvehicletype.jsp";
 				}
+			}else if (action.equalsIgnoreCase("deleteVehicleType")){
+				String vehicleType = request.getParameter("vehicleTypeID");
+				if (vehicleType != null && !vehicleType.isEmpty()){
+					try{
+						int vehicleTypeID = Integer.parseInt(vehicleType);
+						//Get the number of vehicles using this type
+						int vehiclesOfThisType = ivtm.getCountOfVehicleType(vehicleTypeID);
+						if (vehiclesOfThisType > 0){
+							request.setAttribute("errorMessage", "Found " + vehiclesOfThisType + " vehicles using this type. Please re-assign them first before deleting this type.");
+							dispatchedPage = "/managevehicletypes.jsp";
+						}else{
+							if (vehiclesOfThisType == -1){
+								request.setAttribute("errorMessage", "Vehicle Type not deleted.");
+							}else{
+								//Delete vehicle
+							}
+							dispatchedPage = "/managevehicletypes.jsp";
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Invalid vehicle type id format.");
+						dispatchedPage = "/managevehicletypes.jsp";
+					}
+				}else{
+					request.setAttribute("errorMessage", "Missing vehicle type id parameter.");
+					dispatchedPage = "/managevehicletypes.jsp";
+				}
 			}
 		}else{
 			request.setAttribute("errorMessage", "Unknown POST request");

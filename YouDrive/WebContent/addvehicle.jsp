@@ -76,8 +76,8 @@
 					</p>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-							<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO"	scope="application" />
-							<jsp:useBean id="vehicleTypeDAO" class="com.youdrive.helpers.VehicleTypeDAO" scope="application" />
+							<jsp:useBean id="locationDAO" class="com.youdrive.helpers.LocationDAO"	scope="session" />
+							<jsp:useBean id="vehicleTypeDAO" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />
 							<div class="forms">
 								<form class="well" id="addVehicle" name="addVehicle" action="VehicleManagement"	method="post">
 									<label for="make">Make:</label> 
