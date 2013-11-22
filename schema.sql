@@ -61,7 +61,6 @@ id int not null primary key auto_increment,
 customerID int not null,
 locationID int not null,
 vehicleID int not null,
-timePickup datetime not null,
 reservationStart datetime not null,
 reservationEnd datetime  not null,
 FOREIGN KEY (customerID) references Users(id),
@@ -69,11 +68,11 @@ FOREIGN KEY (locationID) references Locations(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
 
-create table Reservation_Status(
+create table ReservationStatus(
 id int not null primary key auto_increment,
 reservationID int not null,
-creationDate datetime not null,
-reservationStatus ENUM ('Created', 'Cancelled', 'Picked Up')  not null,
+dateAdded datetime not null,
+reservationStatus ENUM ('Created', 'Cancelled', 'Returned')  not null,
 FOREIGN KEY (reservationID) references Reservations(id)
 ) Engine=InnoDB;
 
