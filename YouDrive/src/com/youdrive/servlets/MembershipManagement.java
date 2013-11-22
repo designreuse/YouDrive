@@ -117,7 +117,8 @@ public class MembershipManagement extends HttpServlet {
 					}
 				}
 			}else if (action.equalsIgnoreCase("deleteMembership")){
-
+				deleteMembership(request,imm);
+				dispatchedPage = "/managememberships.jsp";
 			}else{
 				dispatchedPage = "/index.jsp";
 			}
@@ -206,8 +207,37 @@ public class MembershipManagement extends HttpServlet {
 		return false;
 	}
 
-	private boolean deleteMembership(HttpServletRequest request,IMembershipManager imm, Membership membership){
-
+	private boolean deleteMembership(HttpServletRequest request,IMembershipManager imm){
+		System.out.println("Calling deleteMembership");
+		String errorMessage = "";
+		String membershipID = request.getParameter("membershipID");
+		if (membershipID != null && !membershipID.isEmpty()){
+			try{
+				int mID = Integer.parseInt(membershipID);
+				//Get the number of users on this plan
+				int numOfUsers = imm.getUsersOnMembership(mID);
+				if (numOfUsers > 0){
+					errorMessage = "Found " + numOfUsers + " users on this plan. Re-assign those members first.";					
+				}else{
+					Membership m = imm.getMembership(mID);
+					if (m != null){
+						boolean result = imm.deleteMembership(mID);
+						if (!result){
+							errorMessage = "Error deleting Membership Plan.";
+						}else{
+							return true;
+						}
+					}else{
+						errorMessage = "Unable to find Membership type in system.";
+					}
+				}
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid membership id format.";
+			}
+		}else{
+			errorMessage = "Invalid parameter used.";
+		}
+		request.setAttribute("errorMessage", errorMessage);
 		return false;
 	}
 }

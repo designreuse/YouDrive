@@ -19,15 +19,48 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
 <title>Manage Memberships</title>
+<script type="text/javascript">
+	//Equivalent to $( document ).ready(function(){});
+	$(function() {
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortMembershipForm').submit();
+		});
+		
+	});
+	
+	/* submit the hidden form to delete the membership but need to confirm with user first*/
+	function getMembershipID(membershipID, membershipName){
+		// confirm dialog
+		alertify.confirm("You are about to delete " + membershipName + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+		    if (e) {
+		    	console.log("OK clicked.");
+				document.getElementById("membershipID").value = membershipID;
+				$('#deleteMembershipForm').submit();
+		    } else {
+		        console.log("Cancel clicked.");
+		    }
+		});
+		console.log(membershipID);
+	}
+</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -92,11 +125,23 @@
 												<c:param name="membershipID" value="${membership.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a><span onclick="getMembershipID('${membership.id}','${membership.name }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
 							</div>
+							
+							<%-- Hidden form for sorting the membership --%>
+							<form id="sortMembershipForm" name="sortMembershipForm" method="get" action="MembershipManagement">
+								<input type="hidden" id="action" name="action" value="sortMembership"/>
+								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
+							
+							<%-- Hidden form for deleting the membership --%>
+							<form id="deleteMembershipForm" name="deleteMembershipForm" method="post" action="MembershipManagement">
+								<input type="hidden" id="action" name="action" value="deleteMembership"/>
+								<input type="hidden" id="membershipID" name="membershipID" value="" />
+							</form>
 						</c:when>
 						<c:otherwise>
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

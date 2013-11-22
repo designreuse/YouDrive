@@ -26,4 +26,11 @@ public class IMembershipManagerTest {
 		assertEquals("getAllMemberships",2,count);
 	}
 
+	@Test
+	public void testGetUsersOnMembership(){
+		int count = imm.getUsersOnMembership(4);
+		assertEquals("users on membership",2,count);
+		count = imm.getUsersOnMembership(1);
+		assertEquals("users on membership",0,count);
+	}
 }
