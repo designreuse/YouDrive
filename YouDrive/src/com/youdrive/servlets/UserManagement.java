@@ -78,11 +78,13 @@ public class UserManagement extends HttpServlet {
 			}
 			dispatchedPage = "/manageusers.jsp";
 		}else if(customerID != null && !customerID.isEmpty()){
+			System.out.println("CustomerID Get Request.");
 			try{
 				int uID = Integer.parseInt(customerID);
-				User user = ium.getCustomer(uID);
+				User user = ium.getUser(uID);
+				//Null check is in jsp
 				session.setAttribute("user", user);
-				dispatchedPage = "/edituser.jsp";
+				dispatchedPage = "/editcustomer.jsp";
 			}catch(NumberFormatException e){
 				errorMessage = "Invalid userID.";
 			}
@@ -206,6 +208,44 @@ public class UserManagement extends HttpServlet {
 							request.setAttribute("errorMessage", e.getMessage());
 							dispatchedPage = "/manageusers.jsp";
 						}
+					}
+				}
+			}else if (action.equalsIgnoreCase("CustomerEditUser")){
+				System.out.println("customer edituser action");
+				String userID = request.getParameter("id");
+				User loggedInUser = (User) session.getAttribute("loggedInUser");
+				if (userID == null || userID.isEmpty()){
+					request.setAttribute("errorMessage", "Invalid parameter found.");
+					dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+				}else{
+					try{
+						int id = Integer.parseInt(userID);						
+						//Admins can edit whomever
+						if (loggedInUser.isAdmin() || id == loggedInUser.getId()){
+							User user = ium.getUser(id);
+							//Check to make sure such user exists.
+							if (user != null){
+								if (editUser(request,ium,user,false)){
+									request.setAttribute("errorMessage","");
+									dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+								}else{
+									request.setAttribute("user", user);
+									dispatchedPage = "/editcustomer.jsp";
+								}
+							}else{
+								request.setAttribute("errorMessage", "User not found.");
+								dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+							}
+						}else{
+							request.setAttribute("errorMessage", "You don't have permission to edit this user.");
+							dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Invalid user id.");
+						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+					}catch(Exception e){
+						request.setAttribute("errorMessage", e.getMessage());
+						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
 					}
 				}
 			}
@@ -375,13 +415,6 @@ public class UserManagement extends HttpServlet {
 					ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 					if (!expDates.isEmpty()){
 						User user = new User();
-						user.setAddress(address);
-						user.setCcExpirationDate(ccExpirationDate);
-						user.setCcNumber(ccNumber);
-						user.setCcSecurityCode(ccCode);
-						user.setState(state);
-						user.setLicense(license);
-						user.setMembershipLevel(memberLevel);
 						user.setFirstName(page1_details.get("firstName"));
 						user.setLastName(page1_details.get("lastName"));
 						user.setEmail(page1_details.get("email"));
@@ -391,6 +424,14 @@ public class UserManagement extends HttpServlet {
 						java.sql.Date creationdate = new java.sql.Date(d.getTime());
 						user.setDateCreated(creationdate);
 						user.setAdmin(false);
+						user.setAddress(address);
+						user.setCcExpirationDate(ccExpirationDate);
+						user.setCcNumber(ccNumber);
+						user.setCcType(ccType);
+						user.setCcSecurityCode(ccCode);
+						user.setState(state);
+						user.setLicense(license);
+						user.setMembershipLevel(memberLevel);
 						userID = ium.addUser(user);
 						errorMessage = "";
 					}else{
@@ -458,11 +499,18 @@ public class UserManagement extends HttpServlet {
 			}else{
 				try{					
 					int ccSecurityCode = Integer.parseInt(ccCode);
+					//Validate credit card
 					if (validateCreditCard(ccNum)){
-						if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
-							return true;
+						//Validate expiration date
+						ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
+						if (!expDates.isEmpty()){
+							if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+								return true;
+							}else{
+								errorMessage = "Unable to update the user details.";
+							}
 						}else{
-							errorMessage = "Unable to update the user details.";
+							errorMessage = "Unable to parse expiration date. Use MM/YYYY format.";
 						}
 					}else{
 						errorMessage = "Invalid credit card number; Must be 16 digits.";

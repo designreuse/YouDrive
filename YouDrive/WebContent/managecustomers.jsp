@@ -109,7 +109,7 @@
 												<c:param name="customerID" value="${user.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	

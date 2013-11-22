@@ -96,6 +96,5 @@ public interface IUserManager {
 	 * @return
 	 */
 	public ArrayList<User> getAllCustomers();
-	public User getCustomer(int uID);
 	
 }

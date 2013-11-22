@@ -5,10 +5,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" href="css/homepage.css">
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>Edit User Details</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<link rel="stylesheet" href="css/homepage.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
+	<link rel="stylesheet" href="css/offcanvas.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/offcanvas.js"></script>
+	<title>Edit User Details</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -93,8 +100,8 @@
 											<input type="hidden" id="id" name="id" value="${user.id }" />
 											<input type="hidden" id="isAdmin" name="isAdmin" value="${user.isAdmin() }" />
 											<input type="hidden" id="action" name="action" value="AdminEditUser"/>
-											<input type="submit" value="Update"/>
-											<input type="button" onclick="window.location.replace('manageusers.jsp')" value="Cancel"/>
+											<button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>
+											<button type="button" onclick="window.location.replace('manageusers.jsp')" class="btn btn-default btn-lg btn-block">Cancel</button>
 										</form>
 									</div>
 								</c:when>

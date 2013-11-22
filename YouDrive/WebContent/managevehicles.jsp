@@ -122,7 +122,7 @@
 												<c:param name="viewComments" value="${vehicle.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	

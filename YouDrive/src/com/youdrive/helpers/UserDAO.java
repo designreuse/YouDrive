@@ -18,7 +18,6 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement getAllAdminsStmt;
 	private PreparedStatement getAllCustomersStmt;
 	private PreparedStatement getUserStmt;
-	private PreparedStatement getCustomerStmt;
 	private PreparedStatement getUserByUsernameStmt;
 	private PreparedStatement authenticateUserStmt;
 	private PreparedStatement addRegularUserStmt;
@@ -363,11 +362,5 @@ public class UserDAO implements IUserManager {
 			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
-	}
-
-	@Override
-	public User getCustomer(int uID) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
