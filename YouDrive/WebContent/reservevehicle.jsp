@@ -66,9 +66,11 @@
 						data-toggle="offcanvas">Toggle nav</button>
 				</p>
 				<div class="row">
-					<p class="error">
-						<c:out value="${errorMessage }" />
-					</p>
+					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
+						<div id="errorDisplay" class="alert alert-danger">
+							<c:out value="${errorMessage }" />
+						</div>
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>

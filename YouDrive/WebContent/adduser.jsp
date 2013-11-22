@@ -59,29 +59,31 @@
 						data-toggle="offcanvas">Toggle nav</button>
 				</p>
 				<div class="row">
-				<p class="error">
-					<c:out value="${errorMessage }" />
-				</p>
-				<c:choose>
-					<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<div class="forms">
-							<form class="form-signin" id="addUser" name="addUser" action="UserManagement" method="post">
-								<label for="firstName">First Name:</label> 
-								<input required	type="text" id="firstName" name="firstName" /><br /> 
-								<label for="lastName" >Last Name:</label> 
-								<input required type="text" id="lastName" name="lastName" /><br /> 
-								<label for="email">Email Address:</label> 
-								<input required type="email" id="email" name="email" /><br />
-								<label for="username">Username:</label> 
-								<input required type="text"	id="username" name="username" /><br /> 
-								<label for="password">Password:</label>
-								<input required type="password" id="password" name="password" /><br />
-								<input type="hidden" id="action" name="action" value="addAdmin" /> 
-								<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
-								<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>
-							</form>
+					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
+						<div id="errorDisplay" class="alert alert-danger">
+							<c:out value="${errorMessage }" />
 						</div>
-					</c:when>
+					</c:if>
+					<c:choose>
+						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+							<div class="forms">
+								<form class="form-signin" id="addUser" name="addUser" action="UserManagement" method="post">
+									<label for="firstName">First Name:</label> 
+									<input required	type="text" id="firstName" name="firstName" /><br /> 
+									<label for="lastName" >Last Name:</label> 
+									<input required type="text" id="lastName" name="lastName" /><br /> 
+									<label for="email">Email Address:</label> 
+									<input required type="email" id="email" name="email" /><br />
+									<label for="username">Username:</label> 
+									<input required type="text"	id="username" name="username" /><br /> 
+									<label for="password">Password:</label>
+									<input required type="password" id="password" name="password" /><br />
+									<input type="hidden" id="action" name="action" value="addAdmin" /> 
+									<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+									<button type="reset" class="btn btn-default btn-lg btn-block">Reset</button>
+								</form>
+							</div>
+						</c:when>
 						<c:otherwise>
 						<p class="error">
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

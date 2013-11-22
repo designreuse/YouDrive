@@ -23,6 +23,7 @@
 	<c:choose>
 		<c:when test="${ loggedInUser != null }">
 			<c:remove var="loggedInUser"/>
+			<c:remove var="errorMessage"/>
 			You are now logged out! Go <a href="http://localhost:8080/YouDrive/">home</a>.
 		</c:when>
 		<c:otherwise>

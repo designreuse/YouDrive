@@ -92,18 +92,18 @@
 	<!-- /.navbar -->
 	
 	<div class="container">
-
 		<div class="row row-offcanvas row-offcanvas-right">
-
 			<div class="col-xs-12 col-sm-9">
 				<p class="pull-right visible-xs">
 					<button type="button" class="btn btn-primary btn-xs"
 						data-toggle="offcanvas">Toggle nav</button>
 				</p>
 				<div class="row">
-					<p class="error">
-						<c:out value="${errorMessage }" />
-					</p>
+					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
+						<div id="errorDisplay" class="alert alert-danger">
+							<c:out value="${errorMessage }" />
+						</div>
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
 						<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />

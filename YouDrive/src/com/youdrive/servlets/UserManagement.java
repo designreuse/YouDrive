@@ -543,6 +543,8 @@ public class UserManagement extends HttpServlet {
 			String ccExpirationDate = request.getParameter("ccExpirationDate");
 			if (state == null || state.isEmpty()){
 				errorMessage = "Missing state";
+			}else if (state.length() != 2){
+				errorMessage = "Invalid state parameter. Enter abbreviation e.g. GA, DE.";
 			}else if (license == null || license.isEmpty()){
 				errorMessage = "Missing license";
 			}else if (address == null || address.isEmpty()){
@@ -558,18 +560,28 @@ public class UserManagement extends HttpServlet {
 			}else{
 				try{					
 					int ccSecurityCode = Integer.parseInt(ccCode);
+					System.out.println(state+" "+license+" "+address+" "+ccType+" "+ccNum+" "+ccCode+" "+ccExpirationDate);
 					//Validate credit card
 					if (validateCreditCard(ccNum)){
 						//Validate expiration date
 						ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 						if (!expDates.isEmpty()){
-							if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
-								return true;
+							boolean isEmailInUse = false;
+							//if email address is being changed
+							if (!(user.getEmail().equalsIgnoreCase(email))){
+								isEmailInUse = ium.isEmailInUse(email);								
+							}
+							if (!isEmailInUse){
+								if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+									return true;
+								}else{
+									errorMessage = "Unable to update the user details.";
+								}
 							}else{
-								errorMessage = "Unable to update the user details.";
+								errorMessage = "Please use a different email address.";
 							}
 						}else{
-							errorMessage = "Unable to parse expiration date. Use MM/YYYY format.";
+							errorMessage = "Invalid expiration date. Use MM/YYYY format or make sure the date is in the future.";
 						}
 					}else{
 						errorMessage = "Invalid credit card number; Must be 16 digits.";
@@ -596,7 +608,7 @@ public class UserManagement extends HttpServlet {
 		String mth = "";
 		String yr = "";
 		ArrayList<Integer> results = new ArrayList<Integer>();
-		if (!expDate.isEmpty()){
+		if (expDate != null && !expDate.isEmpty() && expDate.length() == 7){
 			int slashIndex = expDate.indexOf("/");
 			mth = expDate.substring(0,slashIndex);
 			yr = expDate.substring(slashIndex+1);
@@ -629,6 +641,9 @@ public class UserManagement extends HttpServlet {
 	 * @return
 	 */
 	private boolean validateCreditCard(String ccNumber){
+		if (ccNumber == null || ccNumber.length() != 16){
+			return false;
+		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
 	}
 
