@@ -33,9 +33,14 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<c:if test="${loggedInUser != null}">
-						<li class="active"><a href="user.jsp">Home</a></li>
-					</c:if>
+					<c:choose>
+						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+							<li class="active"><a href="admin.jsp">Home</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="active"><a href="user.jsp">Home</a></li>
+						</c:otherwise>
+					</c:choose>
 					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
 				</ul>
 				<c:if test="${loggedInUser != null }">
@@ -80,7 +85,11 @@
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
-		            <a class="list-group-item active" href="usermembership.jsp">My Membership</a>		            
+		            <a class="list-group-item active" href="usermembership.jsp">My Membership</a>
+		            <c:url value="UserManagement" var="url">
+						<c:param name="customerID" value="${loggedInUser.id}" />
+					</c:url>
+					<a class="list-group-item" href="<c:out value="${url }" />">My Details</a> 	  		            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>

@@ -31,9 +31,14 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<c:if test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<li class="active"><a href="admin.jsp">Home</a></li>
-					</c:if>
+					<c:choose>
+						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
+							<li class="active"><a href="admin.jsp">Home</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="active"><a href="user.jsp">Home</a></li>
+						</c:otherwise>
+					</c:choose>
 					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
 				</ul>
 				<c:if test="${loggedInUser != null }">
@@ -98,7 +103,7 @@
 											<input type="submit" value="Update"/>
 											<c:choose>
 												<c:when test="${loggedInUser.isAdmin()}">
-													<input type="button" onclick="window.location.replace('manageusers.jsp')" value="Cancel"/>
+													<input type="button" onclick="window.location.replace('managecustomers.jsp')" value="Cancel"/>
 												</c:when>
 												<c:otherwise>
 													<input type="button" onclick="window.location.replace('user.jsp')" value="Cancel"/>
@@ -121,23 +126,51 @@
 			</div>
 			<!--/span-->
 
-			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-				<div class="list-group">
-					<a class="list-group-item">Navigation</a>
-		            <a class="list-group-item" href="addvehicle.jsp">Add Vehicle</a>
-		            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
-		            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
-		            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
-		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
-		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
-		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
-		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
-		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
-		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
-		            <a class="list-group-item active" href="managecustomers.jsp">Manage Customers</a>
-		            <a class="list-group-item" href="logout.jsp">Logout</a>
-				</div>
-			</div>
+			<c:choose>
+				<%-- making sure only logged in users can view vehicle comments --%>
+				<c:when test="${loggedInUser != null }">
+					<c:choose>
+						<%-- making sure right navigation menu is displayed to admin versus regular users --%>
+						<c:when test="${loggedInUser.isAdmin()}">
+							<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar"
+								role="navigation">
+								<div class="list-group">
+									<a class="list-group-item">Navigation</a>
+						            <a class="list-group-item" href="addvehicle.jsp">Add Vehicle</a>
+						            <a class="list-group-item" href="addvehicletype.jsp">Add Vehicle Type</a>
+						            <a class="list-group-item" href="addlocation.jsp">Add Location</a>
+						            <a class="list-group-item" href="addmembership.jsp">Add Membership</a>
+						            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
+						            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
+						            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
+						            <a class="list-group-item active" href="managelocations.jsp">Manage Locations</a>
+						            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
+		            				<a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
+		            				<a class="list-group-item" href="managecustomers.jsp">Manage Customers</a>
+						            <a class="list-group-item" href="logout.jsp">Logout</a>
+								</div>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<%-- Display navigation menu for user --%>
+							<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+								<div class="list-group">
+									<a class="list-group-item"><strong>Navigation</strong></a>
+						            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
+						            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
+						            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
+						            <a class="list-group-item" href="usermembership.jsp">My Membership</a>
+						            <c:url value="UserManagement" var="url">
+										<c:param name="customerID" value="${loggedInUser.id}" />
+									</c:url>
+						            <a class="list-group-item active" href="<c:out value="${url }" />">My Details</a>       
+						            <a class="list-group-item" href="logout.jsp">Logout</a>
+								</div>
+							</div>
+						</c:otherwise>
+					</c:choose>						
+				</c:when>
+			</c:choose>
 			<!--/span-->
 		</div>
 		<!--/row-->

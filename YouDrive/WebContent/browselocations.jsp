@@ -80,7 +80,11 @@
 		            <a class="list-group-item active" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
-		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
+		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>	
+		            <c:url value="UserManagement" var="url">
+						<c:param name="customerID" value="${loggedInUser.id}" />
+					</c:url>
+					<a class="list-group-item" href="<c:out value="${url }" />">My Details</a> 	  	            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
