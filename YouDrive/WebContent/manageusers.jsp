@@ -20,9 +20,13 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -40,6 +44,21 @@
 			$('#sortUserForm').submit();
 		});
 	});
+	
+	/* submit the hidden form to delete the membership but need to confirm with user first*/
+	function getAdminUserID(adminID, adminUsername){
+		// confirm dialog
+		alertify.confirm("You are about to delete " + adminUsername + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+		    if (e) {
+		    	console.log("OK clicked.");
+				document.getElementById("userID").value = adminID;
+				$('#deleteAdminUserForm').submit();
+		    } else {
+		        console.log("Cancel clicked.");
+		    }
+		});
+		console.log(adminID);
+	}
 </script>
 <title>Manage Users</title>
 </head>
@@ -118,7 +137,7 @@
 												<c:param name="userID" value="${user.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a><span onclick="getAdminUserID('${user.id}','${user.username }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
@@ -127,6 +146,12 @@
 							<form id="sortUserForm" name="sortUserForm" method="get" action="UserManagement">
 								<input type="hidden" id="action" name="action" value="sortUser"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
+							
+							<%-- Hidden form for deleting the admin user --%>
+							<form id="deleteAdminUserForm" name="deleteAdminUserForm" method="post" action="UserManagement">
+								<input type="hidden" id="action" name="action" value="deleteAdminUser"/>
+								<input type="hidden" id="userID" name="userID" value="" />
 							</form>
 						</c:when>
 						<c:otherwise>

@@ -80,7 +80,7 @@ public class UserManagement extends HttpServlet {
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
-			
+
 			if (action == null || action.isEmpty()){
 				dispatchedPage = "/manageusers.jsp";
 			}else if (action.equalsIgnoreCase("sortCustomer")){
@@ -132,7 +132,7 @@ public class UserManagement extends HttpServlet {
 				int userID = addAdminUser(request,ium);
 				if (userID != 0){
 					request.setAttribute("errorMessage","");
-					dispatchedPage = "/admin.jsp";
+					dispatchedPage = "/manageusers.jsp";
 				}else{
 					dispatchedPage = "/adduser.jsp";
 				}
@@ -257,6 +257,12 @@ public class UserManagement extends HttpServlet {
 						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
 					}
 				}
+			}else if (action.equalsIgnoreCase("deleteAdminUser")){
+				System.out.println("deleteAdminUser action");
+				boolean result = deleteAdmin(request,session,ium);
+				dispatchedPage = "/manageusers.jsp";
+			}else{
+				dispatchedPage = "/login.jsp";
 			}
 		}else{
 			request.setAttribute("errorMessage", "Invalid POST request.");
@@ -280,6 +286,8 @@ public class UserManagement extends HttpServlet {
 		}else if (password == null || password.isEmpty()){
 			request.setAttribute("errorMessage", "Missing password");
 		}else{
+			//TODO check that user's membership hasn't expired.
+			//When admin terminates user, user will be removed from system or have their expiration date set to 0
 			User user = ium.authenticateUser(username, password);
 			return user;
 		}
@@ -622,5 +630,43 @@ public class UserManagement extends HttpServlet {
 	 */
 	private boolean validateCreditCard(String ccNumber){
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
+	}
+
+	private boolean deleteAdmin(HttpServletRequest request, HttpSession session, IUserManager ium){
+		System.out.println("Calling deleteAdmin");
+		String errorMessage = "";
+		String userID = request.getParameter("userID");
+		if (userID != null && !userID.isEmpty()){
+			try{
+				int uID = Integer.parseInt(userID);
+				User u = ium.getUser(uID);
+				User currentUser = (User)session.getAttribute("loggedInUser");
+				//Only admins can delete an admin
+				if (currentUser != null && currentUser.isAdmin()){
+					//Look up object in database
+					if (u != null){
+						//Don't let logged in admin delete self.
+						if (u.getId() != currentUser.getId()){				
+							boolean result = ium.deleteAdminUser(uID);
+							if (!result){
+								errorMessage = "Error deleting Admin User.";
+							}else{
+								return true;
+							}
+						}else{
+							errorMessage = "Please don't delete yourself.";
+						}
+					}else{
+						errorMessage = "Unable to find Admin User in system.";
+					}
+				}
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid User ID format.";
+			}
+		}else{
+			errorMessage = "Invalid Parameter used.";
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
 	}
 }

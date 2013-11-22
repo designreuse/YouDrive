@@ -26,7 +26,7 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement addAdminUserStmt;
 	private PreparedStatement checkUsernameStmt;
 	private PreparedStatement checkEmailStmt;
-	private PreparedStatement deleteUserByUsernameStmt;
+	private PreparedStatement deleteAdminUserStmt;
 
 	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
@@ -40,7 +40,7 @@ public class UserDAO implements IUserManager {
 			getUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
 			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
+			deleteAdminUserStmt = conn.prepareStatement("delete from " + Constants.USERS + " where isAdmin = 1 and id = ?");
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
 			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
@@ -362,5 +362,19 @@ public class UserDAO implements IUserManager {
 			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
+	}
+
+	@Override
+	public boolean deleteAdminUser(int userID){
+		try{
+			deleteAdminUserStmt.setInt(1, userID);
+			deleteAdminUserStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with deleteAdminUser method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return false;
 	}
 }

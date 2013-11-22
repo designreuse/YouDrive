@@ -130,38 +130,8 @@ public class VehicleTypeManagement extends HttpServlet {
 					dispatchedPage = "/editvehicletype.jsp";
 				}
 			}else if (action.equalsIgnoreCase("deleteVehicleType")){
-				String vehicleType = request.getParameter("vehicleTypeID");
-				if (vehicleType != null && !vehicleType.isEmpty()){
-					try{
-						int vehicleTypeID = Integer.parseInt(vehicleType);
-						//Get the number of vehicles using this type
-						int vehiclesOfThisType = ivtm.getCountOfVehicleType(vehicleTypeID);
-						if (vehiclesOfThisType > 0){
-							request.setAttribute("errorMessage", "Found " + vehiclesOfThisType + " vehicles using this type. Please re-assign them first before deleting this type.");
-							dispatchedPage = "/managevehicletypes.jsp";
-						}else{
-							if (vehiclesOfThisType == -1){
-								request.setAttribute("errorMessage", "Vehicle Type not deleted.");
-							}else{
-								//User can return vehicle to any location 
-								//Delete vehicle type
-								if (!ivtm.deleteVehicleType(vehicleTypeID)){
-									request.setAttribute("errorMessage", "Error deleting vehicle type.");
-								}else{
-									//Update session object
-									//session.setAttribute("allVehicleTypes", ivtm.getAllVehicleTypes());
-								}
-							}
-							dispatchedPage = "/managevehicletypes.jsp";
-						}
-					}catch(NumberFormatException e){
-						request.setAttribute("errorMessage", "Invalid vehicle type id format.");
-						dispatchedPage = "/managevehicletypes.jsp";
-					}
-				}else{
-					request.setAttribute("errorMessage", "Missing vehicle type id parameter.");
-					dispatchedPage = "/managevehicletypes.jsp";
-				}
+				boolean result = deleteVehicleType(request,ivtm);
+				dispatchedPage = "/managevehicletypes.jsp";
 			}
 		}else{
 			request.setAttribute("errorMessage", "Unknown POST request");
@@ -265,5 +235,38 @@ public class VehicleTypeManagement extends HttpServlet {
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return vehicleTypeID;	
+	}
+	
+	private boolean deleteVehicleType(HttpServletRequest request,IVehicleTypeManager ivtm){
+		String errorMessage = "";
+		String vehicleType = request.getParameter("vehicleTypeID");
+		if (vehicleType != null && !vehicleType.isEmpty()){
+			try{
+				int vehicleTypeID = Integer.parseInt(vehicleType);
+				//Get the number of vehicles using this type
+				int vehiclesOfThisType = ivtm.getCountOfVehicleType(vehicleTypeID);
+				if (vehiclesOfThisType > 0){
+					errorMessage = "Found " + vehiclesOfThisType + " vehicles using this type. Please re-assign them first before deleting this type.";
+				}else{
+					if (vehiclesOfThisType == -1){
+						errorMessage = "Vehicle Type not deleted.";
+					}else{
+						//User can return vehicle to any location 
+						//Delete vehicle type
+						if (!ivtm.deleteVehicleType(vehicleTypeID)){
+							errorMessage = "Error deleting vehicle type.";
+						}else{
+							return true;
+						}
+					}
+				}
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage", "Invalid vehicle type id format.");
+			}
+		}else{
+			request.setAttribute("errorMessage", "Missing vehicle type id parameter.");
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
 	}
 }
