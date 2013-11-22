@@ -33,7 +33,9 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="http://localhost:8080/YouDrive">Home</a></li>
+					<c:if test="${loggedInUser != null}">
+						<li class="active"><a href="user.jsp">Home</a></li>
+					</c:if>
 					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
 				</ul>
 				<c:if test="${loggedInUser != null }">
@@ -64,7 +66,26 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Reserve Vehicle</p>
+							<%-- Add reservation form here. --%>
+							<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />			
+							<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
+							<div class="col-xs-4">
+								<form role="form">
+									<div class="form-group">
+										<label for="selectLocation">Choose Location:</label>
+										<select class="form-control">
+											<c:forEach items="${allLocations}" var="location" varStatus="status">
+												<option value="${ location.id}"><c:out value="${ location.name}" /></option>
+											</c:forEach>
+										</select>
+									</div>
+									<div class="checkbox">
+										<label> <input type="checkbox"> Check me out
+										</label>
+									</div>
+									<button type="submit" class="btn btn-default">Submit</button>
+								</form>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -75,7 +96,8 @@
 			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 				<div class="list-group">
 					<a class="list-group-item"><strong>Navigation</strong></a>
-		            <a class="list-group-item active" href="reservevehicle.jsp">Reserve Vehicle</a>
+		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
+		            <a class="list-group-item active" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>

@@ -33,7 +33,9 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="http://localhost:8080/YouDrive">Home</a></li>
+					<c:if test="${loggedInUser != null}">
+						<li class="active"><a href="user.jsp">Home</a></li>
+					</c:if>
 					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
 				</ul>
 				<c:if test="${loggedInUser != null }">
@@ -75,7 +77,8 @@
 			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 				<div class="list-group">
 					<a class="list-group-item active"><strong>Navigation</strong></a>
-		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
+		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
+		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>

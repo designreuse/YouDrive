@@ -17,7 +17,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
-	<title>My Membership</title>
+	<title>Browse Locations</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -66,7 +66,7 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>My Membership</p>
+							<p>Browse Locations</p>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -77,10 +77,10 @@
 			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 				<div class="list-group">
 					<a class="list-group-item"><strong>Navigation</strong></a>
-		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
+		            <a class="list-group-item active" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
-		            <a class="list-group-item active" href="usermembership.jsp">My Membership</a>		            
+		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
@@ -91,7 +91,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>
