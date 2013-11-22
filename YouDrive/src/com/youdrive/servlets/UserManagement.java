@@ -21,9 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.youdrive.helpers.MembershipDAO;
 import com.youdrive.helpers.UserDAO;
+import com.youdrive.interfaces.IMembershipManager;
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
+import com.youdrive.models.Membership;
+
 
 /**
  * Servlet implementation class UserManagement
@@ -51,10 +55,9 @@ public class UserManagement extends HttpServlet {
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
 		}
-		String errorMessage = "";
 		String userID = request.getParameter("userID");
 		String searchType = request.getParameter("searchType");
-		String customerID = request.getParameter("customerID");
+		String customerID = request.getParameter("customerID");		
 		String dispatchedPage = "/login.jsp";
 		if (userID != null && !userID.isEmpty()){
 			try{
@@ -63,10 +66,11 @@ public class UserManagement extends HttpServlet {
 				session.setAttribute("user", user);
 				dispatchedPage = "/edituser.jsp";
 			}catch(NumberFormatException e){
-				errorMessage = "Invalid userID.";
+				request.setAttribute("errorMessage", "Invalid user id parameter.");
 			}
 		}else if (searchType != null && !searchType.isEmpty()){
 			//Default sort is by lastname i.e. number 2
+			String action = request.getParameter("action");
 			int sType = 2;
 			try{
 				sType = Integer.parseInt(searchType);
@@ -76,7 +80,12 @@ public class UserManagement extends HttpServlet {
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
-			dispatchedPage = "/manageusers.jsp";
+			
+			if (action == null || action.isEmpty()){
+				dispatchedPage = "/manageusers.jsp";
+			}else if (action.equalsIgnoreCase("sortCustomer")){
+				dispatchedPage = "/managecustomers.jsp";
+			}
 		}else if(customerID != null && !customerID.isEmpty()){
 			System.out.println("CustomerID Get Request.");
 			try{
@@ -86,7 +95,7 @@ public class UserManagement extends HttpServlet {
 				session.setAttribute("user", user);
 				dispatchedPage = "/editcustomer.jsp";
 			}catch(NumberFormatException e){
-				errorMessage = "Invalid userID.";
+				request.setAttribute("errorMessage", "Invalid userID.");
 			}
 		}else{
 			User loggedInUser = (User) session.getAttribute("loggedInUser");
@@ -420,8 +429,8 @@ public class UserManagement extends HttpServlet {
 						user.setEmail(page1_details.get("email"));
 						user.setUsername(page1_details.get("username"));
 						user.setPassword(page1_details.get("password"));
-						java.util.Date d = Calendar.getInstance().getTime();
-						java.sql.Date creationdate = new java.sql.Date(d.getTime());
+						Calendar cal = Calendar.getInstance();
+						java.sql.Date creationdate = new java.sql.Date(cal.getTime().getTime());
 						user.setDateCreated(creationdate);
 						user.setAdmin(false);
 						user.setAddress(address);
@@ -434,6 +443,26 @@ public class UserManagement extends HttpServlet {
 						user.setMembershipLevel(memberLevel);
 						userID = ium.addUser(user);
 						errorMessage = "";
+
+						if (userID > 0){
+							//Add member's expiration date
+							//Look up durations in membership table and add to the user's creation date
+							IMembershipManager imm = new MembershipDAO();
+							if (imm != null){
+								Membership m = imm.getMembership(memberLevel);
+								if (m != null){
+									cal.add(Calendar.MONTH, m.getDuration());
+									java.sql.Date newDate = new java.sql.Date(cal.getTime().getTime());
+									if (!imm.updateExpirationDate(newDate,memberLevel)){
+										errorMessage = "Error saving expiration date to database.";
+									}
+								}else{
+									errorMessage = "Invalid membership plan chosen.";
+								}
+							}
+						}else{
+							errorMessage = "Error creating the user.";
+						}
 					}else{
 						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}
@@ -448,6 +477,28 @@ public class UserManagement extends HttpServlet {
 		return userID;
 	}
 
+	/**
+	 * Helper to calculate expiration date for a given start date in Calendar form
+	 * @param m
+	 * @param creationDate
+	 * @return java.sql.Date
+	 */
+	private java.sql.Date calculateExpirationDate(Membership m,Calendar startDate){
+		//Action
+		int duration = m.getDuration();
+		startDate.add(Calendar.MONTH,duration);
+		return new java.sql.Date(startDate.getTime().getTime());
+	}
+
+	/**
+	 * For editing user's details (NOT membership stuff).
+	 * That requires more logic than simply changing details
+	 * @param request
+	 * @param ium
+	 * @param user
+	 * @param isAdmin
+	 * @return
+	 */
 	private boolean editUser(HttpServletRequest request,IUserManager ium, User user, boolean isAdmin){
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");

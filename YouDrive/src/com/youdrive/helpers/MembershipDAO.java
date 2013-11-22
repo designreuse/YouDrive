@@ -1,6 +1,7 @@
 package com.youdrive.helpers;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ public class MembershipDAO implements IMembershipManager{
 	private PreparedStatement getMembershipStmt;
 	private PreparedStatement checkMembershipNameStmt;
 	private PreparedStatement updateMembershipStmt;
+	private PreparedStatement updateDurationStmt;
 	private PreparedStatement countCustomersInMembershipStmt;
 	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
@@ -34,6 +36,7 @@ public class MembershipDAO implements IMembershipManager{
 			checkMembershipNameStmt = conn.prepareStatement("select * from " + Constants.MEMBERSHIP + " where name = ?");
 			updateMembershipStmt = conn.prepareStatement("update " + Constants.MEMBERSHIP + " set name = ?,price = ?,duration = ? where id = ?");
 			countCustomersInMembershipStmt = conn.prepareStatement("select count(*) from " + Constants.USERS + " u left outer join " + Constants.MEMBERSHIP + " m on m.id = u.membershipLevel where u.isAdmin = 0 and m.id = ?");
+			updateDurationStmt = conn.prepareStatement("update " + Constants.USERS + " set memberExpiration = ? where membershipLevel = ?");
 			System.out.println("Instantiated MembershipDAO");
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -156,8 +159,23 @@ public class MembershipDAO implements IMembershipManager{
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with updateMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with getUsersOnMembership method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
 		return result;
+	}
+	
+	@Override
+	public boolean updateExpirationDate(Date expirationDate,int membershipLevel){
+		try{
+			updateDurationStmt.setDate(1, expirationDate);
+			updateDurationStmt.setInt(2, membershipLevel);
+			updateDurationStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with updateExpirationDate method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return false;
 	}
 }

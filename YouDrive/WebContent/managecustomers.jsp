@@ -37,7 +37,7 @@
 			//Submit form which reloads the page
 			searchValue = $(this).attr('href').substring(1);
 			document.getElementById("searchType").value = searchValue;
-			$('#sortUserForm').submit();
+			$('#sortCustomerForm').submit();
 		});
 	});
 </script>
@@ -95,7 +95,7 @@
 										<th><a href="#2" class="navSort">Name</a></th>
 										<th><a href="#0" class="navSort">Username</a></th>
 										<th><a href="#3" class="navSort">Email</a></th>
-										<th><a href="#8" class="navSort">Membership Expiration</a></th>
+										<th><a href="#7" class="navSort">Membership Expiration</a></th>
 										<th>Edit</th>
 										<th>Delete</th>
 									</tr>
@@ -115,8 +115,8 @@
 								</table>	
 							</div>
 							<%-- Hidden form which gets submitted when user clicks on a clickable table heading --%>	
-							<form id="sortUserForm" name="sortUserForm" method="get" action="UserManagement">
-								<input type="hidden" id="action" name="action" value="sortUser"/>
+							<form id="sortCustomerForm" name="sortCustomerForm" method="get" action="UserManagement">
+								<input type="hidden" id="action" name="action" value="sortCustomer"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 							</form>
 						</c:when>
