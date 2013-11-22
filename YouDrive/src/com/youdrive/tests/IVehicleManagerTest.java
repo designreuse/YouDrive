@@ -41,6 +41,4 @@ public class IVehicleManagerTest {
 	public void testDeleteVehicle() {
 		fail("Not yet implemented");
 	}
-	
-
 }

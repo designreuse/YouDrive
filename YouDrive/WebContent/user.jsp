@@ -73,154 +73,8 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Welcome </p>
+							<p>Welcome!</p>
 							<%-- Add reservation form here. --%>
-							<%--
-							<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
-							<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />
-							<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session" />
-							<c:set var="allVehicleTypes" value="${vehicleTypeMgr.getAllVehicleTypes() }" scope="session" />
-							<div class="col-xs-4">
-								<form role="form" method="post" action="">
-									<div class="form-group">
-										<label for="selectLocation">Choose Location:</label> 
-										<select id="selectLocation" name="selectLocation" class="form-control">
-											<c:forEach items="${allLocations}" var="location"
-												varStatus="status">
-												<option value="${ location.id}">
-													<c:out value="${ location.name}" />
-												</option>
-											</c:forEach>
-										</select>
-									</div>
-									<div class="form-group">
-										<label for="selectVehicleType">Choose Vehicle Type:</label> 
-										<select id="selectVehicleType" name="selectVehicleType" class="form-control">
-											<c:forEach items="${allVehicleTypes}" var="vehicleType"
-												varStatus="status">
-												<option value="${ vehicleType.id}">
-													<c:out value="${ vehicleType.type}" />
-												</option>
-											</c:forEach>
-										</select>
-									</div>
-									<div class="form-group">
-										<label for="pickupDate">Pickup Date</label> <input
-											class="form-control" type="text" id="pickupDate"
-											name="pickupDate" required /> <label for="pickupTime">Pickup
-											Time:</label> <select required name="pickupTime" id="pickupTime"
-											class="form-control"><option value="00:00">12:00
-												Midnight</option>
-											<option value="00:30">12:30 AM</option>
-											<option value="01:00">01:00 AM</option>
-											<option value="01:30">01:30 AM</option>
-											<option value="02:00">02:00 AM</option>
-											<option value="02:30">02:30 AM</option>
-											<option value="03:00">03:00 AM</option>
-											<option value="03:30">03:30 AM</option>
-											<option value="04:00">04:00 AM</option>
-											<option value="04:30">04:30 AM</option>
-											<option value="05:00">05:00 AM</option>
-											<option value="05:30">05:30 AM</option>
-											<option value="06:00">06:00 AM</option>
-											<option value="06:30">06:30 AM</option>
-											<option value="07:00">07:00 AM</option>
-											<option value="07:30">07:30 AM</option>
-											<option value="08:00">08:00 AM</option>
-											<option value="08:30">08:30 AM</option>
-											<option value="09:00">09:00 AM</option>
-											<option value="09:30">09:30 AM</option>
-											<option selected="selected" value="10:00">10:00 AM</option>
-											<option value="10:30">10:30 AM</option>
-											<option value="11:00">11:00 AM</option>
-											<option value="11:30">11:30 AM</option>
-											<option value="12:00">12:00 Noon</option>
-											<option value="12:30">12:30 PM</option>
-											<option value="13:00">01:00 PM</option>
-											<option value="13:30">01:30 PM</option>
-											<option value="14:00">02:00 PM</option>
-											<option value="14:30">02:30 PM</option>
-											<option value="15:00">03:00 PM</option>
-											<option value="15:30">03:30 PM</option>
-											<option value="16:00">04:00 PM</option>
-											<option value="16:30">04:30 PM</option>
-											<option value="17:00">05:00 PM</option>
-											<option value="17:30">05:30 PM</option>
-											<option value="18:00">06:00 PM</option>
-											<option value="18:30">06:30 PM</option>
-											<option value="19:00">07:00 PM</option>
-											<option value="19:30">07:30 PM</option>
-											<option value="20:00">08:00 PM</option>
-											<option value="20:30">08:30 PM</option>
-											<option value="21:00">09:00 PM</option>
-											<option value="21:30">09:30 PM</option>
-											<option value="22:00">10:00 PM</option>
-											<option value="22:30">10:30 PM</option>
-											<option value="23:00">11:00 PM</option>
-											<option value="23:30">11:30 PM</option></select>
-									</div>
-									<div class="form-group">
-										<label for="dropoffDate">Return Date</label> <input
-											class="form-control" type="text" id="dropoffDate"
-											name="dropoffDate" required /> <label for="dropoffTime">Pickup
-											Time:</label> <select required name="dropoffTime" id="dropoffTime"
-											class="form-control"><option value="00:00">12:00
-												Midnight</option>
-											<option value="00:30">12:30 AM</option>
-											<option value="01:00">01:00 AM</option>
-											<option value="01:30">01:30 AM</option>
-											<option value="02:00">02:00 AM</option>
-											<option value="02:30">02:30 AM</option>
-											<option value="03:00">03:00 AM</option>
-											<option value="03:30">03:30 AM</option>
-											<option value="04:00">04:00 AM</option>
-											<option value="04:30">04:30 AM</option>
-											<option value="05:00">05:00 AM</option>
-											<option value="05:30">05:30 AM</option>
-											<option value="06:00">06:00 AM</option>
-											<option value="06:30">06:30 AM</option>
-											<option value="07:00">07:00 AM</option>
-											<option value="07:30">07:30 AM</option>
-											<option value="08:00">08:00 AM</option>
-											<option value="08:30">08:30 AM</option>
-											<option value="09:00">09:00 AM</option>
-											<option value="09:30">09:30 AM</option>
-											<option selected="selected" value="10:00">10:00 AM</option>
-											<option value="10:30">10:30 AM</option>
-											<option value="11:00">11:00 AM</option>
-											<option value="11:30">11:30 AM</option>
-											<option value="12:00">12:00 Noon</option>
-											<option value="12:30">12:30 PM</option>
-											<option value="13:00">01:00 PM</option>
-											<option value="13:30">01:30 PM</option>
-											<option value="14:00">02:00 PM</option>
-											<option value="14:30">02:30 PM</option>
-											<option value="15:00">03:00 PM</option>
-											<option value="15:30">03:30 PM</option>
-											<option value="16:00">04:00 PM</option>
-											<option value="16:30">04:30 PM</option>
-											<option value="17:00">05:00 PM</option>
-											<option value="17:30">05:30 PM</option>
-											<option value="18:00">06:00 PM</option>
-											<option value="18:30">06:30 PM</option>
-											<option value="19:00">07:00 PM</option>
-											<option value="19:30">07:30 PM</option>
-											<option value="20:00">08:00 PM</option>
-											<option value="20:30">08:30 PM</option>
-											<option value="21:00">09:00 PM</option>
-											<option value="21:30">09:30 PM</option>
-											<option value="22:00">10:00 PM</option>
-											<option value="22:30">10:30 PM</option>
-											<option value="23:00">11:00 PM</option>
-											<option value="23:30">11:30 PM</option></select>
-									</div>
-									<button type="submit" class="btn btn-primary btn-lg btn-block">Search</button>
-									<button type="button"
-										onclick="window.location.replace('user.jsp')"
-										class="btn btn-default btn-lg btn-block">Cancel</button>
-
-								</form>
-							</div>--%>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -233,6 +87,7 @@
 					<a class="list-group-item active"><strong>Navigation</strong></a>
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
+		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>
 		            <c:url value="UserManagement" var="url">

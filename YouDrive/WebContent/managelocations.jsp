@@ -44,6 +44,21 @@
 				$('#sortLocationForm').submit();
 			});
 		});
+		
+		/* submit the hidden form to delete the location but need to confirm with user first*/
+		function getLocationID(locationID, locationName){
+			// confirm dialog
+			alertify.confirm("You are about to delete " + locationName + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("locationID").value = locationID;
+					$('#deleteLocationForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(locationID);
+		}
 	</script>
 <title>Manage Locations</title>
 </head>
@@ -115,8 +130,8 @@
 											<c:url value="LocationManagement" var="url">
 												<c:param name="locationID" value="${location.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a  title="Click to edit this location: ${ location.name }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this location: ${location.name }"><span onclick="getLocationID('${location.id}','${location.name }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
@@ -126,6 +141,13 @@
 								<input type="hidden" id="action" name="action" value="sortLocation"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 							</form>
+							
+							<%-- Hidden form for deleting the membership --%>
+							<form id="deleteLocationForm" name="deleteLocationForm" method="post" action="LocationManagement">
+								<input type="hidden" id="action" name="action" value="deleteLocation"/>
+								<input type="hidden" id="locationID" name="locationID" value="" />
+							</form>
+							
 						</c:when>
 						<c:otherwise>
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

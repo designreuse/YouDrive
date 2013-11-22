@@ -81,8 +81,8 @@
 							<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>	
 							<c:set var="allVehicleTypes" value="${vehicleTypeMgr.getAllVehicleTypes() }" scope="session"/>
-							<div class="col-xs-4">
-								<form  role="form" method="post" action="">
+							<div class="col-xs-6">
+								<form  role="form" method="post" action="ReservationManagement" id="checkAvailabilityForm" name="checkAvailabilityForm">
 									<div class="form-group">
 										<label for="selectLocation">Choose Location:</label>
 										<select id="selectLocation" name="selectLocation" class="form-control">
@@ -91,6 +91,7 @@
 											</c:forEach>
 										</select>
 									</div>
+									<%--
 									<div class="form-group">
 										<label for="selectVehicleType">Choose Vehicle Type:</label>
 										<select id="selectVehicleType" name="selectVehicleType" class="form-control">
@@ -98,7 +99,7 @@
 												<option value="${ vehicleType.id}"><c:out value="${ vehicleType.type}" /></option>
 											</c:forEach>
 										</select>
-									</div>
+									</div>--%>
 									<div class="form-group">
 										<label for="pickupDate">Pickup Date</label>
 										<input class="form-control" type="text" id="pickupDate" name="pickupDate" required />

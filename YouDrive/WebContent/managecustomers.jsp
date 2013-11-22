@@ -110,8 +110,8 @@
 											<c:url value="UserManagement" var="url">
 												<c:param name="customerID" value="${user.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a title="Click to edit this customer: ${user.username }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this customer: ${user.username }"><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	

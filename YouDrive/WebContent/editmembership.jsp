@@ -61,7 +61,7 @@
 						data-toggle="offcanvas">Toggle nav</button>
 				</p>
 				<div class="row">
-					<c:if test="${errorMessage != null}">
+					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
 						<div id="errorDisplay" class="alert alert-danger">
 							<c:out value="${errorMessage }" />
 						</div>

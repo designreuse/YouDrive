@@ -31,6 +31,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehiclesByLocationNameStmt;
 	private PreparedStatement getVehicleCommentsStmt;
 	private PreparedStatement addVehicleCommentStmt;
+	private PreparedStatement isVehicleInUseStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -318,4 +319,5 @@ public class VehicleDAO implements IVehicleManager {
 		}
 		return commentID;
 	}
+	
 }

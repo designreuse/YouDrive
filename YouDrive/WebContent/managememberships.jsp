@@ -126,8 +126,8 @@
 											<c:url value="MembershipManagement" var="url">
 												<c:param name="membershipID" value="${membership.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span onclick="getMembershipID('${membership.id}','${membership.name }')" class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a  title="Click to edit this membership plan: ${ membership.name }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this membership plan: ${ membership.name }"><span onclick="getMembershipID('${membership.id}','${membership.name }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>

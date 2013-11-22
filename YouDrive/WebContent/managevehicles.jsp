@@ -119,12 +119,12 @@
 											<c:url value="VehicleManagement" var="url">
 												<c:param name="vehicleID" value="${vehicle.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to edit vehicle tag : ${vehicle.tag }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
 											<c:url value="VehicleManagement" var="url">
 												<c:param name="viewComments" value="${vehicle.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a title="Click to view notes about this vehicle tag : ${vehicle.tag }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
+											<td><a title="Click to delete vehicle tag : ${vehicle.tag }"><span class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	

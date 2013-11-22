@@ -125,8 +125,8 @@
 											<c:url value="VehicleTypeManagement" var="url">
 												<c:param name="vehicleTypeID" value="${vehicleType.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span onclick="getVehicleTypeID('${vehicleType.id}','${vehicleType.type }')" class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a  title="Click to edit vehicle type: ${vehicleType.type }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete vehicle type: ${vehicleType.type }"><span onclick="getVehicleTypeID('${vehicleType.id}','${vehicleType.type }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>

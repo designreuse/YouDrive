@@ -24,7 +24,7 @@
 		<c:when test="${ loggedInUser != null }">
 			<c:remove var="loggedInUser"/>
 			<c:remove var="errorMessage"/>
-			You are now logged out! Go <a href="http://localhost:8080/YouDrive/">home</a>.
+			You are now logged out! Go <a href="http://localhost:8080/YouDrive/">home</a> or <a href="http://localhost:8080/YouDrive/login.jsp">Login here</a>.
 		</c:when>
 		<c:otherwise>
 			Already logged out! <a href="http://localhost:8080/YouDrive/login.jsp">Login here</a>
