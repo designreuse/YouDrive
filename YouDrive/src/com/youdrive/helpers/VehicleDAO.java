@@ -280,7 +280,7 @@ public class VehicleDAO implements IVehicleManager {
 			getVehicleCommentsStmt.setInt(1, vehicleID);
 			ResultSet rs = getVehicleCommentsStmt.executeQuery();
 			while (rs.next()){
-				results.add(new Comment(rs.getInt("id"),rs.getDate("createdOn"),rs.getString("comment"),rs.getInt("author"),rs.getInt("vehicleID")));
+				results.add(new Comment(rs.getInt("id"),rs.getTimestamp("createdOn"),rs.getString("comment"),rs.getInt("author"),rs.getInt("vehicleID")));
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -291,7 +291,7 @@ public class VehicleDAO implements IVehicleManager {
 	}
 	
 	private static java.sql.Timestamp getCurrentTimeStamp() {		 
-		java.util.Date today = new java.util.Date();
+		java.util.Date today = Calendar.getInstance().getTime();
 		return new java.sql.Timestamp(today.getTime());
 	 
 	}
