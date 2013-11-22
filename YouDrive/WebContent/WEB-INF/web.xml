@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	id="WebApp_ID" version="3.0">
-	<display-name>YouDrive</display-name>
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
-
-
-	<error-page>
-		<!-- Missing login -->
-		<error-code>404</error-code>
-		<location>/404.jsp</location>
-	</error-page>
-
-	<!-- taglib info needed. -->
-	<jsp-config>
-		<taglib>
-			<taglib-uri>/sortItems</taglib-uri>
-			<taglib-location>/WEB-INF/tags/sortingFunctions.tld</taglib-location>
-		</taglib>
-	</jsp-config>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jsp="http://java.sun.com/xml/ns/javaee/jsp" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>YouDrive</display-name>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404.jsp</location>
+  </error-page>
+  <jsp-config>
+    <taglib>
+      <taglib-uri>/sortItems</taglib-uri>
+      <taglib-location>/WEB-INF/tags/sortingFunctions.tld</taglib-location>
+    </taglib>
+  </jsp-config>
 </web-app>
