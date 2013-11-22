@@ -126,7 +126,7 @@
 												<c:param name="vehicleTypeID" value="${vehicleType.id}" />
 											</c:url>
 											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><span onclick="getVehicleTypeID('${vehicleType.id}','${vehicleType.type }')" class="glyphicon glyphicon-trash"></span></td>
+											<td><a><span onclick="getVehicleTypeID('${vehicleType.id}','${vehicleType.type }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>

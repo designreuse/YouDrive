@@ -98,7 +98,7 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt.setString(12, p.getCcExpirationDate());
 			addRegularUserStmt.setDate(13, p.getMemberExpiration());
 			addRegularUserStmt.setInt(14, p.getMembershipLevel());
-			addRegularUserStmt.setDate(14, p.getDateCreated());
+			addRegularUserStmt.setDate(15, p.getDateCreated());
 			userID = addRegularUserStmt.executeUpdate();
 			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
 			if (rs.next()){

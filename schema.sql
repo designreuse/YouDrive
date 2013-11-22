@@ -69,6 +69,14 @@ FOREIGN KEY (locationID) references Locations(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
 
+create table Reservation_Status(
+id int not null primary key auto_increment,
+reservationID int not null,
+creationDate datetime not null,
+reservationStatus ENUM ('Created', 'Cancelled', 'Picked Up')  not null,
+FOREIGN KEY (reservationID) references Reservations(id)
+) Engine=InnoDB;
+
 create table Comments(
 id int not null primary key auto_increment,
 createdOn date not null,
