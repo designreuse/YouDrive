@@ -35,7 +35,6 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where id = ?");			
 			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
 			checkVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES  + " where type = ?");
-			checkVehicleTypeStmt = conn.prepareStatement("select count(*) from Vehicles v left outer join VehicleTypes vt on vt.id = v.assignedLocation where vt.id = ?");
 			countTypeInUsestmt = conn.prepareStatement("select count(*) from Vehicles v left outer join VehicleTypes vt on vt.id = v.vehicleType where vt.id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleTypeDAO");
@@ -47,12 +46,12 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	}
 	
 	@Override
-	public String deleteVehicleType(int id) {
+	public boolean deleteVehicleType(int id) {
 		String errorCode = "";
 		try{
 			deleteVehicleTypeStmt.setInt(1, id);
 			deleteVehicleTypeStmt.executeUpdate();
-			return errorCode;
+			return true;
 		}catch(SQLException e){
 			errorCode = String.valueOf(e.getErrorCode());
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -60,7 +59,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			errorCode = "Error";
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
-		return errorCode;
+		return false;
 	}
 
 	

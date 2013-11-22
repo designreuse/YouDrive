@@ -143,7 +143,14 @@ public class VehicleTypeManagement extends HttpServlet {
 							if (vehiclesOfThisType == -1){
 								request.setAttribute("errorMessage", "Vehicle Type not deleted.");
 							}else{
-								//Delete vehicle
+								//User can return vehicle to any location 
+								//Delete vehicle type
+								if (!ivtm.deleteVehicleType(vehicleTypeID)){
+									request.setAttribute("errorMessage", "Error deleting vehicle type.");
+								}else{
+									//Update session object
+									//session.setAttribute("allVehicleTypes", ivtm.getAllVehicleTypes());
+								}
 							}
 							dispatchedPage = "/managevehicletypes.jsp";
 						}

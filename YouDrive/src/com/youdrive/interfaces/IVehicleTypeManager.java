@@ -8,16 +8,16 @@ public interface IVehicleTypeManager {
 	/**
 	 * Remove the vehicle type from the system by the type name
 	 * @param type
-	 * @return
+	 * @return boolean
 	 */
-	public String deleteVehicleType(int typeID);
+	public boolean deleteVehicleType(int typeID);
 	/**
 	 * Adding a vehicle type to the system and return the type id. 
 	 * Returns 0 if unsuccessful
 	 * @param type
 	 * @param hourlyPrice
 	 * @param dailyPrice
-	 * @return
+	 * @return int
 	 */
 	public int addVehicleType(String type, double hourlyPrice, double dailyPrice);
 	/**
