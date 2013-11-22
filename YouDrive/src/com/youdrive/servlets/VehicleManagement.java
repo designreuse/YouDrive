@@ -136,6 +136,27 @@ public class VehicleManagement extends HttpServlet {
 					System.err.println("Problem saving vehicle to db.");
 					dispatcher = ctx.getRequestDispatcher("/addvehicle.jsp");
 				}else{
+					//Add comment to database
+					String comment = request.getParameter("comment");
+					if (comment != null && !comment.isEmpty()){
+						//Get logged in user
+						User user = (User) session.getAttribute("loggedInUser");
+						if (user != null){
+							int commentId = ivm.addVehicleComment(id, comment, user.getId());
+							if (commentId == 0){
+								System.err.println("Unable to save comment.");
+								request.setAttribute("errorMessage","Unable to save comment but vehicle was created.");
+							}else{
+								//Successfully added comment.
+								System.out.println("Added vehicle and created comment.");
+							}
+						}else{
+							request.setAttribute("errorMessage","No user logged in.");
+							System.err.println("User somehow got logged out during comment saving after vehicle was created");
+						}
+					}else{
+						System.err.println("User object in session is null.");
+					}
 					request.setAttribute("errorMessage","");
 					dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 				}
@@ -154,10 +175,11 @@ public class VehicleManagement extends HttpServlet {
 							String comment = request.getParameter("comment");
 							if (comment != null && !comment.isEmpty()){
 								//Get logged in user
-								User user = (User) ctx.getAttribute("loggedInUser");
+								User user = (User) session.getAttribute("loggedInUser");
 								if (user != null){
 									int commentId = ivm.addVehicleComment(v.getId(), comment, user.getId());
 									if (commentId == 0){
+										System.err.println("Unable to save comment.");
 										request.setAttribute("errorMessage","Unable to save comment.");
 									}else{
 										//Successfully added comment.
@@ -166,9 +188,9 @@ public class VehicleManagement extends HttpServlet {
 									request.setAttribute("errorMessage","No user logged in.");
 								}
 							}else{
-								//Continue with editing user.
+								System.err.println("User object in session is null.");
 							}
-							if (editVehicle(request,ivm,ilm,v)){
+							if (editVehicle(session,request,ivm,ilm,v)){
 								request.setAttribute("errorMessage", "");
 								session.setAttribute("allVehicles", ivm.getAllVehicles());
 								dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
@@ -257,7 +279,7 @@ public class VehicleManagement extends HttpServlet {
 		return vehicleID;	
 	}
 
-	private boolean editVehicle(HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm,Vehicle vehicle){
+	private boolean editVehicle(HttpSession session, HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm,Vehicle vehicle){
 		String errorMessage = "";
 		int vehicleID = vehicle.getId();
 		try{
@@ -300,6 +322,15 @@ public class VehicleManagement extends HttpServlet {
 						int locationCapacity = l.getCapacity();
 						//Don't change vehicle is location is full.
 						if (locationCapacity > currentCapacity){
+							int dateLength = lastServiced.length();
+							//By default, the date is shown on the form with hh:mm:ss
+							//this code snippet truncated it to the first 11 characters which is parseable
+							System.out.println("Length: " + dateLength + " form Date:" + lastServiced);
+							if (dateLength != 11){
+								System.out.println("form Date:" + lastServiced);
+								lastServiced = lastServiced.substring(0,10);
+								System.out.println("formatted Date:" + lastServiced);
+							}
 							if (!(ivm.updateVehicle(vehicleID,make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation))){
 								errorMessage = "Could not update Vehicle details.";
 							}else{
@@ -313,6 +344,15 @@ public class VehicleManagement extends HttpServlet {
 					}
 				}else{
 					//Location isn't being changed.
+					int dateLength = lastServiced.length();
+					//By default, the date is shown on the form with hh:mm:ss
+					//this code snippet truncated it to the first 11 characters which is parseable
+					System.out.println("Length: " + dateLength + " form Date:" + lastServiced);
+					if (dateLength != 11){
+						System.out.println("form Date:" + lastServiced);
+						lastServiced = lastServiced.substring(0,10);
+						System.out.println("formatted Date:" + lastServiced);
+					}
 					if (ivm.updateVehicle(vehicleID,make, model, year, tag, mileage, lastServiced, vehicleType, assignedLocation)){
 						return true;
 					}else{

@@ -1,11 +1,17 @@
 package com.youdrive.servlets;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,9 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.youdrive.helpers.MembershipDAO;
 import com.youdrive.helpers.UserDAO;
+import com.youdrive.interfaces.IMembershipManager;
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
+import com.youdrive.models.Membership;
+
 
 /**
  * Servlet implementation class UserManagement
@@ -45,9 +55,9 @@ public class UserManagement extends HttpServlet {
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
 		}
-		String errorMessage = "";
 		String userID = request.getParameter("userID");
 		String searchType = request.getParameter("searchType");
+		String customerID = request.getParameter("customerID");		
 		String dispatchedPage = "/login.jsp";
 		if (userID != null && !userID.isEmpty()){
 			try{
@@ -56,10 +66,11 @@ public class UserManagement extends HttpServlet {
 				session.setAttribute("user", user);
 				dispatchedPage = "/edituser.jsp";
 			}catch(NumberFormatException e){
-				errorMessage = "Invalid userID.";
+				request.setAttribute("errorMessage", "Invalid user id parameter.");
 			}
 		}else if (searchType != null && !searchType.isEmpty()){
 			//Default sort is by lastname i.e. number 2
+			String action = request.getParameter("action");
 			int sType = 2;
 			try{
 				sType = Integer.parseInt(searchType);
@@ -69,7 +80,23 @@ public class UserManagement extends HttpServlet {
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
-			dispatchedPage = "/manageusers.jsp";
+
+			if (action == null || action.isEmpty()){
+				dispatchedPage = "/manageusers.jsp";
+			}else if (action.equalsIgnoreCase("sortCustomer")){
+				dispatchedPage = "/managecustomers.jsp";
+			}
+		}else if(customerID != null && !customerID.isEmpty()){
+			System.out.println("CustomerID Get Request.");
+			try{
+				int uID = Integer.parseInt(customerID);
+				User user = ium.getUser(uID);
+				//Null check is in jsp
+				session.setAttribute("user", user);
+				dispatchedPage = "/editcustomer.jsp";
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage", "Invalid userID.");
+			}
 		}else{
 			User loggedInUser = (User) session.getAttribute("loggedInUser");
 			if (loggedInUser != null){
@@ -105,7 +132,7 @@ public class UserManagement extends HttpServlet {
 				int userID = addAdminUser(request,ium);
 				if (userID != 0){
 					request.setAttribute("errorMessage","");
-					dispatchedPage = "/admin.jsp";
+					dispatchedPage = "/manageusers.jsp";
 				}else{
 					dispatchedPage = "/adduser.jsp";
 				}
@@ -126,6 +153,8 @@ public class UserManagement extends HttpServlet {
 					if (userID == 0){
 						dispatchedPage = "/registration_page1.jsp";
 					}else{
+						User user = ium.getUser(userID);
+						session.setAttribute("loggedInUser", user);
 						dispatchedPage = "/user.jsp";
 					}
 				}else{
@@ -190,6 +219,50 @@ public class UserManagement extends HttpServlet {
 						}
 					}
 				}
+			}else if (action.equalsIgnoreCase("CustomerEditUser")){
+				System.out.println("customer edituser action");
+				String userID = request.getParameter("id");
+				User loggedInUser = (User) session.getAttribute("loggedInUser");
+				if (userID == null || userID.isEmpty()){
+					request.setAttribute("errorMessage", "Invalid parameter found.");
+					dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+				}else{
+					try{
+						int id = Integer.parseInt(userID);						
+						//Admins can edit whomever
+						if (loggedInUser.isAdmin() || id == loggedInUser.getId()){
+							User user = ium.getUser(id);
+							//Check to make sure such user exists.
+							if (user != null){
+								if (editUser(request,ium,user,false)){
+									request.setAttribute("errorMessage","");
+									dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+								}else{
+									request.setAttribute("user", user);
+									dispatchedPage = "/editcustomer.jsp";
+								}
+							}else{
+								request.setAttribute("errorMessage", "User not found.");
+								dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+							}
+						}else{
+							request.setAttribute("errorMessage", "You don't have permission to edit this user.");
+							dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Invalid user id.");
+						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+					}catch(Exception e){
+						request.setAttribute("errorMessage", e.getMessage());
+						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
+					}
+				}
+			}else if (action.equalsIgnoreCase("deleteAdminUser")){
+				System.out.println("deleteAdminUser action");
+				boolean result = deleteAdmin(request,session,ium);
+				dispatchedPage = "/manageusers.jsp";
+			}else{
+				dispatchedPage = "/login.jsp";
 			}
 		}else{
 			request.setAttribute("errorMessage", "Invalid POST request.");
@@ -213,6 +286,8 @@ public class UserManagement extends HttpServlet {
 		}else if (password == null || password.isEmpty()){
 			request.setAttribute("errorMessage", "Missing password");
 		}else{
+			//TODO check that user's membership hasn't expired.
+			//When admin terminates user, user will be removed from system or have their expiration date set to 0
 			User user = ium.authenticateUser(username, password);
 			return user;
 		}
@@ -245,7 +320,16 @@ public class UserManagement extends HttpServlet {
 		}else if (email == null || email.isEmpty()){
 			errorMessage = "Missing email";
 		}else{
-			userID = ium.addAdminUser(username, password, firstName, lastName, email);
+			boolean isUsernameInUse = ium.isUsernameInUse(username);
+			boolean isEmailInUse = ium.isEmailInUse(email);
+			if (isUsernameInUse){
+				errorMessage = "This username is already in use.";
+			}else if (isEmailInUse){
+				errorMessage = "This email address is already in use.";
+			}else{	
+				userID = ium.addAdminUser(username, password, firstName, lastName, email);
+				errorMessage = "";
+			}
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return userID;
@@ -287,8 +371,7 @@ public class UserManagement extends HttpServlet {
 				errorMessage = "This username is already in use.";
 			}else if (isEmailInUse){
 				errorMessage = "This email address is already in use.";
-			}else{			
-				request.setAttribute("errorMessage","");
+			}else{				
 				//Stash user into into map and send in request object
 				addUser1.put("username",username);
 				addUser1.put("password", password);
@@ -297,6 +380,7 @@ public class UserManagement extends HttpServlet {
 				addUser1.put("email", email);
 				session.setAttribute("registration_page1", addUser1);
 				System.out.println("added registration_page1 to session.");
+				request.setAttribute("errorMessage","");
 				return true;
 			}
 		}
@@ -348,21 +432,45 @@ public class UserManagement extends HttpServlet {
 					ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 					if (!expDates.isEmpty()){
 						User user = new User();
-						user.setAddress(address);
-						user.setCcExpirationDate(ccExpirationDate);
-						user.setCcNumber(ccNumber);
-						user.setCcSecurityCode(ccCode);
-						user.setState(state);
-						user.setLicense(license);
-						user.setMembershipLevel(memberLevel);
 						user.setFirstName(page1_details.get("firstName"));
 						user.setLastName(page1_details.get("lastName"));
 						user.setEmail(page1_details.get("email"));
 						user.setUsername(page1_details.get("username"));
 						user.setPassword(page1_details.get("password"));
+						Calendar cal = Calendar.getInstance();
+						java.sql.Date creationdate = new java.sql.Date(cal.getTime().getTime());
+						user.setDateCreated(creationdate);
 						user.setAdmin(false);
+						user.setAddress(address);
+						user.setCcExpirationDate(ccExpirationDate);
+						user.setCcNumber(ccNumber);
+						user.setCcType(ccType);
+						user.setCcSecurityCode(ccCode);
+						user.setState(state);
+						user.setLicense(license);
+						user.setMembershipLevel(memberLevel);
 						userID = ium.addUser(user);
 						errorMessage = "";
+
+						if (userID > 0){
+							//Add member's expiration date
+							//Look up durations in membership table and add to the user's creation date
+							IMembershipManager imm = new MembershipDAO();
+							if (imm != null){
+								Membership m = imm.getMembership(memberLevel);
+								if (m != null){
+									cal.add(Calendar.MONTH, m.getDuration());
+									java.sql.Date newDate = new java.sql.Date(cal.getTime().getTime());
+									if (!imm.updateExpirationDate(newDate,memberLevel)){
+										errorMessage = "Error saving expiration date to database.";
+									}
+								}else{
+									errorMessage = "Invalid membership plan chosen.";
+								}
+							}
+						}else{
+							errorMessage = "Error creating the user.";
+						}
 					}else{
 						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}
@@ -377,6 +485,28 @@ public class UserManagement extends HttpServlet {
 		return userID;
 	}
 
+	/**
+	 * Helper to calculate expiration date for a given start date in Calendar form
+	 * @param m
+	 * @param creationDate
+	 * @return java.sql.Date
+	 */
+	private java.sql.Date calculateExpirationDate(Membership m,Calendar startDate){
+		//Action
+		int duration = m.getDuration();
+		startDate.add(Calendar.MONTH,duration);
+		return new java.sql.Date(startDate.getTime().getTime());
+	}
+
+	/**
+	 * For editing user's details (NOT membership stuff).
+	 * That requires more logic than simply changing details
+	 * @param request
+	 * @param ium
+	 * @param user
+	 * @param isAdmin
+	 * @return
+	 */
 	private boolean editUser(HttpServletRequest request,IUserManager ium, User user, boolean isAdmin){
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
@@ -413,6 +543,8 @@ public class UserManagement extends HttpServlet {
 			String ccExpirationDate = request.getParameter("ccExpirationDate");
 			if (state == null || state.isEmpty()){
 				errorMessage = "Missing state";
+			}else if (state.length() != 2){
+				errorMessage = "Invalid state parameter. Enter abbreviation e.g. GA, DE.";
 			}else if (license == null || license.isEmpty()){
 				errorMessage = "Missing license";
 			}else if (address == null || address.isEmpty()){
@@ -428,11 +560,28 @@ public class UserManagement extends HttpServlet {
 			}else{
 				try{					
 					int ccSecurityCode = Integer.parseInt(ccCode);
+					System.out.println(state+" "+license+" "+address+" "+ccType+" "+ccNum+" "+ccCode+" "+ccExpirationDate);
+					//Validate credit card
 					if (validateCreditCard(ccNum)){
-						if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
-							return true;
+						//Validate expiration date
+						ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
+						if (!expDates.isEmpty()){
+							boolean isEmailInUse = false;
+							//if email address is being changed
+							if (!(user.getEmail().equalsIgnoreCase(email))){
+								isEmailInUse = ium.isEmailInUse(email);								
+							}
+							if (!isEmailInUse){
+								if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+									return true;
+								}else{
+									errorMessage = "Unable to update the user details.";
+								}
+							}else{
+								errorMessage = "Please use a different email address.";
+							}
 						}else{
-							errorMessage = "Unable to update the user details.";
+							errorMessage = "Invalid expiration date. Use MM/YYYY format or make sure the date is in the future.";
 						}
 					}else{
 						errorMessage = "Invalid credit card number; Must be 16 digits.";
@@ -459,7 +608,7 @@ public class UserManagement extends HttpServlet {
 		String mth = "";
 		String yr = "";
 		ArrayList<Integer> results = new ArrayList<Integer>();
-		if (!expDate.isEmpty()){
+		if (expDate != null && !expDate.isEmpty() && expDate.length() == 7){
 			int slashIndex = expDate.indexOf("/");
 			mth = expDate.substring(0,slashIndex);
 			yr = expDate.substring(slashIndex+1);
@@ -492,6 +641,47 @@ public class UserManagement extends HttpServlet {
 	 * @return
 	 */
 	private boolean validateCreditCard(String ccNumber){
+		if (ccNumber == null || ccNumber.length() != 16){
+			return false;
+		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
+	}
+
+	private boolean deleteAdmin(HttpServletRequest request, HttpSession session, IUserManager ium){
+		System.out.println("Calling deleteAdmin");
+		String errorMessage = "";
+		String userID = request.getParameter("userID");
+		if (userID != null && !userID.isEmpty()){
+			try{
+				int uID = Integer.parseInt(userID);
+				User u = ium.getUser(uID);
+				User currentUser = (User)session.getAttribute("loggedInUser");
+				//Only admins can delete an admin
+				if (currentUser != null && currentUser.isAdmin()){
+					//Look up object in database
+					if (u != null){
+						//Don't let logged in admin delete self.
+						if (u.getId() != currentUser.getId()){				
+							boolean result = ium.deleteAdminUser(uID);
+							if (!result){
+								errorMessage = "Error deleting Admin User.";
+							}else{
+								return true;
+							}
+						}else{
+							errorMessage = "Please don't delete yourself.";
+						}
+					}else{
+						errorMessage = "Unable to find Admin User in system.";
+					}
+				}
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid User ID format.";
+			}
+		}else{
+			errorMessage = "Invalid Parameter used.";
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
 	}
 }

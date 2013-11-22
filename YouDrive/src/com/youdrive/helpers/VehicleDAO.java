@@ -175,6 +175,7 @@ public class VehicleDAO implements IVehicleManager {
 			addVehicleStmt.setInt(3, year);
 			addVehicleStmt.setString(4, tag);
 			addVehicleStmt.setInt(5, mileage);
+			//java.sql.Date sd = java.sql.Date.valueOf(lastServiced);
 			java.util.Date d = sdf.parse(lastServiced);
 			java.sql.Date sd = new java.sql.Date(d.getTime());
 			addVehicleStmt.setDate(6,sd);
@@ -255,7 +256,10 @@ public class VehicleDAO implements IVehicleManager {
 			updateVehicleStmt.setInt(3, year);
 			updateVehicleStmt.setString(4, tag);
 			updateVehicleStmt.setInt(5,mileage);
-			updateVehicleStmt.setString(6, lastServiced);
+			//java.sql.Date sd = java.sql.Date.valueOf(lastServiced);
+			java.util.Date d = sdf.parse(lastServiced);
+			java.sql.Date sd = new java.sql.Date(d.getTime());
+			updateVehicleStmt.setDate(6,sd);
 			updateVehicleStmt.setInt(7, vehicleType);
 			updateVehicleStmt.setInt(8, assignedLocation);
 			updateVehicleStmt.setInt(9, id);
@@ -276,7 +280,7 @@ public class VehicleDAO implements IVehicleManager {
 			getVehicleCommentsStmt.setInt(1, vehicleID);
 			ResultSet rs = getVehicleCommentsStmt.executeQuery();
 			while (rs.next()){
-				results.add(new Comment(rs.getInt("id"),rs.getDate("createdOn"),rs.getString("comment"),rs.getInt("author"),rs.getInt("vehicleID")));
+				results.add(new Comment(rs.getInt("id"),rs.getTimestamp("createdOn"),rs.getString("comment"),rs.getInt("author"),rs.getInt("vehicleID")));
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -286,13 +290,19 @@ public class VehicleDAO implements IVehicleManager {
 		return results;
 	}
 	
+	private static java.sql.Timestamp getCurrentTimeStamp() {		 
+		java.util.Date today = Calendar.getInstance().getTime();
+		return new java.sql.Timestamp(today.getTime());
+	 
+	}
+	
 	@Override
 	public int addVehicleComment(int vehicleID, String comment, int author){
 		int commentID = 0;
 		try{
-			java.util.Date d = Calendar.getInstance().getTime();
-			java.sql.Date sd = new java.sql.Date(d.getTime());
-			addVehicleCommentStmt.setDate(1, sd);
+			//java.util.Date d = Calendar.getInstance().getTime();
+			//java.sql.Date sd = new java.sql.Date(d.getTime());
+			addVehicleCommentStmt.setTimestamp(1, getCurrentTimeStamp());
 			addVehicleCommentStmt.setString(2, comment);
 			addVehicleCommentStmt.setInt(3, author);
 			addVehicleCommentStmt.setInt(4, vehicleID);

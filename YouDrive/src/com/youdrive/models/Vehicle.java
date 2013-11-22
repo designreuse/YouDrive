@@ -1,20 +1,22 @@
 package com.youdrive.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Vehicle {
-	int id;
-	String make;
-	String model;
-	int year;
-	String tag;
-	int mileage;
-	Date lastServiced;
-	boolean isAvailable;
-	int vehicleType;
-	int assignedLocation;
-	ArrayList<Comment> vehicleComments = new ArrayList<Comment>();
+public class Vehicle implements Serializable{
+	private static final long serialVersionUID = -2310402415976750455L;
+	private int id;
+	private String make;
+	private String model;
+	private int year;
+	private String tag;
+	private int mileage;
+	private Date lastServiced;
+	private boolean isAvailable;
+	private int vehicleType;
+	private int assignedLocation;
+	private ArrayList<Comment> vehicleComments = new ArrayList<Comment>();
 	
 	public Vehicle() {  }
 	

@@ -6,16 +6,6 @@ import com.youdrive.models.User;
 
 public interface IUserManager {
 	/**
-	 * Adding an admin user
-	 * @param username
-	 * @param password
-	 * @param firstName
-	 * @param lastName
-	 * @param email
-	 * @return
-	 */
-	public int addAdmin(String username, String password, String firstName, String lastName, String email);
-	/**
 	 * Adding a regular User and returns the user's id
 	 * @param p
 	 * @return
@@ -55,7 +45,7 @@ public interface IUserManager {
 	 * Returns an arraylist of all the users in the system
 	 * @return  ArrayList<User> 
 	 */
-	public ArrayList<User> getAllUsers();
+	public ArrayList<User> getAllAdmins();
 	/**
 	 * Updates the admin user's information
 	 * @param id
@@ -66,7 +56,7 @@ public interface IUserManager {
 	 * @param email
 	 * @return
 	 */
-	boolean updateAdminUser(int id, String username, String password, String firstName,
+	public boolean updateAdminUser(int id, String username, String password, String firstName,
 			String lastName, String email);
 	/**
 	 * Updates the regular user's information
@@ -85,7 +75,7 @@ public interface IUserManager {
 	 * @param ccExpirationDate
 	 * @return
 	 */
-	boolean updateUser(int id,String username, String password, String firstName,
+	public boolean updateUser(int id,String username, String password, String firstName,
 			String lastName, String state, String license, String email,
 			String address, String ccType, String ccNumber, int ccSecurityCode,
 			String ccExpirationDate);
@@ -94,11 +84,18 @@ public interface IUserManager {
 	 * @param username
 	 * @return
 	 */
-	boolean isUsernameInUse(String username);
+	public boolean isUsernameInUse(String username);
 	/**
 	 * Returns true if the provided email is taken
 	 * @param email
 	 * @return
 	 */
-	boolean isEmailInUse(String email);
+	public boolean isEmailInUse(String email);
+	/**
+	 * Get a list of non-admin customers.
+	 * @return
+	 */
+	public ArrayList<User> getAllCustomers();
+	boolean deleteAdminUser(int userID);
+	
 }

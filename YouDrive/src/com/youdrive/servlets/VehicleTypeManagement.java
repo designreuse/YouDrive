@@ -58,6 +58,7 @@ public class VehicleTypeManagement extends HttpServlet {
 				dispatchedPage = "/managevehicles.jsp";
 			}
 		}else if (searchType != null && !searchType.isEmpty()){
+			//Simple sets the right search type integer which the managevehicles.jsp page uses to sort the list
 			int sType = 0;
 			try{
 				sType = Integer.parseInt(searchType);
@@ -95,47 +96,58 @@ public class VehicleTypeManagement extends HttpServlet {
 			session.setAttribute("vehicleTypeMgr", ivtm);
 		}	
 		String action = request.getParameter("action");
+		String dispatchedPage = "/managevehicletypes.jsp";
 		if (action != null && !action.isEmpty()){
 			if(action.equalsIgnoreCase("addVehicleType")){
 				//adding a vehicle type
 				int id = addVehicleType(request,ivtm);
 				if (id == 0){
 					System.err.println("Problem saving vehicle type to db.");
-					dispatcher = ctx.getRequestDispatcher("/addvehicletype.jsp");
+					dispatchedPage = "/addvehicletype.jsp";
 				}else{
 					request.setAttribute("errorMessage","");
-					dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
+					dispatchedPage = "/managevehicletypes.jsp";
 				}
 			}else if (action.equalsIgnoreCase("editVehicleType")){
 				System.out.println("editVehicleType action");
 				String errorMessage = "";
-				VehicleType vType = (VehicleType)ctx.getAttribute("vehicleType");
+				VehicleType vType = (VehicleType)session.getAttribute("vehicleType");
 				if (vType == null){
 					String vehicleType = request.getParameter("vehicleTypeID");
 					if (vehicleType ==  null || vehicleType.isEmpty()){
 						errorMessage = "No vehicle type requested.";
 					}else{
+						//Create vehicle type object
 						int vehicleTypeID = Integer.parseInt(vehicleType);
 						vType = ivtm.getVehicleType(vehicleTypeID);
 					}
-				}else{				
-					if (editVehicleType(request,ivtm,vType)){
-						request.setAttribute("errorMessage", "");
-						dispatcher = ctx.getRequestDispatcher("/managevehicletypes.jsp");
-					}else{
-						request.setAttribute("vehicleType", vType);
-						dispatcher = ctx.getRequestDispatcher("/editvehicletype.jsp");
-					}
 				}
+				if (editVehicleType(request,ivtm,vType)){
+					request.setAttribute("errorMessage", "");
+					dispatchedPage = "/managevehicletypes.jsp";
+				}else{
+					request.setAttribute("vehicleType", vType);
+					dispatchedPage = "/editvehicletype.jsp";
+				}
+			}else if (action.equalsIgnoreCase("deleteVehicleType")){
+				boolean result = deleteVehicleType(request,ivtm);
+				dispatchedPage = "/managevehicletypes.jsp";
 			}
 		}else{
 			request.setAttribute("errorMessage", "Unknown POST request");
-			dispatcher = ctx.getRequestDispatcher("/login.jsp");
+			dispatchedPage = "/login.jsp";
 		}
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
 
-
+	/**
+	 * Edit a vehicle type.
+	 * @param request
+	 * @param ivtm
+	 * @param vType
+	 * @return
+	 */
 	private boolean editVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm, VehicleType vType){
 		String errorMessage = "";
 		int vehicleTypeID = vType.getId();
@@ -159,6 +171,7 @@ public class VehicleTypeManagement extends HttpServlet {
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
 				}else{
 					boolean isTypeInUse = ivtm.isTypeInUse(type);
+					//If the vehicle type has not been created OR the type is unchanged.
 					if (!isTypeInUse || type.equalsIgnoreCase(vType.getType())){
 						ivtm.updateVehicleType(vehicleTypeID,type, hourlyPrice, dailyPrice);
 						System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
@@ -178,6 +191,12 @@ public class VehicleTypeManagement extends HttpServlet {
 		return false;	
 	}
 
+	/**
+	 * Adding a Vehicle type
+	 * @param request
+	 * @param ivtm
+	 * @return
+	 */
 	private int addVehicleType(HttpServletRequest request, IVehicleTypeManager ivtm){
 		String errorMessage = "";
 		int vehicleTypeID = 0;
@@ -199,8 +218,13 @@ public class VehicleTypeManagement extends HttpServlet {
 				}else if (dailyPrice < 9){
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
 				}else{
-					vehicleTypeID = ivtm.addVehicleType(type, hourlyPrice, dailyPrice);
-					System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+					boolean isTypeInUse = ivtm.isTypeInUse(type);
+					if (!isTypeInUse){
+						vehicleTypeID = ivtm.addVehicleType(type, hourlyPrice, dailyPrice);
+						System.out.println(vehicleTypeID+"-"+type+"-"+hourlyPrice+"-"+dailyPrice);
+					}else{
+						errorMessage = "Vehicle type already in use.";
+					}
 				}
 			}
 		}catch(NumberFormatException e){
@@ -211,5 +235,38 @@ public class VehicleTypeManagement extends HttpServlet {
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return vehicleTypeID;	
+	}
+	
+	private boolean deleteVehicleType(HttpServletRequest request,IVehicleTypeManager ivtm){
+		String errorMessage = "";
+		String vehicleType = request.getParameter("vehicleTypeID");
+		if (vehicleType != null && !vehicleType.isEmpty()){
+			try{
+				int vehicleTypeID = Integer.parseInt(vehicleType);
+				//Get the number of vehicles using this type
+				int vehiclesOfThisType = ivtm.getCountOfVehicleType(vehicleTypeID);
+				if (vehiclesOfThisType > 0){
+					errorMessage = "Found " + vehiclesOfThisType + " vehicles using this type. Please re-assign them first before deleting this type.";
+				}else{
+					if (vehiclesOfThisType == -1){
+						errorMessage = "Vehicle Type not deleted.";
+					}else{
+						//User can return vehicle to any location 
+						//Delete vehicle type
+						if (!ivtm.deleteVehicleType(vehicleTypeID)){
+							errorMessage = "Error deleting vehicle type.";
+						}else{
+							return true;
+						}
+					}
+				}
+			}catch(NumberFormatException e){
+				request.setAttribute("errorMessage", "Invalid vehicle type id format.");
+			}
+		}else{
+			request.setAttribute("errorMessage", "Missing vehicle type id parameter.");
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
 	}
 }

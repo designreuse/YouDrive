@@ -1,5 +1,6 @@
 package com.youdrive.interfaces;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import com.youdrive.models.Membership;
@@ -16,11 +17,13 @@ public interface IMembershipManager {
 	/**
 	 * TODO remove to separate interface
 	 * @param id
-	 * @return
+	 * @return boolean
 	 */
-	public String deleteMembership(int id);
+	public boolean deleteMembership(int id);
 	public ArrayList<Membership> getAllMemberships();
 	public Membership getMembership(int id);
 	public boolean isNameInUse(String name);
 	public boolean updateMembership(int id, String name, double price, int duration);
+	int getUsersOnMembership(int membershipID);
+	boolean updateExpirationDate(Date expirationDate,int membershipLevel);
 }

@@ -105,12 +105,6 @@ public class Constants {
 				final Object obj = codes.get(errorCode);
 				int eCode = Integer.parseInt(errorCode);
 				errorCodes.put(eCode,obj.toString());
-				/*if(obj instanceof JSONObject){
-					final String errorExplanation = codes.getString(errorCode);
-					System.out.println(errorCode + " => " + errorExplanation);
-					int eCode = Integer.parseInt(errorCode);
-					errorCodes.put(eCode,errorExplanation);
-				}*/
 			}
 			System.out.println(errorCodes.size() + " items in map.");
 		} catch (Exception e){

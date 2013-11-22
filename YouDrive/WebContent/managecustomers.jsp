@@ -1,11 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+    pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="a" uri="/sortItems" %>
+<c:choose>
+	<c:when test="${searchType == null}">
+		<%-- Default sort is #2 i.e. by last name --%>
+		<c:set var="searchType" value="2"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="searchType" value="${searchType }"/>
+	</c:otherwise>
+</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
@@ -18,7 +28,20 @@
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-	<title>Edit Rental Location</title>
+<script type="text/javascript">
+	//Equivalent to $( document ).ready(function(){});
+	$(function() {
+		$('.navSort').click(function(){
+			//Get href value
+			//Set hidden input field
+			//Submit form which reloads the page
+			searchValue = $(this).attr('href').substring(1);
+			document.getElementById("searchType").value = searchValue;
+			$('#sortCustomerForm').submit();
+		});
+	});
+</script>
+<title>Manage Customers</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -66,32 +89,38 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-							<c:if test="${location != null }">
-								<div class="forms">
-									<form class="form-signin" method="post" action="LocationManagement" name="editLocation"
-										id="editLocation">
-											<label style="color:red;">Editing <c:out value="${location.name }"/></label>
-											<label for="locationName">Location Name:</label>
-											<input  required type="text"id="locationName" name="locationName"
-												value="<c:out value="${location.name }"/>" />
-											<br />
-											<label for="locationAddress">Location Address:</label>
-											<input  required type="text" id="locationAddress" name="locationAddress"
-												value="<c:out value="${location.address }"/>" />
-											<br />
-											<label for="capacity">Location Capacity:</label>
-											<input  required type="text" id="capacity" name="capacity"
-												value="<c:out value="${location.capacity }"/>" />
-											<br />
-											<input type="hidden" name="action" id="action" value="editLocation" />
-											<input type="hidden" name="locationID" id="locationID"
-												value="<c:out value="${location.id}" />" />
-											
-										<button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>
-										<button type="button" onclick="window.location.replace('managelocations.jsp')" class="btn btn-default btn-lg btn-block">Cancel</button>										
-									</form>
-								</div>
-							</c:if>
+						<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
+						<c:set var="allCustomers" value="${userMgr.getAllCustomers() }" scope="session"/>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th><a href="#2" class="navSort">Name</a></th>
+										<th><a href="#0" class="navSort">Username</a></th>
+										<th><a href="#3" class="navSort">Email</a></th>
+										<th><a href="#7" class="navSort">Membership Expiration</a></th>
+										<th>Edit</th>
+										<th>Delete</th>
+									</tr>
+									<c:forEach items="${a:userSort(allCustomers,searchType)}" var="user" varStatus="status">
+										<tr id="${ user.id}">
+											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
+											<td><c:out value="${ user.username}" /></td>
+											<td><c:out value="${ user.email}" /></td>
+											<td><c:out value="${ user.memberExpiration}"/></td>
+											<c:url value="UserManagement" var="url">
+												<c:param name="customerID" value="${user.id}" />
+											</c:url>
+											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+										</tr>
+									</c:forEach>
+								</table>	
+							</div>
+							<%-- Hidden form which gets submitted when user clicks on a clickable table heading --%>	
+							<form id="sortCustomerForm" name="sortCustomerForm" method="get" action="UserManagement">
+								<input type="hidden" id="action" name="action" value="sortCustomer"/>
+								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
 						</c:when>
 						<c:otherwise>
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
@@ -113,10 +142,10 @@
 		            <a class="list-group-item" href="adduser.jsp">Add Admin User</a>
 		            <a class="list-group-item" href="managevehicles.jsp">Manage Vehicles</a>
 		            <a class="list-group-item" href="managevehicletypes.jsp">Manage Vehicle Types</a>
-		            <a class="list-group-item active" href="managelocations.jsp">Manage Locations</a>
+		            <a class="list-group-item" href="managelocations.jsp">Manage Locations</a>
 		            <a class="list-group-item" href="managememberships.jsp">Manage Memberships</a>
 		            <a class="list-group-item" href="manageusers.jsp">Manage Admins</a>
-		            <a class="list-group-item" href="managecustomers.jsp">Manage Customers</a>
+		            <a class="list-group-item active" href="managecustomers.jsp">Manage Customers</a>
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
@@ -134,7 +163,7 @@
 	<!--/.container-->
 	
 		<!-- Modal -->
-	<d iv class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
 		aria-labelledby="aboutModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">

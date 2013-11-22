@@ -2,14 +2,6 @@
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<c:choose>
-	<c:when test="${searchType == null}">
-		<c:set var="searchType" value="0"/>
-	</c:when>
-	<c:otherwise>
-		<c:set var="searchType" value="${searchType }"/>
-	</c:otherwise>
-</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,18 +10,12 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
-	<link rel="stylesheet"
-		href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-	<title>View Comments For Vehicle #<c:out value="${vehicle.id }"/></title>
+	<title>Edit Customer Details</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -80,54 +66,61 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
-					<!-- Include choose block -->					
 					<c:choose>
-						<%-- Check if the vehicle object exists --%>
-						<c:when test="${vehicle != null }">	
-							<%-- True if person lands on this page w/o going through vehiclemanagement servlet --%>
-							<c:if test="${vehicleComments == null}">
-								<%-- Removing need to instantiate bean if vehicleMgr already exists in session --%>
-								<c:if test="${vehicleMgr == null }">
-									<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
-								</c:if>
-								<%-- set variable to hold the comments associated with the vehicle --%>
-								<c:set var="vehicleComments" value="${vehicleMgr.getVehicleComments(vehicle.id) }" scope="session" />
-							</c:if>			
-							
-							<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />
-								
-							<div class="table-responsive">
-								<table class="table table-condensed table-hover">
-									<tr>
-										<th class="hidden">ID</th>
-										<th><a href="#0" class="navSort">Date Created</a></th>
-										<th><a href="#1" class="navSort">Comment</a></th>
-										<th><a href="#2" class="navSort">Author</a></th>
-									</tr>
-									<c:forEach items="${vehicleComments}" var="comment" varStatus="status">
-										<tr>
-											<td class="hidden"><c:out value="${comment.id }"/></td>
-											<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short"  value="${comment.createdOn}" /></td>
-											<td><c:out value="${ comment.comment}" /></td>							
+						<c:when test="${loggedInUser != null }">
+							<c:choose>
+								<c:when test="${user != null }">
+									<div class="forms">
+										<form class="well" id="editCustomer" name="editCustomer" action="UserManagement" method="post">
+											<label for="firstName">First Name:</label> 
+											<input required type="text" id="firstName" name="firstName" value="${ user.firstName }"/><br />
+											<label for="lastName">Last Name:</label> 
+											<input required type="text" id="lastName" name="lastName" value="${ user.lastName }" /><br /> 
+											<label for="email">Email Address:</label> 
+											<input required type="email" id="email" name="email" value="${ user.email }"/><br />
+											<label for="username">Username:</label> 
+											<input required type="text" id="username" name="username" value="${ user.username }"/><br /> 
+											<label for="password">Password:</label>
+											<input required type="password" id="password" name="password" value="${ user.password }"/><br />
+											<label for="address">Address:</label>
+											<input id="address" name="address" value="${ user.address }"/><br />
+											<div class="license">
+												<label for="license">License:</label>
+												<input id="license" name="license" value="${ user.license }"/><br />
+												<label for="state">State:</label>
+												<input id="state" maxlength="2" name="state" value="${ user.state }"/><br />
+											</div>
+											<div class="payment">
+												<label for="ccType">Credit Card Type:</label>
+												<input id="ccType" name="ccType" value="${ user.ccType }"/><br />
+												<label for="ccNumber">Credit Card Number:</label>
+												<input id="ccNumber" name="ccNumber" maxlength="16" value="${ user.ccNumber }"/><br />
+												<label for="ccExpirationDate">Expiration Date:</label>
+												<input id="ccExpirationDate" name="ccExpirationDate" maxlength="7" value="${ user.ccExpirationDate }"/><br />
+												<label for="ccSecurityCode">Verification Code:</label>
+												<input id="ccSecurityCode" name="ccSecurityCode" value="${ user.ccSecurityCode }"/><br />
+											</div>				
+											<input type="hidden" id="id" name="id" value="${user.id }" />
+											<input type="hidden" id="action" name="action" value="CustomerEditUser"/>
+											<input type="submit" value="Update"/>
 											<c:choose>
-												<c:when test="${userMgr != null }">
-													<c:set var="author" value="${userMgr.getUser(comment.author) }" />
+												<c:when test="${loggedInUser.isAdmin()}">
+													<input type="button" onclick="window.location.replace('managecustomers.jsp')" value="Cancel"/>
 												</c:when>
 												<c:otherwise>
-													<c:set var="author" value="${comment.author }" />
+													<input type="button" onclick="window.location.replace('user.jsp')" value="Cancel"/>
 												</c:otherwise>
 											</c:choose>
-											<td><c:out value="${ author.username }" /></td>
-										</tr>
-									</c:forEach>
-								</table>
-								<button type="button" onclick="window.history.back()" class="btn btn-primary">Go Back</button> 
-							</div>
+										</form>
+									</div>
+								</c:when>
+								<c:otherwise>
+									<p class="error">User not found.</p>
+								</c:otherwise>
+							</c:choose>
 						</c:when>
 						<c:otherwise>
-							<p class="error">
-								Vehicle not found.
-							</p>
+							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -194,7 +187,7 @@
 	<!--/.container-->
 	
 		<!-- Modal -->
-	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+	<d iv class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
 		aria-labelledby="aboutModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">

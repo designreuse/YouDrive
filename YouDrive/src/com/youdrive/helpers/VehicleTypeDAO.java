@@ -21,6 +21,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	private PreparedStatement updateVehicleTypeStmt;
 	private PreparedStatement allVehicleTypesStmt;
 	private PreparedStatement checkVehicleTypeStmt;
+	private PreparedStatement countTypeInUsestmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -31,9 +32,10 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			allVehicleTypesStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES + " order by type");
 			getVehicleTypeStmt = conn.prepareStatement("select * from " + Constants.VEHICLE_TYPES + " where id = ?");
 			addVehicleTypeStmt = conn.prepareStatement("insert into " + Constants.VEHICLE_TYPES + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where type = ?");			
+			deleteVehicleTypeStmt = conn.prepareStatement("delete from " + Constants.VEHICLE_TYPES + " where id = ?");			
 			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
 			checkVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES  + " where type = ?");
+			countTypeInUsestmt = conn.prepareStatement("select count(*) from Vehicles v left outer join VehicleTypes vt on vt.id = v.vehicleType where vt.id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleTypeDAO");
 		}catch(SQLException e){
@@ -44,12 +46,12 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	}
 	
 	@Override
-	public String deleteVehicleType(String type) {
+	public boolean deleteVehicleType(int id) {
 		String errorCode = "";
 		try{
-			deleteVehicleTypeStmt.setString(1, type);
+			deleteVehicleTypeStmt.setInt(1, id);
 			deleteVehicleTypeStmt.executeUpdate();
-			return errorCode;
+			return true;
 		}catch(SQLException e){
 			errorCode = String.valueOf(e.getErrorCode());
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -57,7 +59,7 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			errorCode = "Error";
 			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
-		return errorCode;
+		return false;
 	}
 
 	
@@ -154,4 +156,22 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 		}
 		return false;
 	}
+
+	@Override
+	public int getCountOfVehicleType(int typeID) {
+		int result = 0;
+		try{
+			countTypeInUsestmt.setInt(1,typeID);
+			ResultSet rs = countTypeInUsestmt.executeQuery();
+			if (rs.next()){
+				result = rs.getInt(1);
+			}
+			return result;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isTypeInUse method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return -1;
+	}	
 }

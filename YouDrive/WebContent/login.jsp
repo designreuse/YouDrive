@@ -11,6 +11,11 @@
 <link rel="stylesheet" href="css/signin.css">
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <title>Login to YouDrive!</title>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
 	<div class="logo">YouDrive</div>
@@ -25,22 +30,8 @@
 			<input type="hidden" id="action" name="action" value="login" /> 
 			<button class="btn btn-lg btn-primary btn-block" type="submit" id="action" name="action" value="login">login</button>
 			<button class="btn btn-lg btn-block" type="reset">Reset</button>
+			<button class="btn btn-lg btn-default btn-block" onclick="window.location.replace('registration_page1.jsp')">Register</button>
 		</form>
-	</div> 
-	
-	 <%--	<c:out value="${errorMessage }" />
-      <form class="form-signin" id="userLogin" name="userLogin" action="UserManagement" method="post">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required autofocus>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-		<!--   
-		<label class="checkbox">
-          <input type="checkbox" value="remember-me"> Remember me
-        </label> -->
-        <input type="hidden" id="action" name="action" value="login" /> 
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        <button class="btn btn-lg btn-block" type="reset">Reset</button>
-      </form>--%>
-
+	</div>
 </body>
 </html>

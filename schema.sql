@@ -36,6 +36,7 @@ ccExpirationDate varchar(7),
 isAdmin boolean,
 memberExpiration date,
 membershipLevel int,
+registrationDate date not null,
 FOREIGN KEY (membershipLevel) references Memberships(id)
 ) Engine=InnoDB;
 
@@ -60,7 +61,6 @@ id int not null primary key auto_increment,
 customerID int not null,
 locationID int not null,
 vehicleID int not null,
-timePickup datetime not null,
 reservationStart datetime not null,
 reservationEnd datetime  not null,
 FOREIGN KEY (customerID) references Users(id),
@@ -68,9 +68,17 @@ FOREIGN KEY (locationID) references Locations(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
 
+create table ReservationStatus(
+id int not null primary key auto_increment,
+reservationID int not null,
+dateAdded datetime not null,
+reservationStatus ENUM ('Created', 'Cancelled', 'Returned')  not null,
+FOREIGN KEY (reservationID) references Reservations(id)
+) Engine=InnoDB;
+
 create table Comments(
 id int not null primary key auto_increment,
-createdOn date not null,
+createdOn datetime not null,
 comment text not null,
 author int not null,
 vehicleID int not null,

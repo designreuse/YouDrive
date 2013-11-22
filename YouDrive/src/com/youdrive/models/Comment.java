@@ -1,8 +1,11 @@
 package com.youdrive.models;
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
 
-public class Comment {
+public class Comment implements Serializable{
+
+	private static final long serialVersionUID = 2021719194603518184L;
 	private int id;
 	private Date createdOn;
 	private String comment;
