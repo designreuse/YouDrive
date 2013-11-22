@@ -98,7 +98,7 @@
 									<c:forEach items="${vehicleComments}" var="comment" varStatus="status">
 										<tr>
 											<td class="hidden"><c:out value="${comment.id }"/></td>
-											<td><fmt:formatDate type="date" value="${comment.createdOn}" /></td>
+											<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short"  value="${comment.createdOn}" /></td>
 											<td><c:out value="${ comment.comment}" /></td>							
 											<c:choose>
 												<c:when test="${userMgr != null }">

@@ -78,7 +78,7 @@ FOREIGN KEY (reservationID) references Reservations(id)
 
 create table Comments(
 id int not null primary key auto_increment,
-createdOn date not null,
+createdOn datetime not null,
 comment text not null,
 author int not null,
 vehicleID int not null,

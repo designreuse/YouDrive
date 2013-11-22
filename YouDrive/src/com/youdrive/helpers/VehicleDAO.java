@@ -290,13 +290,19 @@ public class VehicleDAO implements IVehicleManager {
 		return results;
 	}
 	
+	private static java.sql.Timestamp getCurrentTimeStamp() {		 
+		java.util.Date today = new java.util.Date();
+		return new java.sql.Timestamp(today.getTime());
+	 
+	}
+	
 	@Override
 	public int addVehicleComment(int vehicleID, String comment, int author){
 		int commentID = 0;
 		try{
-			java.util.Date d = Calendar.getInstance().getTime();
-			java.sql.Date sd = new java.sql.Date(d.getTime());
-			addVehicleCommentStmt.setDate(1, sd);
+			//java.util.Date d = Calendar.getInstance().getTime();
+			//java.sql.Date sd = new java.sql.Date(d.getTime());
+			addVehicleCommentStmt.setTimestamp(1, getCurrentTimeStamp());
 			addVehicleCommentStmt.setString(2, comment);
 			addVehicleCommentStmt.setInt(3, author);
 			addVehicleCommentStmt.setInt(4, vehicleID);
