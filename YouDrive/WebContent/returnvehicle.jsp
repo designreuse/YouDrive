@@ -17,7 +17,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
-	<title>My Membership</title>
+	<title>Return Vehicle</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -64,7 +64,7 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>My Membership</p>
+							<p>Return Vehicle</p>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -76,8 +76,8 @@
 				<div class="list-group">
 					<a class="list-group-item"><strong>Navigation</strong></a>
 		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
-		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
-		            <a class="list-group-item active" href="usermembership.jsp">My Membership</a>		            
+		            <a class="list-group-item active" href="returnvehicle.jsp">Return Vehicle</a>
+		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		            
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
