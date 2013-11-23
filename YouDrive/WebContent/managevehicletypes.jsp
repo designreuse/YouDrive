@@ -31,35 +31,35 @@
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-<script type="text/javascript">
-	//Equivalent to $( document ).ready(function(){});
-	$(function() {
-		$('.navSort').click(function(){
-			//Get href value
-			//Set hidden input field
-			//Submit form which reloads the page
-			searchValue = $(this).attr('href').substring(1);
-			document.getElementById("searchType").value = searchValue;
-			$('#sortVehicleTypeForm').submit();
+	<script type="text/javascript">
+		//Equivalent to $( document ).ready(function(){});
+		$(function() {
+			$('.navSort').click(function(){
+				//Get href value
+				//Set hidden input field
+				//Submit form which reloads the page
+				searchValue = $(this).attr('href').substring(1);
+				document.getElementById("searchType").value = searchValue;
+				$('#sortVehicleTypeForm').submit();
+			});
+			
 		});
 		
-	});
-	
-	/* submit the hidden form to delete the vehicle but need to confirm with user first*/
-	function getVehicleTypeID(vehicleTypeID, vehicleType){
-		// confirm dialog
-		alertify.confirm("You are about to delete " + vehicleType + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
-		    if (e) {
-		    	console.log("OK clicked.");
-				document.getElementById("vehicleTypeID").value = vehicleTypeID;
-				$('#deleteVehicleTypeForm').submit();
-		    } else {
-		        console.log("Cancel clicked.");
-		    }
-		});
-		console.log(vehicleTypeID);
-	}
-</script>
+		/* submit the hidden form to delete the vehicle but need to confirm with user first*/
+		function getVehicleTypeID(vehicleTypeID, vehicleType){
+			// confirm dialog
+			alertify.confirm("You are about to delete " + vehicleType + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("vehicleTypeID").value = vehicleTypeID;
+					$('#deleteVehicleTypeForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(vehicleTypeID);
+		}
+	</script>
 <title>Manage Vehicle Types</title>
 </head>
 <body>

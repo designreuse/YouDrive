@@ -31,4 +31,6 @@ public interface IReservationManager {
 
 	ArrayList<Reservation> getReservationsByLocationAndVehicle(int locationID,
 			int vehicleID, Date startDate, Date stopDate);
+
+	int checkIfLocationInUse(int locationID);
 }

@@ -24,6 +24,7 @@ public class LocationDAO implements ILocationManager {
 	private PreparedStatement getVehiclesByLocationStmt;
 	private PreparedStatement updateLocationStmt;
 	private PreparedStatement checkLocationNameStmt;
+	private PreparedStatement countLocationInUseStmt;
 	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
 		
@@ -34,12 +35,13 @@ public class LocationDAO implements ILocationManager {
 			getLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_ID + " = ?");
 			getLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_NAME + " = ?");
 			addLocationStmt = conn.prepareStatement("insert into " + Constants.LOCATIONS + " values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			deleteLocationByNameStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_NAME + " = ?");
-			deleteLocationByIdStmt = conn.prepareStatement("select * from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_ID + " = ?");
+			deleteLocationByNameStmt = conn.prepareStatement("delete from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_NAME + " = ?");
+			deleteLocationByIdStmt = conn.prepareStatement("delete from " + Constants.LOCATIONS + " where " + Constants.LOCATIONS_ID + " = ?");
 			getVehiclesByLocationStmt = conn.prepareStatement("select count(*) from " + Constants.VEHICLES + " as v left outer join " 
 										+ Constants.LOCATIONS + " as l on l.id = v.assignedLocation where l.id = ?");
 			updateLocationStmt = conn.prepareStatement("update " + Constants.LOCATIONS + " set " + Constants.LOCATIONS_NAME + " = ?, " + Constants.LOCATIONS_ADDRESS + " = ?, " + Constants.LOCATIONS_CAPACITY + " = ? where " + Constants.LOCATIONS_ID + " = ?");
 			checkLocationNameStmt = conn.prepareStatement("select name from " + Constants.LOCATIONS + " where name = ?");
+			countLocationInUseStmt = conn.prepareStatement("select count(*) from Vehicles v left outer join Locations l on l.id = v.assignedLocation where l.id = ?");
 			System.out.println("Instantiated LocationDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -153,19 +155,17 @@ public class LocationDAO implements ILocationManager {
 	}
 
 	@Override
-	public String deleteLocationById(int id) {
-		String errorCode = "";
+	public boolean deleteLocationById(int id) {
 		try{
 			deleteLocationByIdStmt.setInt(1, id);
 			deleteLocationByIdStmt.executeUpdate();
+			return true;
 		}catch(SQLException e){
-			errorCode = String.valueOf(e.getErrorCode());
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			errorCode = "Error";
 			System.err.println("Problem with deleteLocationById method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
-		return errorCode;
+		return false;
 	}
 
 	@Override
@@ -251,4 +251,22 @@ public class LocationDAO implements ILocationManager {
 		}
 		return false;
 	}
+	
+	@Override
+	public int getCountOfLocations(int locationID) {
+		int result = 0;
+		try{
+			countLocationInUseStmt.setInt(1,locationID);
+			ResultSet rs = countLocationInUseStmt.executeQuery();
+			if (rs.next()){
+				result = rs.getInt(1);
+			}
+			return result;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with isTypeInUse method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return -1;
+	}	
 }

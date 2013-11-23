@@ -47,7 +47,7 @@ public interface ILocationManager {
 	 * @param id
 	 * @return
 	 */
-	public String deleteLocationById(int id);
+	public boolean deleteLocationById(int id);
 	/**
 	 * Delete a location by its name
 	 * @param name
@@ -69,4 +69,5 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public boolean isLocationNameInUse(String name);
+	int getCountOfLocations(int locationID);
 }

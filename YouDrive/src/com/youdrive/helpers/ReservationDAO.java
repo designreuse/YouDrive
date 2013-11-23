@@ -25,6 +25,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getReservationsByLocationIDStmt;
 	private PreparedStatement getReservationsByLocationAndVehicleStmt;
 	private PreparedStatement getAllReservationsStmt;
+	private PreparedStatement checkLocationsInFutureReservationsStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -44,6 +45,7 @@ public class ReservationDAO implements IReservationManager{
 			getReservationsByLocationIDStmt = conn.prepareStatement("select * from Reservations where locationID = ?");
 			getReservationsByLocationAndVehicleStmt = conn.prepareStatement("select * from Reservations where locationID = ? AND vehicleID = ?");
 			getAllReservationsStmt = conn.prepareStatement("select * from Reservations");
+			checkLocationsInFutureReservationsStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? AND reservationStart > NOW()");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -158,7 +160,7 @@ public class ReservationDAO implements IReservationManager{
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getReservationsInRangeByVehicle method: " + e.getClass().getName() + ": " + e.getMessage());	
+			System.err.println("Problem with getReservationsInRangeByLocation method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return results;
 	}
@@ -182,7 +184,7 @@ public class ReservationDAO implements IReservationManager{
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getReservationsInRangeByVehicle method: " + e.getClass().getName() + ": " + e.getMessage());	
+			System.err.println("Problem with getReservationsByLocationAndVehicle method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return results;
 	}
@@ -201,8 +203,24 @@ public class ReservationDAO implements IReservationManager{
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getReservationsInRangeByVehicle method: " + e.getClass().getName() + ": " + e.getMessage());	
+			System.err.println("Problem with getReservationsByLocationAndVehicleCount method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return 0;
+	}
+	
+	@Override
+	public int checkIfLocationInUse(int locationID){
+		try{
+			checkLocationsInFutureReservationsStmt.setInt(1, locationID);
+			ResultSet rs = checkLocationsInFutureReservationsStmt.executeQuery();
+			if (rs.next()){
+				return rs.getInt(1);
+			}	
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return -1;
 	}
 }
