@@ -1,6 +1,7 @@
 package com.youdrive.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Reservation  implements Serializable{
@@ -13,6 +14,11 @@ public class Reservation  implements Serializable{
 	/* Use getTimestamp*/
 	private Date reservationStart;
 	private Date reservationEnd;
+	//ArrayList<ReservationStatus> reservationStatusList = new ArrayList<ReservationStatus>();
+	ReservationStatus reservationStatus;
+	Vehicle vehicle;
+	VehicleType vehicleType;
+	
 	
 	public Reservation(int id, int customerID, int locationID, int vehicleID, Date reservationStart, Date reservationEnd) {
 		this.id = id;
@@ -31,6 +37,7 @@ public class Reservation  implements Serializable{
 		this.id = id;
 	}
 
+	
 	public int getCustomerID() {
 		return customerID;
 	}
@@ -69,6 +76,30 @@ public class Reservation  implements Serializable{
 
 	public void setReservationEnd(Date reservationEnd) {
 		this.reservationEnd = reservationEnd;
+	}
+
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public VehicleType getVehicleType() {
+		return vehicleType;
+	}
+
+	public void setVehicleType(VehicleType vehicleType) {
+		this.vehicleType = vehicleType;
+	}
+
+	public ReservationStatus getReservationStatus() {
+		return reservationStatus;
+	}
+
+	public void setReservationStatus(ReservationStatus reservationStatus) {
+		this.reservationStatus = reservationStatus;
 	}
 	
 }

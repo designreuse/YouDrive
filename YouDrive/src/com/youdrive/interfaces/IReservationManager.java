@@ -88,4 +88,12 @@ public interface IReservationManager {
 	 * @return int
 	 */
 	public int checkIfLocationInUse(int locationID);
+
+	public ArrayList<Reservation> getAllReturnedReservations();
+
+	public ArrayList<Reservation> getAllCancelledReservations();
+
+	public ArrayList<Reservation> getAllOpenReservations();
+
+	ArrayList<Reservation> getAllReservations();
 }

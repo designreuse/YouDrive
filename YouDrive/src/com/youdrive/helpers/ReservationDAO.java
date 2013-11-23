@@ -6,9 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.models.Reservation;
+import com.youdrive.models.ReservationStatus;
+import com.youdrive.models.Vehicle;
+import com.youdrive.models.VehicleType;
 import com.youdrive.util.ConnectionManager;
 import com.youdrive.util.Constants;
 
@@ -24,7 +28,11 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getReservationsByVehicleIDStmt;
 	private PreparedStatement getReservationsByLocationIDStmt;
 	private PreparedStatement getReservationsByLocationAndVehicleStmt;
+	private PreparedStatement getVehiclesStatusStmt;
 	private PreparedStatement getAllReservationsStmt;
+	private PreparedStatement getAllReturnedReservationsStmt;
+	private PreparedStatement getAllOpenReservationsStmt;
+	private PreparedStatement getAllCancelledReservationsStmt;
 	private PreparedStatement checkLocationsInFutureReservationsStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
@@ -44,8 +52,11 @@ public class ReservationDAO implements IReservationManager{
 			getReservationsByVehicleIDStmt = conn.prepareStatement("select * from Reservations where vehicleID = ?");
 			getReservationsByLocationIDStmt = conn.prepareStatement("select * from Reservations where locationID = ?");
 			getReservationsByLocationAndVehicleStmt = conn.prepareStatement("select * from Reservations where locationID = ? AND vehicleID = ?");
-			getAllReservationsStmt = conn.prepareStatement("select * from Reservations");
+			//getAllReservationsStmt = conn.prepareStatement("select * from Reservations");
 			checkLocationsInFutureReservationsStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? AND reservationStart > NOW()");
+			getVehiclesStatusStmt = conn.prepareStatement("select v.*, r.customerID,r.reservationStart,r.reservationEnd,vt.id as typeID,vt.type,vt.hourlyPrice,vt.dailyPrice from Vehicles v left outer join Reservations r on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType;");
+			getAllReturnedReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus = \"Returned\"");
+			getAllReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -222,5 +233,238 @@ public class ReservationDAO implements IReservationManager{
 			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return -1;
+	}
+	
+	@Override
+	public ArrayList<Reservation> getAllReturnedReservations(){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			ResultSet rs = getAllReturnedReservationsStmt.executeQuery();
+			while (rs.next()){
+				int vehicleID = rs.getInt(1);
+				String make = rs.getString(2);
+				String model = rs.getString(3);
+				int year = rs.getInt(4);
+				String tag = rs.getString(5);
+				int mileage = rs.getInt(6);
+				Date lastServiced = rs.getDate(7);
+				boolean isAvailable = rs.getBoolean(8);
+				int vehicleType = rs.getInt(9);
+				int assignedLocation = rs.getInt(10);
+				int reservationID = rs.getInt(11);
+				int customerID = rs.getInt(12);
+				Date reservationStart = rs.getDate(13);
+				Date reservationEnd = rs.getDate(14);
+				String vType = rs.getString(15);
+				double hourlyPrice = rs.getDouble(16);
+				double dailyPrice = rs.getDouble(17);
+				int reservationStatusID = rs.getInt(18);
+				Date dateAdded = rs.getDate(19);
+				String reservationStatus = rs.getString(20);
+				//Create Vehicle object
+				Vehicle v = new Vehicle();
+				v.setId(vehicleID);
+				v.setMake(make);
+				v.setModel(model);
+				v.setYear(year);
+				v.setTag(tag);
+				v.setMileage(mileage);
+				v.setLastServiced(lastServiced);
+				v.setAvailable(isAvailable);
+				v.setVehicleType(vehicleType);
+				v.setAssignedLocation(assignedLocation);
+				//Create VehicleType object
+				VehicleType vt = new VehicleType(vehicleType,vType,hourlyPrice,dailyPrice);
+				//Create ReservationStatus object
+				ReservationStatus rStatus = new ReservationStatus(reservationStatusID,reservationID,dateAdded,reservationStatus);
+				//Create Reservation object
+				Reservation temp = new Reservation(reservationID, customerID, assignedLocation, vehicleID, reservationStart, reservationEnd);
+				//Add the other objects to the Reservation object
+				temp.setVehicle(v);
+				temp.setVehicleType(vt);
+				temp.setReservationStatus(rStatus);
+				results.add(temp);
+			}	
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+
+	@Override
+	public ArrayList<Reservation> getAllReservations(){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			ResultSet rs = getAllReservationsStmt.executeQuery();
+			while (rs.next()){
+				int vehicleID = rs.getInt(1);
+				String make = rs.getString(2);
+				String model = rs.getString(3);
+				int year = rs.getInt(4);
+				String tag = rs.getString(5);
+				int mileage = rs.getInt(6);
+				Date lastServiced = rs.getDate(7);
+				boolean isAvailable = rs.getBoolean(8);
+				int vehicleType = rs.getInt(9);
+				int assignedLocation = rs.getInt(10);
+				int reservationID = rs.getInt(11);
+				int customerID = rs.getInt(12);
+				Date reservationStart = rs.getDate(13);
+				Date reservationEnd = rs.getDate(14);
+				String vType = rs.getString(15);
+				double hourlyPrice = rs.getDouble(16);
+				double dailyPrice = rs.getDouble(17);
+				int reservationStatusID = rs.getInt(18);
+				Date dateAdded = rs.getDate(19);
+				String reservationStatus = rs.getString(20);
+				//Create Vehicle object
+				Vehicle v = new Vehicle();
+				v.setId(vehicleID);
+				v.setMake(make);
+				v.setModel(model);
+				v.setYear(year);
+				v.setTag(tag);
+				v.setMileage(mileage);
+				v.setLastServiced(lastServiced);
+				v.setAvailable(isAvailable);
+				v.setVehicleType(vehicleType);
+				v.setAssignedLocation(assignedLocation);
+				//Create VehicleType object
+				VehicleType vt = new VehicleType(vehicleType,vType,hourlyPrice,dailyPrice);
+				//Create ReservationStatus object
+				ReservationStatus rStatus = new ReservationStatus(reservationStatusID,reservationID,dateAdded,reservationStatus);
+				//Create Reservation object
+				Reservation temp = new Reservation(reservationID, customerID, assignedLocation, vehicleID, reservationStart, reservationEnd);
+				//Add the other objects to the Reservation object
+				temp.setVehicle(v);
+				temp.setVehicleType(vt);
+				temp.setReservationStatus(rStatus);
+				results.add(temp);
+			}	
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+
+	@Override
+	public ArrayList<Reservation> getAllCancelledReservations() {
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			ResultSet rs = getAllReturnedReservationsStmt.executeQuery();
+			while (rs.next()){
+				int vehicleID = rs.getInt(1);
+				String make = rs.getString(2);
+				String model = rs.getString(3);
+				int year = rs.getInt(4);
+				String tag = rs.getString(5);
+				int mileage = rs.getInt(6);
+				Date lastServiced = rs.getDate(7);
+				boolean isAvailable = rs.getBoolean(8);
+				int vehicleType = rs.getInt(9);
+				int assignedLocation = rs.getInt(10);
+				int reservationID = rs.getInt(11);
+				int customerID = rs.getInt(12);
+				Date reservationStart = rs.getDate(13);
+				Date reservationEnd = rs.getDate(14);
+				String vType = rs.getString(15);
+				double hourlyPrice = rs.getDouble(16);
+				double dailyPrice = rs.getDouble(17);
+				int reservationStatusID = rs.getInt(18);
+				Date dateAdded = rs.getDate(19);
+				String reservationStatus = rs.getString(20);
+				//Create Vehicle object
+				Vehicle v = new Vehicle();
+				v.setId(vehicleID);
+				v.setMake(make);
+				v.setModel(model);
+				v.setYear(year);
+				v.setTag(tag);
+				v.setMileage(mileage);
+				v.setLastServiced(lastServiced);
+				v.setAvailable(isAvailable);
+				v.setVehicleType(vehicleType);
+				v.setAssignedLocation(assignedLocation);
+				//Create VehicleType object
+				VehicleType vt = new VehicleType(vehicleType,vType,hourlyPrice,dailyPrice);
+				//Create ReservationStatus object
+				ReservationStatus rStatus = new ReservationStatus(reservationStatusID,reservationID,dateAdded,reservationStatus);
+				//Create Reservation object
+				Reservation temp = new Reservation(reservationID, customerID, assignedLocation, vehicleID, reservationStart, reservationEnd);
+				//Add the other objects to the Reservation object
+				temp.setVehicle(v);
+				temp.setVehicleType(vt);
+				temp.setReservationStatus(rStatus);
+				results.add(temp);
+			}	
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+
+
+	@Override
+	public ArrayList<Reservation> getAllOpenReservations() {
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			ResultSet rs = getAllReturnedReservationsStmt.executeQuery();
+			while (rs.next()){
+				int vehicleID = rs.getInt(1);
+				String make = rs.getString(2);
+				String model = rs.getString(3);
+				int year = rs.getInt(4);
+				String tag = rs.getString(5);
+				int mileage = rs.getInt(6);
+				Date lastServiced = rs.getDate(7);
+				boolean isAvailable = rs.getBoolean(8);
+				int vehicleType = rs.getInt(9);
+				int assignedLocation = rs.getInt(10);
+				int reservationID = rs.getInt(11);
+				int customerID = rs.getInt(12);
+				Date reservationStart = rs.getDate(13);
+				Date reservationEnd = rs.getDate(14);
+				String vType = rs.getString(15);
+				double hourlyPrice = rs.getDouble(16);
+				double dailyPrice = rs.getDouble(17);
+				int reservationStatusID = rs.getInt(18);
+				Date dateAdded = rs.getDate(19);
+				String reservationStatus = rs.getString(20);
+				//Create Vehicle object
+				Vehicle v = new Vehicle();
+				v.setId(vehicleID);
+				v.setMake(make);
+				v.setModel(model);
+				v.setYear(year);
+				v.setTag(tag);
+				v.setMileage(mileage);
+				v.setLastServiced(lastServiced);
+				v.setAvailable(isAvailable);
+				v.setVehicleType(vehicleType);
+				v.setAssignedLocation(assignedLocation);
+				//Create VehicleType object
+				VehicleType vt = new VehicleType(vehicleType,vType,hourlyPrice,dailyPrice);
+				//Create ReservationStatus object
+				ReservationStatus rStatus = new ReservationStatus(reservationStatusID,reservationID,dateAdded,reservationStatus);
+				//Create Reservation object
+				Reservation temp = new Reservation(reservationID, customerID, assignedLocation, vehicleID, reservationStart, reservationEnd);
+				//Add the other objects to the Reservation object
+				temp.setVehicle(v);
+				temp.setVehicleType(vt);
+				temp.setReservationStatus(rStatus);
+				results.add(temp);
+			}	
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
 	}
 }

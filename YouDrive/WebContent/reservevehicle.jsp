@@ -91,7 +91,7 @@
 											</c:forEach>
 										</select>
 									</div>
-									<%--
+									
 									<div class="form-group">
 										<label for="selectVehicleType">Choose Vehicle Type:</label>
 										<select id="selectVehicleType" name="selectVehicleType" class="form-control">
@@ -99,7 +99,7 @@
 												<option value="${ vehicleType.id}"><c:out value="${ vehicleType.type}" /></option>
 											</c:forEach>
 										</select>
-									</div>--%>
+									</div>
 									<div class="form-group">
 										<label for="pickupDate">Pickup Date</label>
 										<input class="form-control" type="text" id="pickupDate" name="pickupDate" required />
