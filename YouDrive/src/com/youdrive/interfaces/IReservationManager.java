@@ -96,4 +96,6 @@ public interface IReservationManager {
 	public ArrayList<Reservation> getAllOpenReservations();
 
 	ArrayList<Reservation> getAllReservations();
+
+	ArrayList<Reservation> getVehiclesInUse(int vehicleID);
 }

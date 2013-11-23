@@ -31,6 +31,8 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getVehiclesStatusStmt;
 	private PreparedStatement getAllReservationsStmt;
 	private PreparedStatement getAllReturnedReservationsStmt;
+	private PreparedStatement getVehiclesInUseStmt;
+	private PreparedStatement isVehicleInUseRangeStmt;
 	private PreparedStatement getAllOpenReservationsStmt;
 	private PreparedStatement getAllCancelledReservationsStmt;
 	private PreparedStatement checkLocationsInFutureReservationsStmt;
@@ -57,6 +59,8 @@ public class ReservationDAO implements IReservationManager{
 			getVehiclesStatusStmt = conn.prepareStatement("select v.*, r.customerID,r.reservationStart,r.reservationEnd,vt.id as typeID,vt.type,vt.hourlyPrice,vt.dailyPrice from Vehicles v left outer join Reservations r on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType;");
 			getAllReturnedReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus = \"Returned\"");
 			getAllReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id");
+			getVehiclesInUseStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.vehicleID = ? AND (rs.reservationStatus != \"Cancelled\" OR rs.reservationStatus != \"Returned\")");
+			isVehicleInUseRangeStmt = conn.prepareStatement("select * from Reservations where vehicleID = ? AND reservationStart >= ? AND reservationEnd <= ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -66,7 +70,28 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
-
+	@Override
+	public ArrayList<Reservation> getVehiclesInUse(int vehicleID){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			getVehiclesInUseStmt.setInt(1,vehicleID);
+			ResultSet rs = getVehiclesInUseStmt.executeQuery();
+			while (rs.next()){
+				int reservationID = rs.getInt("id");
+				int customerID = rs.getInt("customerID");
+				int locationID = rs.getInt("locationID");
+				java.util.Date sd = rs.getDate("reservationStart");
+				java.util.Date ed = rs.getDate("reservationEnd");
+				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getVehiclesInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
 	@Override
 	public int getVehicleReservationRangeCount(int vehicleID, java.util.Date startDate, java.util.Date stopDate){
 		try{

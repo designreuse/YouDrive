@@ -88,4 +88,5 @@ public interface IVehicleManager {
 	 */
 	public ArrayList<Comment> getVehicleComments(int vehicleID);
 	public  int addVehicleComment(int vehicleID, String comment, int author);
+	public ArrayList<Vehicle> getAllVehiclesByLocationAndType(int locationID, int vehicleTypeID);
 }

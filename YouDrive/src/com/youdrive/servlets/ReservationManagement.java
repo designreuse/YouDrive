@@ -3,6 +3,7 @@ package com.youdrive.servlets;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,8 +18,12 @@ import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.ReservationDAO;
+import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IReservationManager;
+import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.models.Reservation;
+import com.youdrive.models.Vehicle;
 
 /**
  * Servlet implementation class ReservationManagement
@@ -50,21 +55,29 @@ public class ReservationManagement extends HttpServlet {
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
 		IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");
+		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
 		if (irm == null){
 			irm = new ReservationDAO();
 			session.setAttribute("reservationMgr", irm);
+		}		
+		if (ivm == null){
+			ivm = new VehicleDAO();
+			session.setAttribute("vehicleMgr", ivm);
 		}
 		String dispatchedPage = "/user.jsp";
 		String action = request.getParameter("action");
 		if (action != null && !action.isEmpty()){
 			if (action.equalsIgnoreCase("checkAvailableVehicles")){
 				String location = request.getParameter("selectLocation");
+				String vehicleType = request.getParameter("selectVehicleType");
 				String pickupDate = request.getParameter("pickupDate");
 				String pickupTime = request.getParameter("pickupTime");
 				String dropoffDate = request.getParameter("dropoffDate");
 				String dropoffTime = request.getParameter("dropoffTime");
 				if (location == null || location.isEmpty()){
 					request.setAttribute("errorMessage","Missing a location");
+				}else if (vehicleType == null || vehicleType.isEmpty()){
+					request.setAttribute("errorMessage", "Missing vehicle type selection.");
 				}else if (pickupDate == null || pickupDate.isEmpty()){
 					request.setAttribute("errorMessage","Missing a pickup date");
 				}else if (pickupTime == null || pickupTime.isEmpty()){
@@ -79,6 +92,22 @@ public class ReservationManagement extends HttpServlet {
 						//validate times
 						if (isTimeValid(pickupTime) && isTimeValid(dropoffTime)){
 							//validate proper location
+							int locationID = Integer.parseInt(location);
+							int vehicleTypeID = Integer.parseInt(vehicleType);
+							ArrayList<Vehicle> vehiclesOfLocationAndType = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
+							int size = vehiclesOfLocationAndType.size();
+							if (size == 0){
+								request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
+							}else{
+								ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+								for (Vehicle v : vehiclesOfLocationAndType){
+									//Check if this vehicle is in use i.e. in reservations table and not cancelled or returned.
+									ArrayList<Reservation> rv = irm.getVehiclesInUse(v.getId());
+									
+									//If vehicle is not in use in reservations table, add to results
+									//If it is, check that it is not in use during the start And End date. THEN, add to results
+								}
+							}
 						}else{
 							request.setAttribute("errorMessage", "Invalid pickup or dropoff times. Please use the values in the dropdown box.");
 						}
@@ -86,17 +115,19 @@ public class ReservationManagement extends HttpServlet {
 						request.setAttribute("errorMessage", "Invalid pickup date or dropoff date. Please enter your dates in this form: MM/DD/YYYY.");
 					}
 				}
+				dispatchedPage = "/reservevehicle.jsp";
 			}else{
-				
-			}
-			
+				//
+				dispatchedPage = "/user.jsp";
+			}			
 		}else{
-			
+			request.setAttribute("errorMessage", "Unknown POST request.");
+			dispatchedPage = "/user.jsp";
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
-	
+
 	
 	//http://www.mkyong.com/java/how-to-check-if-date-is-valid-in-java/
 	/**

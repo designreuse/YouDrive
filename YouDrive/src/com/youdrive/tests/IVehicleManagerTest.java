@@ -2,10 +2,13 @@ package com.youdrive.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.models.Vehicle;
 
 public class IVehicleManagerTest {
 	private IVehicleManager ivm = new VehicleDAO();
@@ -40,5 +43,11 @@ public class IVehicleManagerTest {
 	@Test
 	public void testDeleteVehicle() {
 		fail("Not yet implemented");
+	}
+	
+	@Test 
+	public void getbyLocandtype(){
+		ArrayList<Vehicle> res = ivm.getAllVehiclesByLocationAndType(4, 3);
+		assertEquals("getbylocaandtype",1,res.size());
 	}
 }

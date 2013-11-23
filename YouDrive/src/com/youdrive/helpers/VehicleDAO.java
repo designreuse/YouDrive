@@ -25,6 +25,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement deleteVehicleStmt;
 	private PreparedStatement getVehicleTypeStmt;
 	private PreparedStatement getVehiclesByLocationIdStmt;
+	private PreparedStatement getVehiclesByLocationAndTypeStmt;
 	private PreparedStatement getVehiclesByLocationNameStmt;
 	private PreparedStatement getVehicleCommentsStmt;
 	private PreparedStatement addVehicleCommentStmt;
@@ -47,6 +48,7 @@ public class VehicleDAO implements IVehicleManager {
 			updateVehicleStmt = conn.prepareStatement("update " + Constants.VEHICLES + " set make = ?, model = ?, year = ?,tag=?,mileage=?,lastServiced=?,vehicleType=?,assignedLocation=? where id = ?");
 			getVehicleCommentsStmt = conn.prepareStatement("select * from Comments where vehicleID = ?");
 			addVehicleCommentStmt = conn.prepareStatement("insert into Comments values (DEFAULT,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			getVehiclesByLocationAndTypeStmt = conn.prepareStatement("select v.*,vt.type,vt.hourlyPrice,vt.dailyPrice,l.name,l.capacity from Vehicles v left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join Locations l on l.id = v.assignedLocation where l.id = ? and vt.id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -82,6 +84,38 @@ public class VehicleDAO implements IVehicleManager {
 		return results;
 	}
 
+	@Override
+	public ArrayList<Vehicle> getAllVehiclesByLocationAndType(int locationID, int vehicleTypeID){
+		ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+		try{
+			getVehiclesByLocationAndTypeStmt.setInt(1, locationID);
+			getVehiclesByLocationAndTypeStmt.setInt(2, vehicleTypeID);
+			ResultSet rs = getVehiclesByLocationAndTypeStmt.executeQuery();
+			while (rs.next()){
+				int id = rs.getInt(1);
+				String make = rs.getString(2);
+				String model = rs.getString(3);
+				int year = rs.getInt(4);
+				String tag = rs.getString(5);
+				int mileage = rs.getInt(6);
+				Date lastServiced = rs.getTimestamp(7);
+				boolean isAvailable = rs.getBoolean(8);
+				int vehicleType = rs.getInt(9);
+				int assignedLocation = rs.getInt(10);
+				/*String type = rs.getString(11);
+				double hourlyPrice = rs.getDouble(12);
+				double dailyPrice = rs.getDouble(13);
+				String locationName = rs.getString(14);
+				int locationCapacity = rs.getInt(15);*/
+				results.add(new Vehicle(id,make,model,year,tag,mileage,lastServiced,isAvailable,vehicleType,assignedLocation));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllVehicles method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return results;
+	}
 
 	@Override
 	public Vehicle getVehicle(int vehicleID) {

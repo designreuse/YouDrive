@@ -23,7 +23,7 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		int count = irm.getVehicleReservationRangeCount(1, start,end);
+		int count = irm.getVehicleReservationRangeCount(6, start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,count);
 	}
 
@@ -35,7 +35,7 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		int count = irm.getLocationReservationRangeCount(1, start,end);
+		int count = irm.getLocationReservationRangeCount(2, start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,count);
 	}
 	
@@ -47,7 +47,7 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		ArrayList<Reservation> res = irm.getReservationsInRangeByVehicle(1,start,end);
+		ArrayList<Reservation> res = irm.getReservationsInRangeByVehicle(3,start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,res.size());
 	}
 	
@@ -60,7 +60,7 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		ArrayList<Reservation> res = irm.getReservationsInRangeByLocation(1,start,end);
+		ArrayList<Reservation> res = irm.getReservationsInRangeByLocation(4,start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,res.size());
 	}
 	
@@ -73,7 +73,7 @@ public class IReservationManagerTest {
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
 		ArrayList<Reservation> res = irm.getAllReservationsInRange(start,end);
-		assertEquals("testGetVehicleReservationRangeCount",1,res.size());
+		assertEquals("testGetVehicleReservationRangeCount",2,res.size());
 	}
 	
 	@Test
@@ -84,7 +84,7 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		ArrayList<Reservation> res = irm.getReservationsByLocationAndVehicle(1, 1,start,end);
+		ArrayList<Reservation> res = irm.getReservationsByLocationAndVehicle(2, 6,start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,res.size());
 	}
 	
@@ -96,19 +96,14 @@ public class IReservationManagerTest {
 		Date start = cal.getTime();
 		cal.add(Calendar.MONTH, 5);
 		Date end = cal.getTime();
-		int count = irm.getReservationsByLocationAndVehicleCount(1, 1,start,end);
+		int count = irm.getReservationsByLocationAndVehicleCount(2, 6,start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,count);
 	}
-	
-	@Test
-	public void getAllReservations(){
-		ArrayList<Reservation> results = irm.getAllReservations();
-		assertEquals("getAllReservations",1,results.size());
-	}
+
 	
 	@Test
 	public void getAllReturnedReservations(){
 		ArrayList<Reservation> results = irm.getAllReturnedReservations();
-		assertEquals("getAllReturnedReservations",0,results.size());
+		assertEquals("getAllReturnedReservations",1,results.size());
 	}
 }

@@ -33,7 +33,7 @@ CREATE TABLE `Comments` (
   KEY `vehicleID` (`vehicleID`),
   CONSTRAINT `Comments_ibfk_1` FOREIGN KEY (`author`) REFERENCES `Users` (`id`),
   CONSTRAINT `Comments_ibfk_2` FOREIGN KEY (`vehicleID`) REFERENCES `Vehicles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `Comments` (
 
 LOCK TABLES `Comments` WRITE;
 /*!40000 ALTER TABLE `Comments` DISABLE KEYS */;
-INSERT INTO `Comments` VALUES (1,'2013-11-21 21:42:37','Test comment about Dodge Durango.',1,3),(2,'2013-11-21 21:42:55','Test comment about this dummy car.',1,5),(3,'2013-11-21 21:43:35','Comment about Hyundai Elantra.',1,2),(4,'2013-11-21 21:45:23','Another comment about this dummy car.',1,5),(5,'2013-11-21 22:42:26','The customer damaged this vehicle.',1,3);
+INSERT INTO `Comments` VALUES (1,'2013-11-21 21:42:37','Test comment about Dodge Durango.',1,3),(2,'2013-11-21 21:42:55','Test comment about this dummy car.',1,5),(3,'2013-11-21 21:43:35','Comment about Hyundai Elantra.',1,2),(4,'2013-11-21 21:45:23','Another comment about this dummy car.',1,5),(5,'2013-11-21 22:42:26','The customer damaged this vehicle.',1,3),(6,'2013-11-22 19:20:01','This is a test comment on a test vehicle.',1,5),(7,'2013-11-22 22:04:56','This is a test comment.',1,1),(8,'2013-11-22 22:05:13','This is a test comment.',1,4);
 /*!40000 ALTER TABLE `Comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +60,7 @@ CREATE TABLE `Locations` (
   `capacity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +69,7 @@ CREATE TABLE `Locations` (
 
 LOCK TABLES `Locations` WRITE;
 /*!40000 ALTER TABLE `Locations` DISABLE KEYS */;
-INSERT INTO `Locations` VALUES (1,'Downtown Location','123 East Broadstreet Rd, Athens GA 30602',2),(2,'Five Points Location','456 S Milledge Ave, Athens GA 30605',5),(3,'Westside Location','789 Olympic Drive, Athens GA 30601',100),(4,'Epps Bridge Location','379 Epps Bridge Pkwy, Athens Ga 30601',20);
+INSERT INTO `Locations` VALUES (1,'Downtown Location','123 East Broadstreet Rd, Athens GA 30602',2),(2,'Five Points Location','456 S Milledge Ave, Athens GA 30605',5),(3,'Westside Location','789 Olympic Drive, Athens GA 30601',100),(4,'Epps Bridge Location','379 Epps Bridge Pkwy, Athens Ga 30601',20),(6,'Dummy Locations','678 S Milledge Rd, Athens GA 30602',10);
 /*!40000 ALTER TABLE `Locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +87,7 @@ CREATE TABLE `Memberships` (
   `duration` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `Memberships` (
 
 LOCK TABLES `Memberships` WRITE;
 /*!40000 ALTER TABLE `Memberships` DISABLE KEYS */;
-INSERT INTO `Memberships` VALUES (2,'12 month plan',290.00,12),(3,'24 month plan',430.00,24),(4,'6 month plan',50.00,6);
+INSERT INTO `Memberships` VALUES (3,'24 month plan',430.00,24),(4,'6 month plan',50.00,6),(5,'12 month plan',120.00,12);
 /*!40000 ALTER TABLE `Memberships` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +115,7 @@ CREATE TABLE `ReservationStatus` (
   PRIMARY KEY (`id`),
   KEY `reservationID` (`reservationID`),
   CONSTRAINT `ReservationStatus_ibfk_1` FOREIGN KEY (`reservationID`) REFERENCES `Reservations` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,6 +124,7 @@ CREATE TABLE `ReservationStatus` (
 
 LOCK TABLES `ReservationStatus` WRITE;
 /*!40000 ALTER TABLE `ReservationStatus` DISABLE KEYS */;
+INSERT INTO `ReservationStatus` VALUES (1,1,'2013-11-23 13:13:18','Created'),(2,1,'2013-11-23 14:18:40','Returned'),(3,2,'2013-11-23 14:20:07','Created');
 /*!40000 ALTER TABLE `ReservationStatus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +149,7 @@ CREATE TABLE `Reservations` (
   CONSTRAINT `Reservations_ibfk_1` FOREIGN KEY (`customerID`) REFERENCES `Users` (`id`),
   CONSTRAINT `Reservations_ibfk_2` FOREIGN KEY (`locationID`) REFERENCES `Locations` (`id`),
   CONSTRAINT `Reservations_ibfk_3` FOREIGN KEY (`vehicleID`) REFERENCES `Vehicles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +158,7 @@ CREATE TABLE `Reservations` (
 
 LOCK TABLES `Reservations` WRITE;
 /*!40000 ALTER TABLE `Reservations` DISABLE KEYS */;
-INSERT INTO `Reservations` VALUES (1,1,1,1,'2013-11-22 15:51:58','2013-11-25 15:51:58');
+INSERT INTO `Reservations` VALUES (1,1,2,6,'2013-11-23 13:13:11','2013-11-26 13:13:11'),(2,1,4,3,'2013-11-23 14:20:07','2013-11-26 14:20:07');
 /*!40000 ALTER TABLE `Reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,7 +192,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `email` (`email`),
   KEY `membershipLevel` (`membershipLevel`),
   CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`membershipLevel`) REFERENCES `Memberships` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +201,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (1,'jane','test','Jane','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(2,'james','test','James','Vaughan',NULL,NULL,'jamesv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(3,'trevor','test','Trevor','Wilson',NULL,NULL,'trevv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(5,'test','test','Test','User','DE','15935B2564','test@example.com','123 Wisteria Ln, Athens GA 30605','Visa','1234123412341234','12','11/2014',0,'2014-05-22',4,'2013-11-21'),(6,'tester','test','Dummy','User','AL','werwrwr','dummy@example.com','werwre','MasterCard','1234123412341234','12','11/2014',0,'2014-05-22',4,'2013-11-21'),(7,'matt','test','Matt','Perry','AL','ABEWERWEW','matt@gmail.com','123 Talk About It','Mastercard','1234123412341234','236','11/2014',0,'2014-05-22',4,'2013-11-22'),(8,'rod','test','Rod','Rashidi',NULL,NULL,'rodr@uga.edu',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-22'),(9,'jd','test','Jane','Doe','AL','AB33744646','jane@doe.com','10 Downing Str, Athens GA 30602','Mastercard','1234456789652315','125','12/2014',0,'2015-11-22',3,'2013-11-22');
+INSERT INTO `Users` VALUES (1,'jane','test','Jane','Ullah',NULL,NULL,'janeullah@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(2,'james','test','James','Vaughan',NULL,NULL,'jamesv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(3,'trevor','test','Trevor','Wilson',NULL,NULL,'trevv@gmail.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-21'),(5,'test','test','Test','User','DE','15935B2564','test@example.com','123 Wisteria Ln, Athens GA 30605','Visa','1234123412341234','12','11/2014',0,'2014-05-22',4,'2013-11-21'),(6,'tester','test','Dummy','User','AL','werwrwr','dummy@example.com','werwre','MasterCard','1234123412341234','12','11/2014',0,'2014-05-22',4,'2013-11-21'),(7,'matt','test','Matt','Perry','AL','ABEWERWEW','matt@gmail.com','123 Talk About It','Mastercard','1234123412341234','236','11/2014',0,'2014-05-22',4,'2013-11-22'),(8,'rod','test','Rod','Rashidi',NULL,NULL,'rodr@uga.edu',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-22'),(9,'jd','test','Jane','Doe','AL','AB33744646','jane@doe.com','10 Downing Str, Athens GA 30602','Mastercard','1234456789652315','125','12/2014',0,'2015-11-22',3,'2013-11-22'),(10,'admin','test','Test','Admin',NULL,NULL,'admin@example.com',NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,'2013-11-23');
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,7 +256,7 @@ CREATE TABLE `Vehicles` (
   KEY `assignedLocation` (`assignedLocation`),
   CONSTRAINT `Vehicles_ibfk_1` FOREIGN KEY (`vehicleType`) REFERENCES `VehicleTypes` (`id`),
   CONSTRAINT `Vehicles_ibfk_2` FOREIGN KEY (`assignedLocation`) REFERENCES `Locations` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +265,7 @@ CREATE TABLE `Vehicles` (
 
 LOCK TABLES `Vehicles` WRITE;
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
-INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,1,1),(4,'Toyota','Camry',2005,'TYU48965',80000,'2013-11-05',0,1,3),(5,'Dummy','Dummy',2013,'ABCTALKAM',9000,'2013-11-20',0,1,4);
+INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,1,1),(4,'Toyota','Camry',2005,'TYU48965',80000,'2013-11-05',0,1,3),(5,'Dummy','Dummy',2013,'ABCTALKAM',9000,'2013-11-20',0,7,6),(6,'Lamborghini','Aventador Coupe',2013,'ABC124356',10000,'2013-11-03',0,1,2);
 /*!40000 ALTER TABLE `Vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -277,4 +278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-11-22 19:16:04
+-- Dump completed on 2013-11-23 14:38:06
