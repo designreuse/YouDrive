@@ -20,20 +20,18 @@ Folder structure:
 5. *com.youdrive.tests* -- Some junit tests (unfinished)
 6. *com.youdrive.util* -- Contains constants such as the table names in Constants.java and ConnectionManager singleton class to create a single Connection object.
 
+Project Status:
+
+1. Adds/Edits on the admin backend are 90% done.
+2. Deletions on the admin backend are completed except for Users and Vehicles
+3. Need to decide how we are handling reservations and account terminations
+
 Implementation Notes:
 
-1. Need to implement some persistent auth scheme to make sure person accessing admin pages is an actual admin
-2. Need adding of delete functionality
-3. Need more helpful user error messages
-4. Need better ui.
-5. All adds to the database return the added item's id or 0 if the addition failed
-6. All deletes and updates to the database return true if successful and false otherwise.
-7. 
+1. All adds to the database return the added item's id or 0 if the addition failed
+2. All deletes and updates to the database return true if successful and false otherwise.
+3. All counts return -1 if an exception occurred or n where n can be 0 which represents the count of whatever is being requested.
 
-Known Issues:
-
-1. <strike>managevehicles.jsp doesn't display the correct number of vehicles after adding a vehicle.</strike> Dumb error: used group by instead of order by
-2. regular user creation not working yet.
 
 
 Users table
