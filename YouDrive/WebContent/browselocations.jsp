@@ -48,7 +48,7 @@
 	</div>
 	<!-- /.navbar -->
 
-	<div class="container">
+	<div class="container">v
 
 		<div class="row row-offcanvas row-offcanvas-right">
 
@@ -68,7 +68,11 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Browse Locations</p>
+							<%-- Instantiate locationmgr if it doesn't exists --%>
+							<c:if test="${locationMgr == null }">						
+								<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
+							</c:if>		
+							<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
 						</c:otherwise>
 					</c:choose>
 				</div>

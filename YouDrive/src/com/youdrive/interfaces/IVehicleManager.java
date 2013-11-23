@@ -81,6 +81,11 @@ public interface IVehicleManager {
 	 */
 	public boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
 			int vehicleType, int assignedLocation);
+	/**
+	 * Retrieves the list of comments associated with the vehicle object
+	 * @param vehicleID
+	 * @return
+	 */
 	public ArrayList<Comment> getVehicleComments(int vehicleID);
 	public  int addVehicleComment(int vehicleID, String comment, int author);
 }
