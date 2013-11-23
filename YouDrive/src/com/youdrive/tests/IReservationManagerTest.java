@@ -105,4 +105,10 @@ public class IReservationManagerTest {
 		ArrayList<Reservation> results = irm.getAllReservations();
 		assertEquals("getAllReservations",1,results.size());
 	}
+	
+	@Test
+	public void getAllReturnedReservations(){
+		ArrayList<Reservation> results = irm.getAllReturnedReservations();
+		assertEquals("getAllReturnedReservations",0,results.size());
+	}
 }
