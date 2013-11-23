@@ -10,27 +10,82 @@ public interface IReservationManager {
 	/**
 	 * Returns the # of active reservations that a given vehicle ID is involved in
 	 * within the date range provided
+	 * Returns -1 if an exception was thrown
+	 * Return 0 if no reservations found but otherwise returns the number
 	 * @param vehicleID
 	 * @return
 	 */
-	int getVehicleReservationRangeCount(int vehicleID,java.util.Date startDate, java.util.Date stopDate);
+	public int getVehicleReservationRangeCount(int vehicleID,java.util.Date startDate, java.util.Date stopDate);
 
-	int getLocationReservationRangeCount(int vehicleID, Date startDate, Date stopDate);
+	/**
+	 * Get the count of reservations by location id
+	 * Returns -1 if an exception was thrown
+	 * Return 0 if no reservations found but otherwise returns the number
+	 * @param vehicleID
+	 * @param startDate
+	 * @param stopDate
+	 * @return
+	 */
+	public int getLocationReservationRangeCount(int locationID, Date startDate, Date stopDate);
 	
-	int getReservationsByLocationAndVehicleCount(int locationID, int vehicleID, Date startDate, Date stopDate);
+	/**
+	 * Get the count of reservations by location and vehicle ids.
+	 * Returns -1 if an exception was thrown
+	 * Return 0 if no reservations found but otherwise returns the number
+	 * @param locationID
+	 * @param vehicleID
+	 * @param startDate
+	 * @param stopDate
+	 * @return
+	 */
+	public int getReservationsByLocationAndVehicleCount(int locationID, int vehicleID, Date startDate, Date stopDate);
 
-	ArrayList<Reservation> getAllReservationsInRange(Date startDate, Date stopDate);
+	/**
+	 * Retrieve a list of reservations within the date range
+	 * @param startDate
+	 * @param stopDate
+	 * @return ArrayList<Reservation>
+	 */
+	public ArrayList<Reservation> getAllReservationsInRange(Date startDate, Date stopDate);
 
-	ArrayList<Reservation> getReservationsInRangeByVehicle(int vehicleID,
-			Date startDate, Date stopDate);
+	/**
+	 * Retrieve a list of reservations by a specific vehicle and a date range
+	 * List will be empty if nothing is present
+	 * @param vehicleID
+	 * @param startDate
+	 * @param stopDate
+	 * @return ArrayList<Reservation>
+	 */
+	public ArrayList<Reservation> getReservationsInRangeByVehicle(int vehicleID, Date startDate, Date stopDate);
 
-	ArrayList<Reservation> getReservationsInRangeByLocation(int locationID,
-			Date startDate, Date stopDate);
+	/**
+	 * Retrieve a list of reservations by a specific location and a date range
+	 * List will be empty if nothing is present
+	 * @param locationID
+	 * @param startDate
+	 * @param stopDate
+	 * @return ArrayList<Reservation>
+	 */
+	public ArrayList<Reservation> getReservationsInRangeByLocation(int locationID, Date startDate, Date stopDate);
 
+	/**
+	 * Retrieve a list of reservations by a specific location and vehicle  and a date range
+	 * List will be empty if nothing is present
+	 * @param locationID
+	 * @param vehicleID
+	 * @param startDate
+	 * @param stopDate
+	 * @return ArrayList<Reservation>
+	 */
+	public ArrayList<Reservation> getReservationsByLocationAndVehicle(int locationID, int vehicleID, Date startDate, Date stopDate);
 
-
-	ArrayList<Reservation> getReservationsByLocationAndVehicle(int locationID,
-			int vehicleID, Date startDate, Date stopDate);
-
-	int checkIfLocationInUse(int locationID);
+	/**
+	 * select count(*) from Reservations where locationID = ? AND reservationStart > NOW()
+	 * Get count of vehicles with a particular location where reservation pickup time is in the future
+	 * Returns -1 if an exception was thrown
+	 * Return 0 if no reservations found but otherwise returns the number
+	 * @param locationID
+	 * @return int
+	 */
+	public int checkIfLocationInUse(int locationID);
 }

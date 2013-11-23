@@ -13,9 +13,10 @@ public class ConnectionManager {
 		if (conn == null){
 			try {
 				DBInit();
-			} catch (ClassNotFoundException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			}catch (ClassNotFoundException e){
+				System.err.println("Class not found: " + e.getMessage());
+			}catch(SQLException e) {
+				System.err.println("SQLException: " + e.getErrorCode());
 			}
 		}
 		return conn;

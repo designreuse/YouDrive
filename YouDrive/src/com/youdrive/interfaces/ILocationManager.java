@@ -54,7 +54,20 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public String deleteLocationByName(String name);
+	/**
+	 * Return true of the location has any vehicles assigned
+	 * @param locationID
+	 * @return
+	 */
 	public boolean isLocationInUse(int locationID);
+	/**
+	 * Update a location
+	 * @param locationID
+	 * @param name
+	 * @param address
+	 * @param capacity
+	 * @return
+	 */
 	public boolean updateLocation(int locationID, String name, String address, int capacity);
 	/**
 	 * Check to ensure the updated capacity matches the vehicle count in db 
@@ -69,5 +82,10 @@ public interface ILocationManager {
 	 * @return
 	 */
 	public boolean isLocationNameInUse(String name);
-	int getCountOfLocations(int locationID);
+	/**
+	 * Get the count of vehicles assigned to the location
+	 * @param locationID
+	 * @return
+	 */
+	public int getCountOfLocations(int locationID);
 }

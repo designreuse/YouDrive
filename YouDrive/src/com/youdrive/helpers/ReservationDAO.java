@@ -71,7 +71,7 @@ public class ReservationDAO implements IReservationManager{
 		}catch(Exception e){
 			System.err.println("Problem with getVehicleReservationCount method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
-		return 0;
+		return -1;
 	}
 	
 	@Override
@@ -89,7 +89,7 @@ public class ReservationDAO implements IReservationManager{
 		}catch(Exception e){
 			System.err.println("Problem with getLocationReservationCount method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
-		return 0;
+		return -1;
 	}
 	
 	@Override
@@ -205,7 +205,7 @@ public class ReservationDAO implements IReservationManager{
 		}catch(Exception e){
 			System.err.println("Problem with getReservationsByLocationAndVehicleCount method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
-		return 0;
+		return -1;
 	}
 	
 	@Override
