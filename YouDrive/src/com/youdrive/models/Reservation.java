@@ -14,10 +14,10 @@ public class Reservation  implements Serializable{
 	/* Use getTimestamp*/
 	private Date reservationStart;
 	private Date reservationEnd;
-	//ArrayList<ReservationStatus> reservationStatusList = new ArrayList<ReservationStatus>();
-	ReservationStatus reservationStatus;
-	Vehicle vehicle;
-	VehicleType vehicleType;
+	private ArrayList<ReservationStatus> reservationStatusList = new ArrayList<ReservationStatus>();
+	private ReservationStatus reservationStatus;
+	private Vehicle vehicle;
+	private VehicleType vehicleType;
 	
 	
 	public Reservation(int id, int customerID, int locationID, int vehicleID, Date reservationStart, Date reservationEnd) {
@@ -29,6 +29,14 @@ public class Reservation  implements Serializable{
 		this.reservationEnd = reservationEnd;
 	}
 
+	public void addReservationStatus(ReservationStatus rs){
+		reservationStatusList.add(rs);
+	}
+	
+	public ArrayList<ReservationStatus> getReservationStatusList(){
+		return reservationStatusList;
+	}
+	
 	public int getId() {
 		return id;
 	}

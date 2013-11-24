@@ -60,13 +60,11 @@ create table Reservations(
 id int not null primary key auto_increment,
 customerID int not null,
 locationID int not null,
-vehicleTypeID int not null,
 vehicleID int not null,
 reservationStart datetime not null,
 reservationEnd datetime  not null,
 FOREIGN KEY (customerID) references Users(id),
 FOREIGN KEY (locationID) references Locations(id),
-FOREIGN KEY (locationID) references VehicleTypes(id),
 FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
 

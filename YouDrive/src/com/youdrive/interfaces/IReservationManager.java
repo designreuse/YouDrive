@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.youdrive.models.Reservation;
+import com.youdrive.models.ReservationStatus;
 
 public interface IReservationManager {
 
@@ -97,5 +98,15 @@ public interface IReservationManager {
 
 	ArrayList<Reservation> getAllReservations();
 
-	ArrayList<Reservation> getVehiclesInUse(int vehicleID);
+	ArrayList<Reservation> getVehiclesInUse(int locationID, int vehicleID);
+
+	ArrayList<Reservation> getAllReservations(int locationID, int vehicleID);
+
+	ArrayList<ReservationStatus> getReservationStatus(int reservationID);
+
+	ArrayList<Reservation> getReservationsInRange(int locationID,
+			int vehicleID, Date startDate, Date stopDate);
+
+	int getReservationCountsInRange(int locationID, int vehicleID,
+			Date startDate, Date stopDate);
 }

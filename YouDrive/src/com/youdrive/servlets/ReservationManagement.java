@@ -1,9 +1,13 @@
 package com.youdrive.servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +27,7 @@ import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Reservation;
+import com.youdrive.models.ReservationStatus;
 import com.youdrive.models.Vehicle;
 
 /**
@@ -31,14 +36,15 @@ import com.youdrive.models.Vehicle;
 @WebServlet("/ReservationManagement")
 public class ReservationManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ReservationManagement() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public ReservationManagement() {
+		super(); 
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -92,30 +98,75 @@ public class ReservationManagement extends HttpServlet {
 						//validate times
 						if (isTimeValid(pickupTime) && isTimeValid(dropoffTime)){
 							//validate proper location
-							int locationID = Integer.parseInt(location);
-							int vehicleTypeID = Integer.parseInt(vehicleType);
-							ArrayList<Vehicle> vehiclesOfLocationAndType = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
-							int size = vehiclesOfLocationAndType.size();
-							if (size == 0){
-								request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
-							}else{
-								ArrayList<Vehicle> results = new ArrayList<Vehicle>();
-								for (Vehicle v : vehiclesOfLocationAndType){
-									//Check if this vehicle is in use i.e. in reservations table and not cancelled or returned.
-									ArrayList<Reservation> rv = irm.getVehiclesInUse(v.getId());
-									
-									//If vehicle is not in use in reservations table, add to results
-									//If it is, check that it is not in use during the start And End date. THEN, add to results
+
+							Calendar startDate = getDate(pickupDate,pickupTime);
+							Calendar stopDate = getDate(dropoffDate,dropoffTime);
+							
+							if (startDate != null && stopDate != null){
+								java.util.Date sDate = startDate.getTime();
+								java.util.Date eDate = stopDate.getTime();
+								System.out.println("User dates: " + sDate + " end: " + eDate);
+								int locationID = Integer.parseInt(location);
+								int vehicleTypeID = Integer.parseInt(vehicleType);
+								//Get all vehicles of that type at that location
+								ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
+								int size = allVehicles.size();
+								if (size == 0){
+									request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
+									dispatchedPage = "/reservevehicle.jsp";
+								}else{
+									ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+									for (Vehicle v : allVehicles){
+										//Get reservations in Reservations that fit this location id and vehicle id
+										ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
+										if (inReservationsTable.isEmpty()){
+											System.out.println("Empty " + v.getId());
+											results.add(v);
+										}else{
+											int count = irm.getReservationCountsInRange(locationID, v.getId(), sDate, eDate);
+											System.out.println("Count: " + count);
+											for (Reservation r : inReservationsTable){
+												java.util.Date rStartDate = r.getReservationStart();
+												java.util.Date rEndDate = r.getReservationEnd();
+												System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
+												//x.compareTo(y) < 0 if x is before y
+												//x.compareTo(y) > 0 if x is after y
+												if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
+													System.out.println("< <");
+													results.add(v);													
+												}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
+													System.out.println("> >");
+													results.add(v);
+												}
+											}
+										}
+										//If vehicle is not in use in reservations table, add to results
+										//If it is, check that it is not in use during the start And End date. THEN, add to results
+									}
+	
+									//Send to results page
+									if (results.size() > 0){
+										request.setAttribute("locationID", locationID);
+										request.setAttribute("vehicleTypeID", vehicleTypeID);
+										session.setAttribute("searchResults",results);
+										dispatchedPage = "/reservationcheck.jsp";
+									}else{
+										request.setAttribute("errorMessage", "Change parameters. Found vehicles reserved that overlap your start/end dates/times");
+										dispatchedPage = "/reservevehicle.jsp";
+									}
 								}
+							}else{
+								request.setAttribute("errorMessage","Error parsing the dates.");
 							}
 						}else{
 							request.setAttribute("errorMessage", "Invalid pickup or dropoff times. Please use the values in the dropdown box.");
+							dispatchedPage = "/reservevehicle.jsp";
 						}
 					}else{
 						request.setAttribute("errorMessage", "Invalid pickup date or dropoff date. Please enter your dates in this form: MM/DD/YYYY.");
+						dispatchedPage = "/reservevehicle.jsp";
 					}
 				}
-				dispatchedPage = "/reservevehicle.jsp";
 			}else{
 				//
 				dispatchedPage = "/user.jsp";
@@ -128,7 +179,7 @@ public class ReservationManagement extends HttpServlet {
 		dispatcher.forward(request,response);
 	}
 
-	
+
 	//http://www.mkyong.com/java/how-to-check-if-date-is-valid-in-java/
 	/**
 	 * Return true if the Date is an actual date
@@ -139,20 +190,36 @@ public class ReservationManagement extends HttpServlet {
 	public boolean isThisDateValid(String dateToValidate){
 		if(dateToValidate == null){
 			return false;
-		} 
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/YYYY");
-		sdf.setLenient(false); 
+		}		
 		try { 
 			//if not valid, it will throw ParseException
-			java.util.Date date = sdf.parse(dateToValidate);
-			System.out.println("Validated date: " + date);
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy",Locale.US);
+			sdf.setLenient(false);
+			return true;
+		}catch(Exception e){ 
+			e.printStackTrace();
+		} 
+		return false;
+	}
+
+	public Calendar getDate(String date, String time){
+		if(date == null || time == null){
+			return null;
+		}		
+		try { 
+			//if not valid, it will throw ParseException
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm",Locale.US);
+			sdf.setLenient(false);
+			java.util.Date d = sdf.parse(date.trim()+" "+time.trim());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(d);
+			return cal;
 		}catch(ParseException e){ 
 			e.printStackTrace();
-			return false;
 		} 
-		return true;
+		return null;
 	}
- 
+
 	//http://www.mkyong.com/regular-expressions/how-to-validate-time-in-24-hours-format-with-regular-expression/
 	/**
 	 * Returns true if the time is a valid 24-hr format time.

@@ -31,11 +31,18 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getVehiclesStatusStmt;
 	private PreparedStatement getAllReservationsStmt;
 	private PreparedStatement getAllReturnedReservationsStmt;
-	private PreparedStatement getVehiclesInUseStmt;
+	private PreparedStatement getCreatedReservationsStmt;
+	private PreparedStatement getAllReservationsByVehicleAndLocationStmt;
 	private PreparedStatement isVehicleInUseRangeStmt;
 	private PreparedStatement getAllOpenReservationsStmt;
 	private PreparedStatement getAllCancelledReservationsStmt;
 	private PreparedStatement checkLocationsInFutureReservationsStmt;
+	private PreparedStatement getCancelledReservationsStmt;
+	private PreparedStatement getReturnedReservationsStmt;
+	private PreparedStatement getReservationsStmt;
+	private PreparedStatement getReservationStatusStmt;
+	private PreparedStatement checkReservationRangeStmt;
+	private PreparedStatement checkReservationRangeCountStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -59,8 +66,15 @@ public class ReservationDAO implements IReservationManager{
 			getVehiclesStatusStmt = conn.prepareStatement("select v.*, r.customerID,r.reservationStart,r.reservationEnd,vt.id as typeID,vt.type,vt.hourlyPrice,vt.dailyPrice from Vehicles v left outer join Reservations r on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType;");
 			getAllReturnedReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus = \"Returned\"");
 			getAllReservationsStmt = conn.prepareStatement("select v.*, r.id,r.customerID,r.reservationStart,r.reservationEnd,vt.type,vt.hourlyPrice,vt.dailyPrice,rs.id, rs.dateAdded,rs.reservationStatus from Reservations r left outer join Vehicles v on r.vehicleID = v.id left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join ReservationStatus rs on rs.reservationID = r.id");
-			getVehiclesInUseStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.vehicleID = ? AND (rs.reservationStatus != \"Cancelled\" OR rs.reservationStatus != \"Returned\")");
+			getCreatedReservationsStmt = conn.prepareStatement(" select * from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ? AND r.vehicleID = ? AND rs.reservationStatus = \"Created\"");
+			getCancelledReservationsStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ? AND r.vehicleID = ? AND rs.reservationStatus = \"Cancelled\"");
+			getReturnedReservationsStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ? AND r.vehicleID = ? AND rs.reservationStatus = \"Returned\"");
 			isVehicleInUseRangeStmt = conn.prepareStatement("select * from Reservations where vehicleID = ? AND reservationStart >= ? AND reservationEnd <= ?");
+			getAllReservationsByVehicleAndLocationStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ? AND r.vehicleID = ?");
+			getReservationsStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ?");
+			getReservationStatusStmt = conn.prepareStatement("select * from ReservationStatus where reservationID = ?");
+			checkReservationRangeStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ? and NOT reservationStart between ? and ? and NOT reservationEnd between ? and ?");
+			checkReservationRangeCountStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? and vehicleID = ? and ((reservationStart between ? and ?) or (reservationEnd between ? and ?))");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -70,18 +84,113 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	
 	@Override
-	public ArrayList<Reservation> getVehiclesInUse(int vehicleID){
+	public int getReservationCountsInRange(int locationID, int vehicleID, java.util.Date startDate, java.util.Date stopDate){
+		try{
+			checkReservationRangeCountStmt.setInt(1,locationID);
+			checkReservationRangeCountStmt.setInt(2, vehicleID);
+			checkReservationRangeCountStmt.setTimestamp(3, new java.sql.Timestamp(startDate.getTime()));
+			checkReservationRangeCountStmt.setTimestamp(4, new java.sql.Timestamp(stopDate.getTime()));
+			checkReservationRangeCountStmt.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+			checkReservationRangeCountStmt.setTimestamp(6, new java.sql.Timestamp(stopDate.getTime()));
+			ResultSet rs = checkReservationRangeCountStmt.executeQuery();
+			if (rs.next()){
+				int ct = rs.getInt(1);
+				System.out.println(ct);
+				return ct;
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return -1;
+	}
+	
+	@Override
+	public ArrayList<Reservation> getReservationsInRange(int locationID, int vehicleID, java.util.Date startDate, java.util.Date stopDate){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
 		try{
-			getVehiclesInUseStmt.setInt(1,vehicleID);
-			ResultSet rs = getVehiclesInUseStmt.executeQuery();
+			checkReservationRangeStmt.setInt(1,locationID);
+			checkReservationRangeStmt.setInt(2, vehicleID);
+			checkReservationRangeStmt.setTimestamp(3, new java.sql.Timestamp(startDate.getTime()));
+			checkReservationRangeStmt.setTimestamp(4, new java.sql.Timestamp(stopDate.getTime()));
+			checkReservationRangeStmt.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+			checkReservationRangeStmt.setTimestamp(6, new java.sql.Timestamp(stopDate.getTime()));
+			ResultSet rs = checkReservationRangeStmt.executeQuery();
+			Reservation temp;
 			while (rs.next()){
 				int reservationID = rs.getInt("id");
 				int customerID = rs.getInt("customerID");
-				int locationID = rs.getInt("locationID");
-				java.util.Date sd = rs.getDate("reservationStart");
-				java.util.Date ed = rs.getDate("reservationEnd");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
+				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
+	@Override
+	public ArrayList<ReservationStatus> getReservationStatus(int reservationID){
+		ArrayList<ReservationStatus> results = new ArrayList<ReservationStatus>();
+		try{
+			getReservationStatusStmt.setInt(1,reservationID);
+			ResultSet rs = getReservationStatusStmt.executeQuery();
+			ReservationStatus temp;
+			while (rs.next()){
+				int reservationStatusID = rs.getInt("id");
+				java.util.Date rd = rs.getTimestamp("dateAdded");
+				String status = rs.getString("reservationStatus");
+				results.add(new ReservationStatus(reservationStatusID, reservationID, rd, status));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
+	@Override
+	public ArrayList<Reservation> getAllReservations(int locationID, int vehicleID){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			getReservationsStmt.setInt(1,locationID);
+			getReservationsStmt.setInt(2,vehicleID);
+			ResultSet rs = getReservationsStmt.executeQuery();
+			Reservation temp;
+			while (rs.next()){
+				int reservationID = rs.getInt("id");
+				int customerID = rs.getInt("customerID");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
+				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getAllReservations method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
+	@Override
+	public ArrayList<Reservation> getVehiclesInUse(int locationID, int vehicleID){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			getCreatedReservationsStmt.setInt(1,locationID);
+			getCreatedReservationsStmt.setInt(2,vehicleID);
+			ResultSet rs = getCreatedReservationsStmt.executeQuery();
+			while (rs.next()){
+				int reservationID = rs.getInt("id");
+				int customerID = rs.getInt("customerID");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
 				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
 			}
 		}catch(SQLException e){
@@ -140,8 +249,8 @@ public class ReservationDAO implements IReservationManager{
 				int customerID = rs.getInt("customerID");
 				int locationID = rs.getInt("locationID");
 				int vehicleID = rs.getInt("vehicleID");
-				java.util.Date sd = rs.getDate("reservationStart");
-				java.util.Date ed = rs.getDate("reservationEnd");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
 				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
 			}
 		}catch(SQLException e){
@@ -164,8 +273,8 @@ public class ReservationDAO implements IReservationManager{
 				int reservationID = rs.getInt("id");
 				int customerID = rs.getInt("customerID");
 				int locationID = rs.getInt("locationID");
-				java.util.Date sd = rs.getDate("reservationStart");
-				java.util.Date ed = rs.getDate("reservationEnd");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
 				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
 			}
 		}catch(SQLException e){
@@ -189,8 +298,8 @@ public class ReservationDAO implements IReservationManager{
 				int reservationID = rs.getInt("id");
 				int customerID = rs.getInt("customerID");
 				int vehicleID = rs.getInt("vehicleID");
-				java.util.Date sd = rs.getDate("reservationStart");
-				java.util.Date ed = rs.getDate("reservationEnd");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
 				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
 			}	
 		}catch(SQLException e){
@@ -213,8 +322,8 @@ public class ReservationDAO implements IReservationManager{
 			while (rs.next()){
 				int reservationID = rs.getInt("id");
 				int customerID = rs.getInt("customerID");
-				java.util.Date sd = rs.getDate("reservationStart");
-				java.util.Date ed = rs.getDate("reservationEnd");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
 				results.add(new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed));
 			}	
 		}catch(SQLException e){
@@ -278,13 +387,13 @@ public class ReservationDAO implements IReservationManager{
 				int assignedLocation = rs.getInt(10);
 				int reservationID = rs.getInt(11);
 				int customerID = rs.getInt(12);
-				Date reservationStart = rs.getDate(13);
-				Date reservationEnd = rs.getDate(14);
+				Date reservationStart = rs.getTimestamp(13);
+				Date reservationEnd = rs.getTimestamp(14);
 				String vType = rs.getString(15);
 				double hourlyPrice = rs.getDouble(16);
 				double dailyPrice = rs.getDouble(17);
 				int reservationStatusID = rs.getInt(18);
-				Date dateAdded = rs.getDate(19);
+				Date dateAdded = rs.getTimestamp(19);
 				String reservationStatus = rs.getString(20);
 				//Create Vehicle object
 				Vehicle v = new Vehicle();
@@ -336,13 +445,13 @@ public class ReservationDAO implements IReservationManager{
 				int assignedLocation = rs.getInt(10);
 				int reservationID = rs.getInt(11);
 				int customerID = rs.getInt(12);
-				Date reservationStart = rs.getDate(13);
-				Date reservationEnd = rs.getDate(14);
+				Date reservationStart = rs.getTimestamp(13);
+				Date reservationEnd = rs.getTimestamp(14);
 				String vType = rs.getString(15);
 				double hourlyPrice = rs.getDouble(16);
 				double dailyPrice = rs.getDouble(17);
 				int reservationStatusID = rs.getInt(18);
-				Date dateAdded = rs.getDate(19);
+				Date dateAdded = rs.getTimestamp(19);
 				String reservationStatus = rs.getString(20);
 				//Create Vehicle object
 				Vehicle v = new Vehicle();
@@ -394,13 +503,13 @@ public class ReservationDAO implements IReservationManager{
 				int assignedLocation = rs.getInt(10);
 				int reservationID = rs.getInt(11);
 				int customerID = rs.getInt(12);
-				Date reservationStart = rs.getDate(13);
-				Date reservationEnd = rs.getDate(14);
+				Date reservationStart = rs.getTimestamp(13);
+				Date reservationEnd = rs.getTimestamp(14);
 				String vType = rs.getString(15);
 				double hourlyPrice = rs.getDouble(16);
 				double dailyPrice = rs.getDouble(17);
 				int reservationStatusID = rs.getInt(18);
-				Date dateAdded = rs.getDate(19);
+				Date dateAdded = rs.getTimestamp(19);
 				String reservationStatus = rs.getString(20);
 				//Create Vehicle object
 				Vehicle v = new Vehicle();
@@ -453,13 +562,13 @@ public class ReservationDAO implements IReservationManager{
 				int assignedLocation = rs.getInt(10);
 				int reservationID = rs.getInt(11);
 				int customerID = rs.getInt(12);
-				Date reservationStart = rs.getDate(13);
-				Date reservationEnd = rs.getDate(14);
+				Date reservationStart = rs.getTimestamp(13);
+				Date reservationEnd = rs.getTimestamp(14);
 				String vType = rs.getString(15);
 				double hourlyPrice = rs.getDouble(16);
 				double dailyPrice = rs.getDouble(17);
 				int reservationStatusID = rs.getInt(18);
-				Date dateAdded = rs.getDate(19);
+				Date dateAdded = rs.getTimestamp(19);
 				String reservationStatus = rs.getString(20);
 				//Create Vehicle object
 				Vehicle v = new Vehicle();
