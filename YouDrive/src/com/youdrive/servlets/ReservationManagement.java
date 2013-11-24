@@ -20,6 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.ReservationDAO;
 import com.youdrive.helpers.VehicleDAO;
@@ -154,8 +158,18 @@ public class ReservationManagement extends HttpServlet {
 									if (results.size() > 0){
 										request.setAttribute("locationID", locationID);
 										request.setAttribute("vehicleTypeID", vehicleTypeID);
-										request.setAttribute("startDate", sDate);
-										request.setAttribute("endDate", eDate);
+										try{
+											JSONObject j = new JSONObject();
+											j.put("locationID", locationID);
+											j.put("vehicleTypeID", vehicleTypeID);
+											j.put("pickupDate", sDate);
+											j.put("dropoffDate", eDate);
+											session.setAttribute("resultParams", j);
+										}catch(JSONException e){
+											System.err.println("Error converting to JSONObject.");
+										}
+										request.setAttribute("startDate", pickupDate+" "+pickupTime);
+										request.setAttribute("endDate", dropoffDate+" "+dropoffTime);
 										session.setAttribute("searchResults",results);
 										dispatchedPage = "/reservationcheck.jsp";
 									}else{
@@ -175,6 +189,9 @@ public class ReservationManagement extends HttpServlet {
 						dispatchedPage = "/reservevehicle.jsp";
 					}
 				}
+			}else if (action.equalsIgnoreCase("makeReservation")){
+				System.out.println("makeReservationForm action");
+				dispatchedPage = "/confirmation.jsp";
 			}else{
 				//
 				dispatchedPage = "/user.jsp";

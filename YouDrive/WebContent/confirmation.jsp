@@ -23,27 +23,7 @@
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-	<title>Available Vehicles</title>
-	<script type="text/javascript">
-		/* submit the hidden form to delete the location but need to confirm with user first*/
-		function getVehicleID(vehicleID, vehicletag){
-			// confirm dialog
-			var resultParams = ${resultParams};
-			console.log(resultParams);
-			var msg = "You are about to reserve " + vehicletag + " from " + resultParams.pickupDate + " to " + resultParams.dropoffDate;
-			msg += ".\nTo continue, press \"OK\"; otherwise, hit \"Cancel\"";
-			alertify.confirm(msg, function(result) {
-			    if (result) {
-			    	console.log("OK clicked.");
-					document.getElementById("vehicleID").value = vehicleID;
-					$('#makeReservationForm').submit();
-			    } else {
-			        console.log("Cancel clicked.");
-			    }
-			});
-			console.log(vehicleID);
-		}
-	</script>
+	<title>Reservation Confirmation</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -99,42 +79,9 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<c:if test="${ locationMgr == null }">	
-								<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
-							</c:if>
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
-							<div class="table-responsive">
-								<table class="table table-condensed table-hover">
-									<tr>
-										<th>Make</th>
-										<th>Model</th>
-										<th>Year</th>
-										<th>Tag</th>
-										<th>Mileage</th>
-										<th>Last Serviced</th>
-										<th>Reserve</th>
-									</tr>
-									<c:forEach items="${searchResults}" var="vehicle" varStatus="status">
-										<tr id="${vehicle.id }">
-											<td><c:out value="${ vehicle.make }" /></td>
-											<td><c:out value="${ vehicle.model }" /></td>
-											<td><c:out value="${ vehicle.year }" /></td>
-											<td><c:out value="${ vehicle.tag }" /></td>
-											<td><c:out value="${ vehicle.mileage }" /></td>
-											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
-											<td><button type="button" onclick="getVehicleID('${vehicle.id}','${vehicle.tag }')" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-star"></span> Reserve</button></td>
-										</tr>
-									</c:forEach>
-								</table>								
-								<button type="button" onclick="window.history.back()" class="btn btn-primary">Go Back</button> 
-							</div>
-							<%-- Hidden form for the sorting --%>
-							<form id="makeReservationForm" name="makeReservationForm" method="post" action="ReservationManagement">
-								<input type="hidden" id="action" name="action" value="makeReservation"/>
-								<input type="hidden" id="vehicleID" name="vehicleID" value="" />
-							</form>
 						</c:otherwise>
 					</c:choose>
 				</div>
