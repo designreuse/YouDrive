@@ -137,6 +137,14 @@ public class ReservationManagement extends HttpServlet {
 												}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
 													System.out.println("> >");
 													results.add(v);
+												}else{
+													//Check ReservationStatus to see if the vehicle has been Returned
+													//If so, you can add  it, otherwise, move on.
+													String reservationStatus = irm.getStatus(r.getId());
+													if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
+														System.out.println("Valid Reservation Status: " + reservationStatus);
+														results.add(v);
+													}
 												}
 											}
 										}

@@ -80,7 +80,7 @@
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
 							<c:forEach items="${searchResults}" var="vehicle" varStatus="status">
-								<p>Found <c:out value="${vehicle.id }" /> available</p>
+								<p>Found <c:out value="${vehicle.tag }" /> available</p>
 							</c:forEach>
 						</c:otherwise>
 					</c:choose>

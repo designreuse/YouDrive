@@ -41,6 +41,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getReturnedReservationsStmt;
 	private PreparedStatement getReservationsStmt;
 	private PreparedStatement getReservationStatusStmt;
+	private PreparedStatement getCancelledOrReturnedReservationStatusStmt;
 	private PreparedStatement checkReservationRangeStmt;
 	private PreparedStatement checkReservationRangeCountStmt;
 	private SimpleDateFormat sdf;
@@ -73,6 +74,7 @@ public class ReservationDAO implements IReservationManager{
 			getAllReservationsByVehicleAndLocationStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ? AND r.vehicleID = ?");
 			getReservationsStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ?");
 			getReservationStatusStmt = conn.prepareStatement("select * from ReservationStatus where reservationID = ?");
+			getCancelledOrReturnedReservationStatusStmt = conn.prepareStatement("select reservationStatus from ReservationStatus where reservationID = ? and reservationStatus != \"Created\"");
 			checkReservationRangeStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ? and NOT reservationStart between ? and ? and NOT reservationEnd between ? and ?");
 			checkReservationRangeCountStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? and vehicleID = ? and ((reservationStart between ? and ?) or (reservationEnd between ? and ?))");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -84,6 +86,23 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	@Override 
+	public String getStatus(int reservationID){
+		String results = "";
+		try{
+			getCancelledOrReturnedReservationStatusStmt.setInt(1,reservationID);
+			ResultSet rs = getCancelledOrReturnedReservationStatusStmt.executeQuery();
+			ReservationStatus temp;
+			if (rs.next()){
+				return rs.getString(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
 	
 	@Override
 	public int getReservationCountsInRange(int locationID, int vehicleID, java.util.Date startDate, java.util.Date stopDate){

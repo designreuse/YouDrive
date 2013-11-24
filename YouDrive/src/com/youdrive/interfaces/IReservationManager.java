@@ -109,4 +109,6 @@ public interface IReservationManager {
 
 	int getReservationCountsInRange(int locationID, int vehicleID,
 			Date startDate, Date stopDate);
+
+	String getStatus(int reservationID);
 }
