@@ -191,7 +191,14 @@ public class ReservationManagement extends HttpServlet {
 				}
 			}else if (action.equalsIgnoreCase("makeReservation")){
 				System.out.println("makeReservationForm action");
-				dispatchedPage = "/confirmation.jsp";
+				String vehicleID = request.getParameter("vehicleID");
+				if (vehicleID == null || vehicleID.isEmpty()){
+					request.setAttribute("errorMessage","No selection made.");
+					dispatchedPage = "/reservecheck.jsp";
+				}else{
+					request.setAttribute("errorMessage", "");
+					dispatchedPage = "/confirmation.jsp";
+				}
 			}else{
 				//
 				dispatchedPage = "/user.jsp";

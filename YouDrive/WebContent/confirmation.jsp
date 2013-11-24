@@ -82,6 +82,7 @@
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
+							<c:out value="${resultParams }"
 						</c:otherwise>
 					</c:choose>
 				</div>
