@@ -128,7 +128,8 @@
 										</tr>
 									</c:forEach>
 								</table>	
-							</div>			
+							</div>
+							<%-- Hidden form for the sorting --%>
 							<form id="sortVehicleForm" name="sortVehicleForm" method="get" action="VehicleManagement">
 								<input type="hidden" id="action" name="action" value="sortVehicle"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />

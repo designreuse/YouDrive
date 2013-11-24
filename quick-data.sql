@@ -11,8 +11,7 @@ INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345'
 
 insert into Reservations values (DEFAULT,1,1,1,NOW(),DATE_ADD(NOW(), INTERVAL 72 HOUR));
 
-
 insert into ReservationStatus values (DEFAULT,1,NOW(),'Created');
 
-select count(*) from Reservations where locationID = 2 and vehicleID = 6 and reservationStart between '2013-11-23 08:00:00' and '2013-11-23 15:00:00' or reservationEnd between '2013-11-23 08:00:00' and '2013-11-23 15:00:00';
+
 

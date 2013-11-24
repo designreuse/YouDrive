@@ -123,8 +123,6 @@ public class ReservationManagement extends HttpServlet {
 											System.out.println("Empty " + v.getId());
 											results.add(v);
 										}else{
-											int count = irm.getReservationCountsInRange(locationID, v.getId(), sDate, eDate);
-											System.out.println("Count: " + count);
 											for (Reservation r : inReservationsTable){
 												java.util.Date rStartDate = r.getReservationStart();
 												java.util.Date rEndDate = r.getReservationEnd();
@@ -156,6 +154,8 @@ public class ReservationManagement extends HttpServlet {
 									if (results.size() > 0){
 										request.setAttribute("locationID", locationID);
 										request.setAttribute("vehicleTypeID", vehicleTypeID);
+										request.setAttribute("startDate", sDate);
+										request.setAttribute("endDate", eDate);
 										session.setAttribute("searchResults",results);
 										dispatchedPage = "/reservationcheck.jsp";
 									}else{

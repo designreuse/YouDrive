@@ -2,22 +2,50 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<c:set var="pickupDate" value='<fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${startDate}" />'/>
+<c:set var="dropoffDate" value='<fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${endDate}" />'/>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
+	<script src="js/alertify.min.js"></script>
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
 	<title>Available Vehicles</title>
+	<script type="text/javascript">
+		/* submit the hidden form to delete the location but need to confirm with user first*/
+		function getVehicleID(vehicleID, vehicletag){
+			// confirm dialog
+			var sDate = ${pickupDate};
+			var eDate = ${dropoffDate};
+			console.log(sDate+"---"+eDate);
+			var msg = "You are about to reserve " + vehicletag + " from " + sDate + " to " + eDate;
+			msg += ".\nTo continue, press \"OK\"; otherwise, hit \"Cancel\"";
+			alertify.confirm(msg, function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("vehicleID").value = vehicleID;
+					$('#makeReservationForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(vehicleID);
+		}
+	</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -79,9 +107,36 @@
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
-							<c:forEach items="${searchResults}" var="vehicle" varStatus="status">
-								<p>Found <c:out value="${vehicle.tag }" /> available</p>
-							</c:forEach>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th>Make</th>
+										<th>Model</th>
+										<th>Year</th>
+										<th>Tag</th>
+										<th>Mileage</th>
+										<th>Last Serviced</th>
+										<th>Reserve</th>
+									</tr>
+									<c:forEach items="${searchResults}" var="vehicle" varStatus="status">
+										<tr id="${vehicle.id }">
+											<td><c:out value="${ vehicle.make }" /></td>
+											<td><c:out value="${ vehicle.model }" /></td>
+											<td><c:out value="${ vehicle.year }" /></td>
+											<td><c:out value="${ vehicle.tag }" /></td>
+											<td><c:out value="${ vehicle.mileage }" /></td>
+											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
+											<td><button type="button" onclick="getVehicleID('${vehicle.id}','${vehicle.tag }')" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-star"></span> Reserve</button></td>
+										</tr>
+									</c:forEach>
+								</table>								
+								<button type="button" onclick="window.history.back()" class="btn btn-primary">Go Back</button> 
+							</div>
+							<%-- Hidden form for the sorting --%>
+							<form id="makeReservationForm" name="makeReservationForm" method="get" action="ReservationManagement">
+								<input type="hidden" id="action" name="action" value="makeReservation"/>
+								<input type="hidden" id="vehicleID" name="vehicleID" value="" />
+							</form>
 						</c:otherwise>
 					</c:choose>
 				</div>

@@ -81,7 +81,8 @@ public class VehicleManagement extends HttpServlet {
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
-			dispatchedPage = "/managevehicles.jsp";
+			User user = (User) session.getAttribute("loggedInUser");
+			dispatchedPage = (user.isAdmin())?"/managevehicles.jsp":"/reservationcheck.jsp";
 		}else if (viewComments != null && !viewComments.isEmpty()){
 			System.out.println("Retrieving comments.");
 			try{
