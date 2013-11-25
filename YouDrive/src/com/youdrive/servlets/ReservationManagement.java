@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,14 +112,14 @@ public class ReservationManagement extends HttpServlet {
 							Calendar startDate = getDate(pickupDate,pickupTime);
 							Calendar stopDate = getDate(dropoffDate,dropoffTime);
 
+							Calendar maxBookingDate = Calendar.getInstance();
+							maxBookingDate.setTime(startDate.getTime());
 							//More validation :)
 							if (startDate != null && stopDate != null){
-								Calendar maxBookingDate = startDate;
-								maxBookingDate.add(Calendar.HOUR, 72);
-
-								if (maxBookingDate.compareTo(stopDate) == 0){
-									System.err.println("Exceeded max booking time.");
-									request.setAttribute("errorMessage", "Exceeded max booking time of 72 hours.");
+								if (startDate.compareTo(stopDate) > 0){
+									request.setAttribute("errorMessage", "Stop date must be later than the start Date.");
+								}else if (stopDate.compareTo(maxBookingDate) > 0){
+									request.setAttribute("errorMessage", "Exceeds max reservation of 72 hours.");
 								}else{
 									java.util.Date sDate = startDate.getTime();
 									java.util.Date eDate = stopDate.getTime();
@@ -141,31 +142,30 @@ public class ReservationManagement extends HttpServlet {
 												results.add(v);
 											}else{
 												//Loop through the found reservations to check the dates
-												int prevVehicleID = 0;
-												int currentVehicleID = 0;
-												for (Reservation r : inReservationsTable){
-													currentVehicleID = r.getVehicleID();												
+												boolean foundOverlap = false;
+												for (Reservation r : inReservationsTable){												
 													java.util.Date rStartDate = r.getReservationStart();
 													java.util.Date rEndDate = r.getReservationEnd();
 													System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
 													//x.compareTo(y) < 0 if x is before y
 													//x.compareTo(y) > 0 if x is after y
-													if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
-														System.out.println("< <");
-														results.add(v);													
-													}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
-														System.out.println("> >");
-														results.add(v);
-													}else{
-														//Check ReservationStatus to see if the vehicle has been Returned
-														//If so, you can add  it, otherwise, move on.
+													if ((rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) < 0)
+															|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
+															|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
+															|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
+														
+														//Check reservationStatus if overlap is found.
 														String reservationStatus = irm.getStatus(r.getId());
-														if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
-															System.out.println("Valid Reservation Status: " + reservationStatus);
-															results.add(v);
+														if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
+															System.err.println("Found single sample of vehicle and location combination that overlaps. Breaking from inner for loop.");
+															foundOverlap = true;
+															break;
 														}
 													}
-													prevVehicleID = currentVehicleID;
+												}
+												//if overlap wasn't found, add the vehicle to the list.
+												if (!foundOverlap){
+													results.add(v);
 												}
 											}
 										}
