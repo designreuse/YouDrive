@@ -17,7 +17,6 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
 	<script src="js/alertify.min.js"></script>
-	<script src="js/bootbox.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -90,15 +89,24 @@
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
-							<p>
-							You have made a reservation for vehicle ID <c:out value="${ reservedVehicle.id}"/><br/>
-							Make: <c:out value="${ reservedVehicle.make}"/><br/>
-							Model: <c:out value="${ reservedVehicle.model}"/><br/>
-							Tag: <c:out value="${ reservedVehicle.tag}"/><br/>
-							From: <fmt:formatDate type="both" value="${startDate}" /><br/>
-							To: <fmt:formatDate type="both" value="${endDate}" />
-							Reservation ID: <c:out value="${reservationID }"/>
-							</p>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th>Reservation ID</th>
+										<th>Date Booked</th>
+										<th>Start Date</th>
+										<th>Stop Date</th>
+										<th>Vehicle Details</th>
+									</tr>
+									<tr>
+										<td><c:out value="${reservation.id }"/></td>
+										<td><fmt:formatDate type="both" value="${reservationStatus.dateAdded}" /></td>
+										<td><fmt:formatDate type="both" value="${startDate}" /></td>
+										<td><fmt:formatDate type="both" value="${endDate}" /></td>
+										<td><c:out value="${ reservedVehicle.make}"/>, <c:out value="${ reservedVehicle.model}"/> (<c:out value="${ reservedVehicle.tag}"/>)</td>
+									</tr>
+								</table>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</div>

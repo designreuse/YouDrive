@@ -17,7 +17,6 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
 	<script src="js/alertify.min.js"></script>
-	<script src="js/bootbox.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -111,7 +110,8 @@
 										<th>Make</th>
 										<th>Model</th>
 										<th>Year</th>
-										<th>Tag</th>
+										<th>Hourly Price</th>
+										<th>Daily Price</th>
 										<th>Mileage</th>
 										<th>Last Serviced</th>
 										<th>Reserve</th>
@@ -121,7 +121,8 @@
 											<td><c:out value="${ vehicle.make }" /></td>
 											<td><c:out value="${ vehicle.model }" /></td>
 											<td><c:out value="${ vehicle.year }" /></td>
-											<td><c:out value="${ vehicle.tag }" /></td>
+											<td><c:out value="${ hourlyPrice }" /></td>
+											<td><c:out value="${ dailyPrice }" /></td>
 											<td><c:out value="${ vehicle.mileage }" /></td>
 											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
 											<td><button type="button" onclick="getVehicleID('${vehicle.id}','${vehicle.tag }')" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-star"></span> Reserve</button></td>

@@ -28,13 +28,16 @@ import org.json.JSONObject;
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.ReservationDAO;
 import com.youdrive.helpers.VehicleDAO;
+import com.youdrive.helpers.VehicleTypeDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.interfaces.IVehicleTypeManager;
 import com.youdrive.models.Reservation;
 import com.youdrive.models.ReservationStatus;
 import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
+import com.youdrive.models.VehicleType;
 
 /**
  * Servlet implementation class ReservationManagement
@@ -68,6 +71,7 @@ public class ReservationManagement extends HttpServlet {
 		HttpSession session = request.getSession();
 		IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");
 		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
+		IVehicleTypeManager ivtm = (VehicleTypeDAO) session.getAttribute("vehicleTypeMgr");
 		if (irm == null){
 			irm = new ReservationDAO();
 			session.setAttribute("reservationMgr", irm);
@@ -75,6 +79,10 @@ public class ReservationManagement extends HttpServlet {
 		if (ivm == null){
 			ivm = new VehicleDAO();
 			session.setAttribute("vehicleMgr", ivm);
+		}	
+		if (ivtm == null){
+			ivtm = new VehicleTypeDAO();
+			session.setAttribute("vehicleTypeMgr", ivtm);
 		}
 		String dispatchedPage = "/user.jsp";
 		String action = request.getParameter("action");
@@ -104,105 +112,118 @@ public class ReservationManagement extends HttpServlet {
 				}else if (dropoffTime == null || dropoffTime.isEmpty()){
 					request.setAttribute("errorMessage","Missing a dropoff time.");
 				}else{
-					//validate Date
-					if (isThisDateValid(pickupDate) && isThisDateValid(dropoffDate)){
-						//validate times
-						if (isTimeValid(pickupTime) && isTimeValid(dropoffTime)){
-							//Create date objects
-							Calendar startDate = getDate(pickupDate,pickupTime);
-							Calendar stopDate = getDate(dropoffDate,dropoffTime);
+					try{
+						int vTypeID = Integer.parseInt(vehicleType);
+						VehicleType vt = ivtm.getVehicleType(vTypeID);
+						if (vt != null){
+							//validate Date
+							if (isThisDateValid(pickupDate) && isThisDateValid(dropoffDate)){
+								//validate times
+								if (isTimeValid(pickupTime) && isTimeValid(dropoffTime)){
+									//Create date objects
+									Calendar startDate = getDate(pickupDate,pickupTime);
+									Calendar stopDate = getDate(dropoffDate,dropoffTime);
 
-							Calendar maxBookingDate = Calendar.getInstance();
-							maxBookingDate.setTime(startDate.getTime());
-							maxBookingDate.add(Calendar.HOUR, 72);
-							//More validation :)
-							if (startDate != null && stopDate != null){
-								if (startDate.compareTo(stopDate) > 0){
-									request.setAttribute("errorMessage", "Stop date must be later than the start Date.");
-								}else if (stopDate.compareTo(maxBookingDate) > 0){
-									System.out.println("Max booking date: " + maxBookingDate.getTime());
-									request.setAttribute("errorMessage", "Exceeds max reservation of 72 hours.");
-								}else{
-									java.util.Date sDate = startDate.getTime();
-									java.util.Date eDate = stopDate.getTime();
-									System.out.println("User dates: " + sDate + " end: " + eDate);
-									int locationID = Integer.parseInt(location);
-									int vehicleTypeID = Integer.parseInt(vehicleType);
-									//Get all vehicles of that type at that location
-									ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
-									int size = allVehicles.size();
-									if (size == 0){
-										request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
-									}else{
-										ArrayList<Vehicle> results = new ArrayList<Vehicle>();
-										//Going through list and
-										for (Vehicle v : allVehicles){
-											//Get reservations in Reservations that fit this location id and vehicle id
-											ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
-											//Add this vehicle if it is not in the Reservations table
-											if (inReservationsTable.isEmpty()){
-												results.add(v);
+									//Reservations can't be more than 72hrs in duration
+									Calendar maxBookingDate = Calendar.getInstance();
+									maxBookingDate.setTime(startDate.getTime());
+									maxBookingDate.add(Calendar.HOUR, 72);
+
+									if (startDate != null && stopDate != null){
+										if (startDate.compareTo(stopDate) > 0){
+											request.setAttribute("errorMessage", "Stop date must be later than the start Date.");
+										}else if (stopDate.compareTo(maxBookingDate) > 0){
+											System.out.println("Max booking date: " + maxBookingDate.getTime());
+											request.setAttribute("errorMessage", "Exceeds max reservation of 72 hours.");
+										}else{
+											java.util.Date sDate = startDate.getTime();
+											java.util.Date eDate = stopDate.getTime();
+											System.out.println("User dates: " + sDate + " end: " + eDate);
+											int locationID = Integer.parseInt(location);
+											int vehicleTypeID = Integer.parseInt(vehicleType);
+											//Get all vehicles of that type at that location
+											ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
+											int size = allVehicles.size();
+											if (size == 0){
+												request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
 											}else{
-												//Loop through the found reservations to check the dates
-												boolean foundOverlap = false;
-												for (Reservation r : inReservationsTable){												
-													java.util.Date rStartDate = r.getReservationStart();
-													java.util.Date rEndDate = r.getReservationEnd();
-													System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
-													//x.compareTo(y) < 0 if x is before y
-													//x.compareTo(y) > 0 if x is after y
-													if ((rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) < 0)
-															|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
-															|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
-															|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
-														
-														//Check reservationStatus if overlap is found.
-														String reservationStatus = irm.getStatus(r.getId());
-														if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
-															System.err.println("Found single sample of vehicle and location combination that overlaps. Breaking from inner for loop.");
-															foundOverlap = true;
-															break;
+												ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+												//Going through list and
+												for (Vehicle v : allVehicles){
+													//Get reservations in Reservations that fit this location id and vehicle id
+													ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
+													//Add this vehicle if it is not in the Reservations table
+													if (inReservationsTable.isEmpty()){
+														results.add(v);
+													}else{
+														//Loop through the found reservations to check the dates
+														boolean foundOverlap = false;
+														for (Reservation r : inReservationsTable){												
+															java.util.Date rStartDate = r.getReservationStart();
+															java.util.Date rEndDate = r.getReservationEnd();
+															System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
+															//x.compareTo(y) < 0 if x is before y
+															//x.compareTo(y) > 0 if x is after y
+															if ((rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) < 0)
+																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
+																
+																//Check reservationStatus if overlap is found.
+																String reservationStatus = irm.getStatus(r.getId());
+																if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
+																	System.err.println("Found single sample of vehicle and location combination that overlaps. Breaking from inner for loop.");
+																	foundOverlap = true;
+																	break;
+																}
+															}
+														}
+														//if overlap wasn't found, add the vehicle to the list.
+														if (!foundOverlap){
+															results.add(v);
 														}
 													}
 												}
-												//if overlap wasn't found, add the vehicle to the list.
-												if (!foundOverlap){
-													results.add(v);
+
+												//Send to results page
+												if (results.size() > 0){
+													session.setAttribute("locationID", locationID);
+													session.setAttribute("vehicleTypeID", vehicleTypeID);										
+													try{
+														JSONObject j = new JSONObject();
+														j.put("locationID", locationID);
+														j.put("vehicleTypeID", vehicleTypeID);
+														j.put("pickupDate", sDate);
+														j.put("dropoffDate", eDate);
+														session.setAttribute("resultParams", j);
+													}catch(JSONException e){
+														System.err.println("Error converting to JSONObject.");
+													}
+													session.setAttribute("startDate", sDate);
+													session.setAttribute("endDate", eDate);
+													session.setAttribute("hourlyPrice", vt.getHourlyPrice());
+													session.setAttribute("dailyPrice", vt.getDailyPrice());
+													session.setAttribute("searchResults",results);
+													dispatchedPage = "/reservationcheck.jsp";
+												}else{
+													request.setAttribute("errorMessage", "Change parameters. Found vehicles reserved that overlap your start/end dates/times");
 												}
 											}
 										}
-
-										//Send to results page
-										if (results.size() > 0){
-											session.setAttribute("locationID", locationID);
-											session.setAttribute("vehicleTypeID", vehicleTypeID);										
-											try{
-												JSONObject j = new JSONObject();
-												j.put("locationID", locationID);
-												j.put("vehicleTypeID", vehicleTypeID);
-												j.put("pickupDate", sDate);
-												j.put("dropoffDate", eDate);
-												session.setAttribute("resultParams", j);
-											}catch(JSONException e){
-												System.err.println("Error converting to JSONObject.");
-											}
-											session.setAttribute("startDate", sDate);
-											session.setAttribute("endDate", eDate);
-											session.setAttribute("searchResults",results);
-											dispatchedPage = "/reservationcheck.jsp";
-										}else{
-											request.setAttribute("errorMessage", "Change parameters. Found vehicles reserved that overlap your start/end dates/times");
-										}
+									}else{
+										request.setAttribute("errorMessage","Error parsing the dates.");
 									}
+								}else{
+									request.setAttribute("errorMessage", "Invalid pickup or dropoff times. Please use the values in the dropdown box.");
 								}
 							}else{
-								request.setAttribute("errorMessage","Error parsing the dates.");
+								request.setAttribute("errorMessage", "Invalid pickup date or dropoff date. Please enter your dates in this form: MM/DD/YYYY.");
 							}
 						}else{
-							request.setAttribute("errorMessage", "Invalid pickup or dropoff times. Please use the values in the dropdown box.");
+							request.setAttribute("errorMessage", "Invalid vehicle type.");
 						}
-					}else{
-						request.setAttribute("errorMessage", "Invalid pickup date or dropoff date. Please enter your dates in this form: MM/DD/YYYY.");
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage","Invalid vehicle type id found.");
 					}
 				}
 			}else if (action.equalsIgnoreCase("makeReservation")){
@@ -233,14 +254,17 @@ public class ReservationManagement extends HttpServlet {
 						Vehicle v = ivm.getVehicle(vID);
 						if (v != null){
 							//Make reservation
-							Calendar reservationDate = Calendar.getInstance(Locale.US);
+							Calendar reservationDate = Calendar.getInstance(Locale.US);							
 							int reservationID = irm.makeReservation(user.getId(),locationID,vID,startDate,stopDate);
 							if (reservationID > 0){
 								int reservationStatusID = irm.addReservationStatus(reservationID,reservationDate.getTime(),"Created");
 								if (reservationStatusID > 0){
 									//Update reservationStatus
+									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
+									ReservationStatus rs = new ReservationStatus(reservationStatusID, reservationID, reservationDate.getTime(), "Created");
 									request.setAttribute("reservedVehicle", v);
-									request.setAttribute("reservationID", reservationID);
+									request.setAttribute("reservation", r);
+									request.setAttribute("reservationStatus", rs);
 									request.setAttribute("errorMessage", "Reservation Made!!");
 									dispatchedPage = "/confirmation.jsp";
 								}else{

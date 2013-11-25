@@ -22,6 +22,8 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 	private PreparedStatement allVehicleTypesStmt;
 	private PreparedStatement checkVehicleTypeStmt;
 	private PreparedStatement countTypeInUsestmt;
+	private PreparedStatement getHourlyPriceStmt;
+	private PreparedStatement getDailyPriceStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -36,6 +38,8 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 			updateVehicleTypeStmt = conn.prepareStatement("update " + Constants.VEHICLE_TYPES + " set " + Constants.VEHICLE_TYPES_TYPE + " = ?, " + Constants.VEHICLE_TYPES_HOURLY_PRICE + " = ?, " + Constants.VEHICLE_TYPES_DAILY_PRICE + " = ? where " + Constants.VEHICLE_TYPES_ID + " = ?");
 			checkVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES  + " where type = ?");
 			countTypeInUsestmt = conn.prepareStatement("select count(*) from Vehicles v left outer join VehicleTypes vt on vt.id = v.vehicleType where vt.id = ?");
+			getHourlyPriceStmt = conn.prepareStatement("select hourlyPrice from VehicleTypes where id = ?");
+			getDailyPriceStmt = conn.prepareStatement("select dailyPrice from VehicleTypes where id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleTypeDAO");
 		}catch(SQLException e){
@@ -43,6 +47,40 @@ public class VehicleTypeDAO implements IVehicleTypeManager{
 		}catch(Exception e){
 			System.err.println("Problem with VehicleTypeDAO constructor: " + e.getClass().getName() + ": " + e.getMessage());
 		}
+	}
+	
+	@Override
+	public double getHourlyPrice(int vehicleTypeID) {
+		double result = 0.0;
+		try{
+			getHourlyPriceStmt.setInt(1, vehicleTypeID);
+			ResultSet rs = getHourlyPriceStmt.executeQuery();
+			if (rs.next()){
+				result = rs.getDouble(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getHourlyPrice method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return result;
+	}
+	
+	@Override
+	public double getDailyPrice(int vehicleTypeID) {
+		double result = 0.0;
+		try{
+			getDailyPriceStmt.setInt(1, vehicleTypeID);
+			ResultSet rs = getDailyPriceStmt.executeQuery();
+			if (rs.next()){
+				result = rs.getDouble(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getDailyPrice method: " + e.getClass().getName() + ": " + e.getMessage());			
+		}
+		return result;
 	}
 	
 	@Override
