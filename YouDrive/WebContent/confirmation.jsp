@@ -70,7 +70,7 @@
 				</p>
 				<div class="row">
 					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
-						<div id="errorDisplay" class="alert alert-danger">
+						<div id="errorDisplay" class="alert alert-success">
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>

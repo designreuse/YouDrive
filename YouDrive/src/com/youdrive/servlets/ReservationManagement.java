@@ -101,11 +101,10 @@ public class ReservationManagement extends HttpServlet {
 					if (isThisDateValid(pickupDate) && isThisDateValid(dropoffDate)){
 						//validate times
 						if (isTimeValid(pickupTime) && isTimeValid(dropoffTime)){
-							//validate proper location
-
+							//Create date objects
 							Calendar startDate = getDate(pickupDate,pickupTime);
 							Calendar stopDate = getDate(dropoffDate,dropoffTime);
-							
+							//More validation :)
 							if (startDate != null && stopDate != null){
 								java.util.Date sDate = startDate.getTime();
 								java.util.Date eDate = stopDate.getTime();
@@ -123,10 +122,12 @@ public class ReservationManagement extends HttpServlet {
 									for (Vehicle v : allVehicles){
 										//Get reservations in Reservations that fit this location id and vehicle id
 										ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
+										//Add this vehicle if it is not in the Reservations table
 										if (inReservationsTable.isEmpty()){
 											System.out.println("Empty " + v.getId());
 											results.add(v);
 										}else{
+											//Loop through the found reservations to check the dates
 											for (Reservation r : inReservationsTable){
 												java.util.Date rStartDate = r.getReservationStart();
 												java.util.Date rEndDate = r.getReservationEnd();
@@ -150,14 +151,12 @@ public class ReservationManagement extends HttpServlet {
 												}
 											}
 										}
-										//If vehicle is not in use in reservations table, add to results
-										//If it is, check that it is not in use during the start And End date. THEN, add to results
 									}
 	
 									//Send to results page
 									if (results.size() > 0){
-										request.setAttribute("locationID", locationID);
-										request.setAttribute("vehicleTypeID", vehicleTypeID);
+										session.setAttribute("locationID", locationID);
+										session.setAttribute("vehicleTypeID", vehicleTypeID);										
 										try{
 											JSONObject j = new JSONObject();
 											j.put("locationID", locationID);
@@ -168,8 +167,8 @@ public class ReservationManagement extends HttpServlet {
 										}catch(JSONException e){
 											System.err.println("Error converting to JSONObject.");
 										}
-										request.setAttribute("startDate", pickupDate+" "+pickupTime);
-										request.setAttribute("endDate", dropoffDate+" "+dropoffTime);
+										session.setAttribute("startDate", pickupDate+" "+pickupTime);
+										session.setAttribute("endDate", dropoffDate+" "+dropoffTime);
 										session.setAttribute("searchResults",results);
 										dispatchedPage = "/reservationcheck.jsp";
 									}else{
@@ -196,7 +195,8 @@ public class ReservationManagement extends HttpServlet {
 					request.setAttribute("errorMessage","No selection made.");
 					dispatchedPage = "/reservecheck.jsp";
 				}else{
-					request.setAttribute("errorMessage", "");
+					//TODO insert entry into Reservations and ReservationStatus
+					request.setAttribute("errorMessage", "Reservation Made!!");
 					dispatchedPage = "/confirmation.jsp";
 				}
 			}else{
@@ -227,6 +227,7 @@ public class ReservationManagement extends HttpServlet {
 			//if not valid, it will throw ParseException
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy",Locale.US);
 			sdf.setLenient(false);
+			java.util.Date d = sdf.parse(dateToValidate);
 			return true;
 		}catch(Exception e){ 
 			e.printStackTrace();
