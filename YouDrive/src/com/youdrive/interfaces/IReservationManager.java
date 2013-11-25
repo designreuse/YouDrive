@@ -111,4 +111,10 @@ public interface IReservationManager {
 			Date startDate, Date stopDate);
 
 	String getStatus(int reservationID);
+
+	public int makeReservation(int userID, int locationID, int vehicleID, Date startDate, Date stopDate);
+
+	public int addReservationStatus(int reservationID, Date dateAdded, String reservationStatus);
+
+	int isVehicleInUse(int vehicleID);
 }

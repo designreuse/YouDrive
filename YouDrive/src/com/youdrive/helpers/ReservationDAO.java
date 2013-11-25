@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,6 +45,9 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getCancelledOrReturnedReservationStatusStmt;
 	private PreparedStatement checkReservationRangeStmt;
 	private PreparedStatement checkReservationRangeCountStmt;
+	private PreparedStatement makeReservationStmt;
+	private PreparedStatement addReservationStatusStmt;
+	private PreparedStatement isVehicleInUseStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -77,6 +81,9 @@ public class ReservationDAO implements IReservationManager{
 			getCancelledOrReturnedReservationStatusStmt = conn.prepareStatement("select reservationStatus from ReservationStatus where reservationID = ? and reservationStatus != \"Created\"");
 			checkReservationRangeStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ? and NOT reservationStart between ? and ? and NOT reservationEnd between ? and ?");
 			checkReservationRangeCountStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? and vehicleID = ? and ((reservationStart between ? and ?) or (reservationEnd between ? and ?))");
+			makeReservationStmt = conn.prepareStatement("insert into Reservations values (DEFAULT,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -86,15 +93,31 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	@Override
+	public int isVehicleInUse(int vehicleID){
+		int results = -1;
+		try{
+			isVehicleInUseStmt.setInt(1,vehicleID);
+			ResultSet rs = isVehicleInUseStmt.executeQuery();
+			if (rs.next()){
+				results = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
 	@Override 
 	public String getStatus(int reservationID){
 		String results = "";
 		try{
 			getCancelledOrReturnedReservationStatusStmt.setInt(1,reservationID);
 			ResultSet rs = getCancelledOrReturnedReservationStatusStmt.executeQuery();
-			ReservationStatus temp;
 			if (rs.next()){
-				return rs.getString(1);
+				results = rs.getString(1);
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -617,6 +640,48 @@ public class ReservationDAO implements IReservationManager{
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+
+	@Override
+	public int makeReservation(int userID, int locationID, int vehicleID, Date startDate, Date stopDate) {
+		int results = 0;
+		try{
+			makeReservationStmt.setInt(1, userID);
+			makeReservationStmt.setInt(2, locationID);
+			makeReservationStmt.setInt(3, vehicleID);
+			makeReservationStmt.setTimestamp(4, new java.sql.Timestamp(startDate.getTime()));
+			makeReservationStmt.setTimestamp(5, new java.sql.Timestamp(stopDate.getTime()));
+			makeReservationStmt.executeUpdate();
+			ResultSet rs = makeReservationStmt.getGeneratedKeys();
+			if (rs.next()){
+				results = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with makeReservation method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+
+	@Override
+	public int addReservationStatus(int reservationID, Date dateAdded, String reservationStatus) {
+		int results = 0;
+		try{
+			addReservationStatusStmt.setInt(1, reservationID);
+			addReservationStatusStmt.setTimestamp(2, new java.sql.Timestamp(dateAdded.getTime()));
+			addReservationStatusStmt.setString(3, reservationStatus);
+			addReservationStatusStmt.executeUpdate();
+			ResultSet rs = addReservationStatusStmt.getGeneratedKeys();
+			if (rs.next()){
+				results = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with updateReservationStatus method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return results;
 	}

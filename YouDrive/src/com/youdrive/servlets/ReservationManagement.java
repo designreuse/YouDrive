@@ -32,6 +32,7 @@ import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Reservation;
 import com.youdrive.models.ReservationStatus;
+import com.youdrive.models.User;
 import com.youdrive.models.Vehicle;
 
 /**
@@ -77,14 +78,18 @@ public class ReservationManagement extends HttpServlet {
 		String dispatchedPage = "/user.jsp";
 		String action = request.getParameter("action");
 		if (action != null && !action.isEmpty()){
+			//Condition is true if user is coming from reservevehicle.jsp page
 			if (action.equalsIgnoreCase("checkAvailableVehicles")){
+				User user = (User)session.getAttribute("loggedInUser");
 				String location = request.getParameter("selectLocation");
 				String vehicleType = request.getParameter("selectVehicleType");
 				String pickupDate = request.getParameter("pickupDate");
 				String pickupTime = request.getParameter("pickupTime");
 				String dropoffDate = request.getParameter("dropoffDate");
 				String dropoffTime = request.getParameter("dropoffTime");
-				if (location == null || location.isEmpty()){
+				if (user == null){
+					request.setAttribute("errorMessage", "Please log in to perform this action.");
+				}else if (location == null || location.isEmpty()){
 					request.setAttribute("errorMessage","Missing a location");
 				}else if (vehicleType == null || vehicleType.isEmpty()){
 					request.setAttribute("errorMessage", "Missing vehicle type selection.");
@@ -119,34 +124,43 @@ public class ReservationManagement extends HttpServlet {
 									dispatchedPage = "/reservevehicle.jsp";
 								}else{
 									ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+									ArrayList<Vehicle> firstPass = new ArrayList<Vehicle>();
+									//Going through list and
 									for (Vehicle v : allVehicles){
-										//Get reservations in Reservations that fit this location id and vehicle id
-										ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
-										//Add this vehicle if it is not in the Reservations table
-										if (inReservationsTable.isEmpty()){
-											System.out.println("Empty " + v.getId());
+										int count = irm.isVehicleInUse(v.getId());
+										if (count == 0){
 											results.add(v);
+										}else if (count < 0){
+											System.err.println("Error getting count of vehicles in use.");
 										}else{
-											//Loop through the found reservations to check the dates
-											for (Reservation r : inReservationsTable){
-												java.util.Date rStartDate = r.getReservationStart();
-												java.util.Date rEndDate = r.getReservationEnd();
-												System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
-												//x.compareTo(y) < 0 if x is before y
-												//x.compareTo(y) > 0 if x is after y
-												if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
-													System.out.println("< <");
-													results.add(v);													
-												}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
-													System.out.println("> >");
-													results.add(v);
-												}else{
-													//Check ReservationStatus to see if the vehicle has been Returned
-													//If so, you can add  it, otherwise, move on.
-													String reservationStatus = irm.getStatus(r.getId());
-													if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
-														System.out.println("Valid Reservation Status: " + reservationStatus);
+											//Get reservations in Reservations that fit this location id and vehicle id
+											ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
+											//Add this vehicle if it is not in the Reservations table
+											if (inReservationsTable.isEmpty()){
+												System.out.println("Empty " + v.getId());
+												results.add(v);
+											}else{
+												//Loop through the found reservations to check the dates
+												for (Reservation r : inReservationsTable){
+													java.util.Date rStartDate = r.getReservationStart();
+													java.util.Date rEndDate = r.getReservationEnd();
+													System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
+													//x.compareTo(y) < 0 if x is before y
+													//x.compareTo(y) > 0 if x is after y
+													if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
+														System.out.println("< <");
+														results.add(v);													
+													}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
+														System.out.println("> >");
 														results.add(v);
+													}else{
+														//Check ReservationStatus to see if the vehicle has been Returned
+														//If so, you can add  it, otherwise, move on.
+														String reservationStatus = irm.getStatus(r.getId());
+														if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
+															System.out.println("Valid Reservation Status: " + reservationStatus);
+															results.add(v);
+														}
 													}
 												}
 											}
@@ -167,8 +181,8 @@ public class ReservationManagement extends HttpServlet {
 										}catch(JSONException e){
 											System.err.println("Error converting to JSONObject.");
 										}
-										session.setAttribute("startDate", pickupDate+" "+pickupTime);
-										session.setAttribute("endDate", dropoffDate+" "+dropoffTime);
+										session.setAttribute("startDate", sDate);
+										session.setAttribute("endDate", eDate);
 										session.setAttribute("searchResults",results);
 										dispatchedPage = "/reservationcheck.jsp";
 									}else{
@@ -178,6 +192,7 @@ public class ReservationManagement extends HttpServlet {
 								}
 							}else{
 								request.setAttribute("errorMessage","Error parsing the dates.");
+								dispatchedPage = "/reservevehicle.jsp";
 							}
 						}else{
 							request.setAttribute("errorMessage", "Invalid pickup or dropoff times. Please use the values in the dropdown box.");
@@ -189,14 +204,59 @@ public class ReservationManagement extends HttpServlet {
 					}
 				}
 			}else if (action.equalsIgnoreCase("makeReservation")){
+				//Condition is true if user clicks "reserve" on the reservationcheck.jsp page
+				//details on what the user selected are in the session parameters 
 				System.out.println("makeReservationForm action");
+				User user = (User)session.getAttribute("loggedInUser");
 				String vehicleID = request.getParameter("vehicleID");
-				if (vehicleID == null || vehicleID.isEmpty()){
+				int locationID = (int)session.getAttribute("locationID");
+				java.util.Date startDate = (java.util.Date) session.getAttribute("startDate");
+				java.util.Date stopDate = (java.util.Date) session.getAttribute("endDate");
+						
+				if(user == null){ 
+					request.setAttribute("errorMessage","Please log in before making this request.");
+					dispatchedPage = "/reservecheck.jsp";
+				}else if (vehicleID == null || vehicleID.isEmpty()){
 					request.setAttribute("errorMessage","No selection made.");
 					dispatchedPage = "/reservecheck.jsp";
+				}else if (locationID == 0){
+					request.setAttribute("errorMessage","No location.");
+					dispatchedPage = "/reservecheck.jsp";
+				}else if (startDate == null){
+					request.setAttribute("errorMessage","Invalid startDate.");
+					dispatchedPage = "/reservecheck.jsp";					
+				}else if (stopDate == null){
+					request.setAttribute("errorMessage","Invalid stopDate");
+					dispatchedPage = "/reservecheck.jsp";
 				}else{
-					//TODO insert entry into Reservations and ReservationStatus
-					request.setAttribute("errorMessage", "Reservation Made!!");
+					//TODO insert entry into Reservations and ReservationStatus					
+					try{
+						int vID = Integer.parseInt(vehicleID);
+						Vehicle v = ivm.getVehicle(vID);
+						if (v != null){
+							//Make reservation
+							Calendar reservationDate = Calendar.getInstance(Locale.US);
+							int reservationID = irm.makeReservation(user.getId(),locationID,vID,startDate,stopDate);
+							if (reservationID > 0){
+								int reservationStatusID = irm.addReservationStatus(reservationID,reservationDate.getTime(),"Created");
+								if (reservationStatusID > 0){
+									//Update reservationStatus
+									request.setAttribute("reservedVehicle", v);
+									request.setAttribute("reservationID", reservationID);
+									request.setAttribute("errorMessage", "Reservation Made!!");
+								}else{
+									request.setAttribute("errorMessage", "Unable to save reservationStatus.");
+									System.err.println("Uh oh, was unable to save the reservation status but an entry was made to Reservations table.");
+								}
+							}else{
+								request.setAttribute("errorMessage", "Unable to create Reservation.");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Vehicle not found!!");
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", e.getMessage());
+					}
 					dispatchedPage = "/confirmation.jsp";
 				}
 			}else{

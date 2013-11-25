@@ -82,6 +82,15 @@
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
+							<p>
+							You have made a reservation for vehicle ID <c:out value="${ reservedVehicle.id}"/><br/>
+							Make: <c:out value="${ reservedVehicle.make}"/><br/>
+							Model: <c:out value="${ reservedVehicle.model}"/><br/>
+							Tag: <c:out value="${ reservedVehicle.tag}"/><br/>
+							From: <fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${startDate}" /><br/>
+							To: <fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${endDate}" />
+							
+							</p>
 						</c:otherwise>
 					</c:choose>
 				</div>
