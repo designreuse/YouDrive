@@ -133,7 +133,11 @@ public class ReservationManagement extends HttpServlet {
 											results.add(v);
 										}else{
 											//Loop through the found reservations to check the dates
+											int prevVehicleID = 0;
+											int currentVehicleID = 0;
 											for (Reservation r : inReservationsTable){
+												currentVehicleID = r.getVehicleID();
+												
 												java.util.Date rStartDate = r.getReservationStart();
 												java.util.Date rEndDate = r.getReservationEnd();
 												System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
@@ -154,6 +158,7 @@ public class ReservationManagement extends HttpServlet {
 														results.add(v);
 													}
 												}
+												prevVehicleID = currentVehicleID;
 											}
 										}
 									}

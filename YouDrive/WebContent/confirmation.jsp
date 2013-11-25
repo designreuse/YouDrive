@@ -24,6 +24,13 @@
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
 	<title>Reservation Confirmation</title>
+	<script type="text/javascript">
+	/*Fade out the div after 30s*/
+		$(document).ready( function() {
+        	$('#errorDisplay').delay(30000).fadeOut();
+    	});
+	</script>
+	
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -74,6 +81,7 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
@@ -87,9 +95,9 @@
 							Make: <c:out value="${ reservedVehicle.make}"/><br/>
 							Model: <c:out value="${ reservedVehicle.model}"/><br/>
 							Tag: <c:out value="${ reservedVehicle.tag}"/><br/>
-							From: <fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${startDate}" /><br/>
-							To: <fmt:formatDate pattern="MM/dd/yyyy" type="both" value="${endDate}" />
-							
+							From: <fmt:formatDate type="both" value="${startDate}" /><br/>
+							To: <fmt:formatDate type="both" value="${endDate}" />
+							Reservation ID: <c:out value="${reservationID }"/>
 							</p>
 						</c:otherwise>
 					</c:choose>
