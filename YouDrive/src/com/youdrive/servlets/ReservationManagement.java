@@ -114,11 +114,13 @@ public class ReservationManagement extends HttpServlet {
 
 							Calendar maxBookingDate = Calendar.getInstance();
 							maxBookingDate.setTime(startDate.getTime());
+							maxBookingDate.add(Calendar.HOUR, 72);
 							//More validation :)
 							if (startDate != null && stopDate != null){
 								if (startDate.compareTo(stopDate) > 0){
 									request.setAttribute("errorMessage", "Stop date must be later than the start Date.");
 								}else if (stopDate.compareTo(maxBookingDate) > 0){
+									System.out.println("Max booking date: " + maxBookingDate.getTime());
 									request.setAttribute("errorMessage", "Exceeds max reservation of 72 hours.");
 								}else{
 									java.util.Date sDate = startDate.getTime();
