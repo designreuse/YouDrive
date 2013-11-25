@@ -124,43 +124,34 @@ public class ReservationManagement extends HttpServlet {
 									dispatchedPage = "/reservevehicle.jsp";
 								}else{
 									ArrayList<Vehicle> results = new ArrayList<Vehicle>();
-									ArrayList<Vehicle> firstPass = new ArrayList<Vehicle>();
 									//Going through list and
 									for (Vehicle v : allVehicles){
-										int count = irm.isVehicleInUse(v.getId());
-										if (count == 0){
+										//Get reservations in Reservations that fit this location id and vehicle id
+										ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
+										//Add this vehicle if it is not in the Reservations table
+										if (inReservationsTable.isEmpty()){
 											results.add(v);
-										}else if (count < 0){
-											System.err.println("Error getting count of vehicles in use.");
 										}else{
-											//Get reservations in Reservations that fit this location id and vehicle id
-											ArrayList<Reservation> inReservationsTable = irm.getAllReservations(v.getAssignedLocation(),v.getId());
-											//Add this vehicle if it is not in the Reservations table
-											if (inReservationsTable.isEmpty()){
-												System.out.println("Empty " + v.getId());
-												results.add(v);
-											}else{
-												//Loop through the found reservations to check the dates
-												for (Reservation r : inReservationsTable){
-													java.util.Date rStartDate = r.getReservationStart();
-													java.util.Date rEndDate = r.getReservationEnd();
-													System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
-													//x.compareTo(y) < 0 if x is before y
-													//x.compareTo(y) > 0 if x is after y
-													if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
-														System.out.println("< <");
-														results.add(v);													
-													}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
-														System.out.println("> >");
+											//Loop through the found reservations to check the dates
+											for (Reservation r : inReservationsTable){
+												java.util.Date rStartDate = r.getReservationStart();
+												java.util.Date rEndDate = r.getReservationEnd();
+												System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
+												//x.compareTo(y) < 0 if x is before y
+												//x.compareTo(y) > 0 if x is after y
+												if ((rStartDate.compareTo(sDate) < 0 && rEndDate.compareTo(sDate) < 0)){
+													System.out.println("< <");
+													results.add(v);													
+												}else if (rStartDate.compareTo(eDate) > 0 && rEndDate.compareTo(eDate) > 0){
+													System.out.println("> >");
+													results.add(v);
+												}else{
+													//Check ReservationStatus to see if the vehicle has been Returned
+													//If so, you can add  it, otherwise, move on.
+													String reservationStatus = irm.getStatus(r.getId());
+													if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
+														System.out.println("Valid Reservation Status: " + reservationStatus);
 														results.add(v);
-													}else{
-														//Check ReservationStatus to see if the vehicle has been Returned
-														//If so, you can add  it, otherwise, move on.
-														String reservationStatus = irm.getStatus(r.getId());
-														if (reservationStatus.equalsIgnoreCase("Cancelled") || reservationStatus.equalsIgnoreCase("Returned")){
-															System.out.println("Valid Reservation Status: " + reservationStatus);
-															results.add(v);
-														}
 													}
 												}
 											}

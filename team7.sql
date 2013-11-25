@@ -33,7 +33,7 @@ CREATE TABLE `Comments` (
   KEY `vehicleID` (`vehicleID`),
   CONSTRAINT `Comments_ibfk_1` FOREIGN KEY (`author`) REFERENCES `Users` (`id`),
   CONSTRAINT `Comments_ibfk_2` FOREIGN KEY (`vehicleID`) REFERENCES `Vehicles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `Comments` (
 
 LOCK TABLES `Comments` WRITE;
 /*!40000 ALTER TABLE `Comments` DISABLE KEYS */;
-INSERT INTO `Comments` VALUES (1,'2013-11-21 21:42:37','Test comment about Dodge Durango.',1,3),(2,'2013-11-21 21:42:55','Test comment about this dummy car.',1,5),(3,'2013-11-21 21:43:35','Comment about Hyundai Elantra.',1,2),(4,'2013-11-21 21:45:23','Another comment about this dummy car.',1,5),(5,'2013-11-21 22:42:26','The customer damaged this vehicle.',1,3),(6,'2013-11-22 19:20:01','This is a test comment on a test vehicle.',1,5),(7,'2013-11-22 22:04:56','This is a test comment.',1,1),(8,'2013-11-22 22:05:13','This is a test comment.',1,4);
+INSERT INTO `Comments` VALUES (1,'2013-11-21 21:42:37','Test comment about Dodge Durango.',1,3),(2,'2013-11-21 21:42:55','Test comment about this dummy car.',1,5),(3,'2013-11-21 21:43:35','Comment about Hyundai Elantra.',1,2),(4,'2013-11-21 21:45:23','Another comment about this dummy car.',1,5),(5,'2013-11-21 22:42:26','The customer damaged this vehicle.',1,3),(6,'2013-11-22 19:20:01','This is a test comment on a test vehicle.',1,5),(7,'2013-11-22 22:04:56','This is a test comment.',1,1),(8,'2013-11-22 22:05:13','This is a test comment.',1,4),(9,'2013-11-24 23:49:48','This tesla is the bomb.com',1,7);
 /*!40000 ALTER TABLE `Comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +115,7 @@ CREATE TABLE `ReservationStatus` (
   PRIMARY KEY (`id`),
   KEY `reservationID` (`reservationID`),
   CONSTRAINT `ReservationStatus_ibfk_1` FOREIGN KEY (`reservationID`) REFERENCES `Reservations` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,7 +124,7 @@ CREATE TABLE `ReservationStatus` (
 
 LOCK TABLES `ReservationStatus` WRITE;
 /*!40000 ALTER TABLE `ReservationStatus` DISABLE KEYS */;
-INSERT INTO `ReservationStatus` VALUES (1,1,'2013-11-23 13:13:18','Created'),(2,1,'2013-11-23 14:18:40','Returned'),(3,2,'2013-11-23 14:20:07','Created');
+INSERT INTO `ReservationStatus` VALUES (1,1,'2013-11-23 13:13:18','Created'),(2,1,'2013-11-23 14:18:40','Returned'),(3,2,'2013-11-23 14:20:07','Created'),(4,3,'2013-11-25 11:41:15','Created');
 /*!40000 ALTER TABLE `ReservationStatus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,7 +149,7 @@ CREATE TABLE `Reservations` (
   CONSTRAINT `Reservations_ibfk_1` FOREIGN KEY (`customerID`) REFERENCES `Users` (`id`),
   CONSTRAINT `Reservations_ibfk_2` FOREIGN KEY (`locationID`) REFERENCES `Locations` (`id`),
   CONSTRAINT `Reservations_ibfk_3` FOREIGN KEY (`vehicleID`) REFERENCES `Vehicles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `Reservations` (
 
 LOCK TABLES `Reservations` WRITE;
 /*!40000 ALTER TABLE `Reservations` DISABLE KEYS */;
-INSERT INTO `Reservations` VALUES (1,1,2,6,'2013-11-23 13:13:11','2013-11-26 13:13:11'),(2,1,4,3,'2013-11-23 14:20:07','2013-11-26 14:20:07');
+INSERT INTO `Reservations` VALUES (1,1,2,6,'2013-11-23 13:13:11','2013-11-26 13:13:11'),(2,1,1,3,'2013-11-23 14:20:07','2013-11-26 14:20:07'),(3,1,1,2,'2013-11-25 11:40:28','2013-11-27 11:40:28');
 /*!40000 ALTER TABLE `Reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -265,7 +265,7 @@ CREATE TABLE `Vehicles` (
 
 LOCK TABLES `Vehicles` WRITE;
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
-INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,1,1),(4,'Toyota','Camry',2005,'TYU48965',80000,'2013-11-05',0,1,3),(5,'Dummy','Dummy',2013,'ABCTALKAM',9000,'2013-11-20',0,7,6),(6,'Lamborghini','Aventador Coupe',2013,'ABC124356',10000,'2013-11-03',0,1,2);
+INSERT INTO `Vehicles` VALUES (1,'Lamborghini','Aventador Coupe',2013,'AVG12345',100000,'2013-11-01',0,3,4),(2,'Hyundai','Elantra',2007,'DEF789456',50000,'2013-06-03',0,1,1),(3,'Dodge','Durango',2010,'GHI589623',75000,'2013-07-01',0,1,1),(4,'Toyota','Camry',2005,'TYU48965',80000,'2013-11-05',0,1,3),(5,'Dummy','Dummy',2013,'ABCTALKAM',9000,'2013-11-20',0,7,6),(6,'Lamborghini','Aventador Coupe',2013,'ABC124356',10000,'2013-11-03',0,3,2),(7,'Tesla','Model S',2013,'POP45263',15000,'2013-11-06',0,3,3);
 /*!40000 ALTER TABLE `Vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -278,4 +278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-11-23 14:38:06
+-- Dump completed on 2013-11-25 12:56:52
