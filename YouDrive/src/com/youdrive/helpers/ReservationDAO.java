@@ -149,7 +149,8 @@ public class ReservationDAO implements IReservationManager{
 	}	
 	
 	@Override
-	public int getOpenReservationCount(int vehicleID){
+	public int getCancelledOrReturnedReservationCount(int vehicleID){
+		//Returns 0 if no cancelled/return reservations found
 		int results = -1;
 		try{
 			checkOpenReservationByVehicleStmt.setInt(1,vehicleID);
