@@ -78,7 +78,14 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
-					<h2>Vehicles at ${location.name }</h2>
+					<h2 class="pull-left">Vehicles at ${location.name }</h2>
+					<form class="form-search pull-right" action="VehicleBrowser" method="get">
+						<div style="padding-top:18px"class="input-append">
+							<input type="text" class="span2" name="searchTerms">
+						    <button type="submit" class="btn btn-primary">Search</button>
+						    <input type="hidden" name="redirect" value="viewlocation.jsp" />
+						</div>
+					</form>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
@@ -87,7 +94,14 @@
 							<c:if test="${vehicleMgr == null }">
 								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
 							</c:if>
-							<c:set var="allVehicles" value="${vehicleMgr.getVehiclesByLocationId(location.id) }" scope="session"/>
+							<c:choose>
+								<c:when test="${searchTerms != null && !searchTerms.isEmpty() }">
+									<c:set var="allVehicles" value="${vehicleMgr.searchVehiclesAtLocation(searchTerms, location.id) }" scope="session"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="allVehicles" value="${vehicleMgr.getVehiclesByLocationId(location.id) }" scope="session"/>
+								</c:otherwise>
+							</c:choose>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
@@ -119,6 +133,8 @@
 								<input type="hidden" id="action" name="action" value="sortVehicle"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 								<input type="hidden" id="locationID" name="locationID" value="${ location.id }" />
+								<input type="hidden" id="searchTerms" name="searchTerms" value="${ searchTerms }" />
+								<input type="hidden" name="redirect" value="viewlocation.jsp" />
 							</form>
 							
 						</c:otherwise>

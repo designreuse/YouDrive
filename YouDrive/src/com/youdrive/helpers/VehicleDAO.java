@@ -31,6 +31,8 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement deleteVehicleCommentsStmt;
 	private PreparedStatement addVehicleCommentStmt;
 	private PreparedStatement isVehicleInUseStmt;
+	private PreparedStatement searchVehiclesStmt;
+	private PreparedStatement searchVehiclesAtLocStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -50,6 +52,8 @@ public class VehicleDAO implements IVehicleManager {
 			getVehicleCommentsStmt = conn.prepareStatement("select * from Comments where vehicleID = ?");
 			addVehicleCommentStmt = conn.prepareStatement("insert into Comments values (DEFAULT,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			getVehiclesByLocationAndTypeStmt = conn.prepareStatement("select v.*,vt.type,vt.hourlyPrice,vt.dailyPrice,l.name,l.capacity from Vehicles v left outer join VehicleTypes vt on vt.id = v.vehicleType left outer join Locations l on l.id = v.assignedLocation where l.id = ? and vt.id = ?");
+			searchVehiclesStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where make like ? or model like ? or year like ?");
+			searchVehiclesAtLocStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " where (make like ? or model like ? or year like ?) and assignedLocation=?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated VehicleDAO");
 		}catch(SQLException e){
@@ -348,6 +352,66 @@ public class VehicleDAO implements IVehicleManager {
 			System.err.println("Problem with addVehicleComment method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
 		return commentID;
+	}
+	
+	@Override
+	public ArrayList<Vehicle> searchVehicles(String searchTerms) {
+		ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+		try{
+			searchVehiclesStmt.setString(1, "%" + searchTerms + "%");
+			searchVehiclesStmt.setString(2, "%" + searchTerms + "%");
+			searchVehiclesStmt.setString(3, "%" + searchTerms + "%");
+			ResultSet rs = searchVehiclesStmt.executeQuery();
+			while (rs.next()){
+				int id = rs.getInt("id");
+				String make = rs.getString("make");
+				String model = rs.getString("model");
+				int year = rs.getInt("year");
+				String tag = rs.getString("tag");
+				int mileage = rs.getInt("mileage");
+				Date lastServiced = rs.getDate("lastServiced");
+				boolean isAvailable = rs.getBoolean("isAvailable");
+				int vehicleType = rs.getInt("vehicleType");
+				int assignedLocation = rs.getInt("assignedLocation");
+				results.add(new Vehicle(id,make,model,year,tag,mileage,lastServiced,isAvailable,vehicleType,assignedLocation));
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with searchVehicles method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return results;
+	}
+	
+	@Override
+	public ArrayList<Vehicle> searchVehiclesAtLocation(String searchTerms, int locationID) {
+		ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+		try{
+			searchVehiclesAtLocStmt.setString(1, "%" + searchTerms + "%");
+			searchVehiclesAtLocStmt.setString(2, "%" + searchTerms + "%");
+			searchVehiclesAtLocStmt.setString(3, "%" + searchTerms + "%");
+			searchVehiclesAtLocStmt.setInt(4, locationID);
+			ResultSet rs = searchVehiclesAtLocStmt.executeQuery();
+			while (rs.next()){
+				int id = rs.getInt("id");
+				String make = rs.getString("make");
+				String model = rs.getString("model");
+				int year = rs.getInt("year");
+				String tag = rs.getString("tag");
+				int mileage = rs.getInt("mileage");
+				Date lastServiced = rs.getDate("lastServiced");
+				boolean isAvailable = rs.getBoolean("isAvailable");
+				int vehicleType = rs.getInt("vehicleType");
+				int assignedLocation = rs.getInt("assignedLocation");
+				results.add(new Vehicle(id,make,model,year,tag,mileage,lastServiced,isAvailable,vehicleType,assignedLocation));
+			}
+		}catch(SQLException e){
+			System.out.println("SQL Exception");
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with searchVehiclesAtLocation method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return results;
 	}
 	
 }

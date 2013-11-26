@@ -49,24 +49,10 @@ public class VehicleBrowser extends HttpServlet {
 		String searchType = request.getParameter("searchType");
 		String viewComments = request.getParameter("viewComments");
 		String locationID = request.getParameter("locationID");
+		String searchTerms = request.getParameter("searchTerms");
 		String dispatchedPage = "/login.jsp";
-		
-		//Direct to reservation form for a specific vehicle
-		if (vehicleID != null && !vehicleID.isEmpty()){
-			System.out.println("getting vehicle details.");
-			int vID = Integer.parseInt(vehicleID);
-			Vehicle vehicle = ivm.getVehicle(vID);
-			if (vehicle != null){
-				session.setAttribute("vehicle", vehicle);
-				request.setAttribute("errorMessage","");
-				dispatchedPage = "/editvehicle.jsp";
-			}else{
-				request.setAttribute("errorMessage", "Unable to find Vehicle object.");
-				dispatchedPage = "/managevehicles.jsp";
-			}
-			
-		//Sort vehicles list
-		}else if (searchType != null && !searchType.isEmpty()){
+	
+		if (searchType != null && !searchType.isEmpty()){
 			System.out.println("Performing sorting action.");
 			int sType = 0;
 			try{
@@ -107,8 +93,23 @@ public class VehicleBrowser extends HttpServlet {
 				}
 			}
 		}
+		
+		if (searchTerms != null){
+			System.out.println("Searching vehicles");
+			request.setAttribute("searchTerms", searchTerms);
+			dispatchedPage = "/" + (String) request.getAttribute("redirect");
+			if( locationID != null && !locationID.isEmpty()){
+				dispatchedPage = "/viewlocation.jsp";
+			}
+			else{
+				dispatchedPage = "/browsevehicles.jsp";
+			}
+		}
+				
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
-		dispatcher.forward(request,response);	}
+		dispatcher.forward(request,response);	
+	
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
