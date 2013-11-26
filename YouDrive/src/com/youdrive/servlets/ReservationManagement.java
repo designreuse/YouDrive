@@ -203,7 +203,7 @@ public class ReservationManagement extends HttpServlet {
 																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
 																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
 																	|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
-																
+
 																//Check reservationStatus if overlap is found.
 																String reservationStatus = irm.getStatus(r.getId());
 																if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
@@ -292,7 +292,7 @@ public class ReservationManagement extends HttpServlet {
 							Calendar reservationDate = Calendar.getInstance(Locale.US);							
 							int reservationID = irm.makeReservation(user.getId(),locationID,vID,startDate,stopDate);
 							if (reservationID > 0){
-								int reservationStatusID = irm.addReservationStatus(reservationID,reservationDate.getTime(),"Created");
+								int reservationStatusID = irm.addReservationStatus(reservationID,"Created");
 								if (reservationStatusID > 0){
 									//Update reservationStatus
 									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
@@ -323,6 +323,29 @@ public class ReservationManagement extends HttpServlet {
 				if (reservationID != null && !reservationID.isEmpty()){
 					try{
 						int rID = Integer.parseInt(reservationID);
+						Reservation r = irm.getReservation(rID);
+						User user = (User)session.getAttribute("loggedInUser");
+						if (user != null){
+							if (r != null){
+								if (r.getCustomerID() == user.getId()){
+									//Insert into status table
+									int statusID = irm.addReservationStatus(r.getId(), "Returned");
+									if (statusID > 0){
+										System.out.println("Successfully returned vehicle.");
+									}else if (statusID == 0){
+										request.setAttribute("errorMessage", "Unspecified error updating the reservation status.");
+									}else{
+										request.setAttribute("errorMessage", "Unspecified exception updating the status of the reservation.");
+									}
+								}else{
+									request.setAttribute("errorMessage", "Unauthorized to return this vehicle.");
+								}
+							}else{
+								request.setAttribute("errorMessage", "Invalid reservation object");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Please login as user before performing this action.");
+						}
 					}catch(NumberFormatException e){
 						request.setAttribute("errorMessage","Unable to format reservation id parameter.");
 					}

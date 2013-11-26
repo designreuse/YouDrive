@@ -40,6 +40,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement addReservationStatusStmt;
 	private PreparedStatement isVehicleInUseStmt;
 	private PreparedStatement cancelReservationStmt;
+	private PreparedStatement getReservationStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -65,11 +66,12 @@ public class ReservationDAO implements IReservationManager{
 			checkReservationRangeCountStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? and vehicleID = ? and ((reservationStart between ? and ?) or (reservationEnd between ? and ?))");
 			checkOpenReservationByVehicleStmt = conn.prepareCall("select count(*) from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.vehicleID = ? and (rs.reservationStatus = \"Returned\" or rs.reservationStatus = \"Cancelled\")");
 			makeReservationStmt = conn.prepareStatement("insert into Reservations values (DEFAULT,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,NOW(),?)",Statement.RETURN_GENERATED_KEYS);
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
 			getOpenReservationsByUserStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on r.id = rs.reservationID where r.customerID = ?");
 			cancelReservationStmt = conn.prepareStatement("insert into ReservationStatus values(DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			getOpenReservationsByUserStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus != \"Cancelled\" and rs.reservationStatus != \"Returned\" and customerID = ?");
+			getReservationStmt = conn.prepareStatement("select * from Reservations where id = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -79,6 +81,28 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	@Override
+	public Reservation getReservation(int reservationID){
+		Reservation temp = null;
+		try{
+			getReservationStmt.setInt(1,reservationID);
+			ResultSet rs = getReservationStmt.executeQuery();
+			if (rs.next()){
+				int customerID = rs.getInt("customerID");
+				int locationID = rs.getInt("locationID");
+				int vehicleID = rs.getInt("vehicleID");
+				java.util.Date sd = rs.getTimestamp("reservationStart");
+				java.util.Date ed = rs.getTimestamp("reservationEnd");
+				temp = new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed);
+			}
+		}catch(SQLException e){
+			System.err.println(e.getErrorCode());
+		}catch(Exception e){
+			System.err.println("Problem with getReservation constructor: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return temp;
+	}
+	
 	@Override
 	public ArrayList<Reservation> getOpenReservationsByUser(int userID){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
@@ -715,12 +739,11 @@ public class ReservationDAO implements IReservationManager{
 	}
 
 	@Override
-	public int addReservationStatus(int reservationID, Date dateAdded, String reservationStatus) {
-		int results = 0;
+	public int addReservationStatus(int reservationID, String reservationStatus) {
+		int results = -1;
 		try{
 			addReservationStatusStmt.setInt(1, reservationID);
-			addReservationStatusStmt.setTimestamp(2, new java.sql.Timestamp(dateAdded.getTime()));
-			addReservationStatusStmt.setString(3, reservationStatus);
+			addReservationStatusStmt.setString(2, reservationStatus);
 			addReservationStatusStmt.executeUpdate();
 			ResultSet rs = addReservationStatusStmt.getGeneratedKeys();
 			if (rs.next()){

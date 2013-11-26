@@ -114,7 +114,7 @@ public interface IReservationManager {
 
 	public int makeReservation(int userID, int locationID, int vehicleID, Date startDate, Date stopDate);
 
-	public int addReservationStatus(int reservationID, Date dateAdded, String reservationStatus);
+	public int addReservationStatus(int reservationID, String reservationStatus);
 
 	int isVehicleInUse(int vehicleID);
 
@@ -123,4 +123,6 @@ public interface IReservationManager {
 	int cancelReservation(int reservationID);
 
 	ArrayList<Reservation> getOpenReservationsByUser(int userID);
+
+	Reservation getReservation(int reservationID);
 }

@@ -106,8 +106,8 @@
 								You selected:<br/>
 								Location: <strong><c:out value="${location.name }"/></strong><br/>
 								Vehicle Type: <strong><c:out value="${vehicleType.type }"/></strong><br/>
-								Start Date: <strong><fmt:formatDate type="both" value="${startDate}" /></strong><br/>
-								Stop Date: <strong><fmt:formatDate type="both" value="${endDate}" /> </strong><br/>							
+								Start Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${startDate}" /></strong><br/>
+								Stop Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${endDate}" /> </strong><br/>							
 							</div>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
