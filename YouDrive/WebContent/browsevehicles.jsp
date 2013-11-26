@@ -32,7 +32,7 @@
 			});
 		});
 	</script>
-	<title>Browse Locations</title>
+	<title>Browse Vehicles</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -78,6 +78,7 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<h2>All Vehicles</h2>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
@@ -129,8 +130,8 @@
 			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 				<div class="list-group">
 					<a class="list-group-item"><strong>Navigation</strong></a>
-		            <a class="list-group-item active" href="browselocations.jsp">Browse Locations</a>
-		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
+		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
+		            <a class="list-group-item active" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
 		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>	

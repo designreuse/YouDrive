@@ -32,7 +32,7 @@
 			});
 		});
 	</script>
-	<title>Browse Locations</title>
+	<title>${location.name }</title>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -78,6 +78,7 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<h2>Vehicles at ${location.name }</h2>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>

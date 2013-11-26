@@ -82,6 +82,7 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<h2>All Locations</h2>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
