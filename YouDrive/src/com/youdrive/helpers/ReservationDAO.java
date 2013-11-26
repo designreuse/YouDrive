@@ -30,6 +30,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getCreatedReservationsStmt;
 	private PreparedStatement checkLocationsInFutureReservationsStmt;
 	private PreparedStatement getReservationsStmt;
+	private PreparedStatement getOpenReservationsByUserStmt;
 	private PreparedStatement getReservationStatusStmt;
 	private PreparedStatement getCancelledOrReturnedReservationStatusStmt;
 	private PreparedStatement checkReservationRangeStmt;
@@ -38,6 +39,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement checkOpenReservationByVehicleStmt;
 	private PreparedStatement addReservationStatusStmt;
 	private PreparedStatement isVehicleInUseStmt;
+	private PreparedStatement cancelReservationStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -65,6 +67,9 @@ public class ReservationDAO implements IReservationManager{
 			makeReservationStmt = conn.prepareStatement("insert into Reservations values (DEFAULT,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
+			getOpenReservationsByUserStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on r.id = rs.reservationID where r.customerID = ?");
+			cancelReservationStmt = conn.prepareStatement("insert into ReservationStatus values(DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			getOpenReservationsByUserStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus != \"Cancelled\" and rs.reservationStatus != \"Returned\" and customerID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -74,6 +79,51 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	@Override
+	public ArrayList<Reservation> getOpenReservationsByUser(int userID){
+		ArrayList<Reservation> results = new ArrayList<Reservation>();
+		try{
+			getOpenReservationsByUserStmt.setInt(1,userID);
+			ResultSet rs = getOpenReservationsByUserStmt.executeQuery();
+			while (rs.next()){
+				int reservationID = rs.getInt("id");
+				int customerID = rs.getInt("customerID");
+				int locationID = rs.getInt("locationID");
+				int vehicleID = rs.getInt("vehicleID");
+				java.util.Date startDate = rs.getTimestamp("reservationStart");
+				java.util.Date endDate = rs.getTimestamp("reservationEnd");
+				int reservationStatusID = rs.getInt("reservationStatusID");
+				java.util.Date dateAdded = rs.getTimestamp("dateAdded");
+				String status = rs.getString("reservationStatus");
+				Reservation temp = new Reservation(reservationID, customerID, locationID, vehicleID, startDate, endDate);
+				temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
+				results.add(temp);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getOpenReservationCount method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}		
+	
+	@Override
+	public int cancelReservation(int reservationID){
+		int results = -1;
+		try{
+			cancelReservationStmt.setInt(1,reservationID);
+			ResultSet rs = cancelReservationStmt.executeQuery();
+			if (rs.next()){
+				results = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getOpenReservationCount method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}	
+	
 	@Override
 	public int getOpenReservationCount(int vehicleID){
 		int results = -1;

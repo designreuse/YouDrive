@@ -1,7 +1,7 @@
 package com.youdrive.models;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 public class User implements Serializable{
 	private static final long serialVersionUID = 8015514732999869774L;

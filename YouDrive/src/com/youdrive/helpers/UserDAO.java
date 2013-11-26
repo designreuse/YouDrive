@@ -27,6 +27,7 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement checkUsernameStmt;
 	private PreparedStatement checkEmailStmt;
 	private PreparedStatement deleteAdminUserStmt;
+	private PreparedStatement deleteCustomerUserStmt;
 
 	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
@@ -38,9 +39,10 @@ public class UserDAO implements IUserManager {
 			getAllCustomersStmt = conn.prepareStatement("select * from " + Constants.USERS + " where isAdmin = 0 order by firstName");
 			getUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where id = ?");
 			getUserByUsernameStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ?");
-			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,?)",Statement.RETURN_GENERATED_KEYS);
+			addRegularUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,NOW())",Statement.RETURN_GENERATED_KEYS);
+			addAdminUserStmt = conn.prepareStatement("insert into " + Constants.USERS + " values (DEFAULT,?,?,?,?,DEFAULT,DEFAULT,?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,NOW())",Statement.RETURN_GENERATED_KEYS);
 			deleteAdminUserStmt = conn.prepareStatement("delete from " + Constants.USERS + " where isAdmin = 1 and id = ?");
+			deleteCustomerUserStmt = conn.prepareStatement("delete from " + Constants.USERS + " where isAdmin = 0 and id = ?");
 			authenticateUserStmt = conn.prepareStatement("select * from " + Constants.USERS + " where username = ? and password = ?");
 			updateAdminUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?, password = ?,firstName=?,lastName=?,email=? where id = ?");
 			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
@@ -63,9 +65,6 @@ public class UserDAO implements IUserManager {
 			addAdminUserStmt.setString(3,firstName);
 			addAdminUserStmt.setString(4,lastName);
 			addAdminUserStmt.setString(5,email);
-			java.util.Date d = Calendar.getInstance().getTime();
-			java.sql.Date creationdate = new java.sql.Date(d.getTime());
-			addAdminUserStmt.setDate(6, creationdate);
 			addAdminUserStmt.executeUpdate();
 			ResultSet rs = addAdminUserStmt.getGeneratedKeys();
 			if (rs.next()){
@@ -95,9 +94,8 @@ public class UserDAO implements IUserManager {
 			addRegularUserStmt.setString(10, p.getCcNumber());
 			addRegularUserStmt.setInt(11, p.getCcSecurityCode());
 			addRegularUserStmt.setString(12, p.getCcExpirationDate());
-			addRegularUserStmt.setDate(13, p.getMemberExpiration());
+			addRegularUserStmt.setTimestamp(13, new java.sql.Timestamp(p.getMemberExpiration().getTime()));
 			addRegularUserStmt.setInt(14, p.getMembershipLevel());
-			addRegularUserStmt.setDate(15, p.getDateCreated());
 			userID = addRegularUserStmt.executeUpdate();
 			ResultSet rs = addRegularUserStmt.getGeneratedKeys();
 			if (rs.next()){
@@ -165,9 +163,11 @@ public class UserDAO implements IUserManager {
 				int ccSecurityCode = rs.getInt("ccSecurityCode");
 				String ccExpirationDate = rs.getString("ccExpirationDate");
 				boolean isAdmin = rs.getBoolean("isAdmin");
-				Date memberExpiration = rs.getDate("memberExpiration");
+				java.util.Date memberExpiration = rs.getTimestamp("memberExpiration");
 				int membershipLevel = rs.getInt("membershipLevel");
+				java.util.Date registrationDate = rs.getTimestamp("registrationDate");
 				user = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				user.setDateCreated(registrationDate);
 				return user;
 			}
 		}catch(SQLException e){
@@ -200,7 +200,9 @@ public class UserDAO implements IUserManager {
 				boolean isAdmin = rs.getBoolean("isAdmin");
 				Date memberExpiration = rs.getDate("memberExpiration");
 				int membershipLevel = rs.getInt("membershipLevel");
+				java.util.Date registrationDate = rs.getTimestamp("registrationDate");
 				user = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				user.setDateCreated(registrationDate);
 				return user;
 			}
 		}catch(SQLException e){
@@ -233,12 +235,15 @@ public class UserDAO implements IUserManager {
 				boolean isAdmin = rs.getBoolean("isAdmin");
 				Date memberExpiration = rs.getDate("memberExpiration");
 				int membershipLevel = rs.getInt("membershipLevel");
-				results.add(new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel));				
+				java.util.Date registrationDate = rs.getTimestamp("registrationDate");
+				User temp = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				temp.setDateCreated(registrationDate);
+				results.add(temp);				
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			System.err.println("Problem with getAllUsers method: " + e.getClass().getName() + ": " + e.getMessage());
+			System.err.println("Problem with getAllAdmins method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return results;
 	}
@@ -354,7 +359,10 @@ public class UserDAO implements IUserManager {
 				boolean isAdmin = rs.getBoolean("isAdmin");
 				Date memberExpiration = rs.getDate("memberExpiration");
 				int membershipLevel = rs.getInt("membershipLevel");
-				results.add(new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel));				
+				java.util.Date registrationDate = rs.getTimestamp("registrationDate");
+				User temp = new User(id, username, password, firstName,lastName, state, license, email,address, ccType, ccNumber, ccSecurityCode, ccExpirationDate, isAdmin,memberExpiration,  membershipLevel);
+				temp.setDateCreated(registrationDate);
+				results.add(temp);
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
@@ -374,6 +382,20 @@ public class UserDAO implements IUserManager {
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with deleteAdminUser method: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean deleteRegularUser(int userID){
+		try{
+			deleteCustomerUserStmt.setInt(1, userID);
+			deleteCustomerUserStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with deleteRegularUser method: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return false;
 	}

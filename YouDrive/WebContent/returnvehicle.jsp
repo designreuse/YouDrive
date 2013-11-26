@@ -73,7 +73,28 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Return Vehicle</p>
+							<c:if test="${reservationMgr == null }">
+								<jsp:useBean id="reservationMgr" class="com.youdrive.helpers.ReservationDAO" scope="session" />	
+							</c:if>
+							<table  class="table table-condensed table-hover">
+								<tr>
+									<th>Reservation #</th>
+									<th>Location </th>
+									<th>Vehicle</th>
+									<th>Start Date</th>
+									<th>End Date</th>
+								</tr>
+								<c:forEach items="${reservationMgr.getOpenReservationsByUser(loggedInUser.id)}" var="reservation" varStatus="status">
+									<tr id="reservation_${reservation.id}">
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</c:forEach>
+							</select>
+							</table>
 						</c:otherwise>
 					</c:choose>
 				</div>

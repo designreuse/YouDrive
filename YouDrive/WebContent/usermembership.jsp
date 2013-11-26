@@ -73,7 +73,26 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>My Membership</p>
+							<c:if test="${ membershipMgr == null}">
+								<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />	
+							</c:if>
+							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}" />
+							<c:choose>
+								<c:when test="${membershipObj != null }">
+									<h3>
+										Your Membership Details
+									</h3>
+									<article class="membershipDisplay">
+										<span >Membership: <strong><c:out value="${membershipObj.name }"/></strong></span>
+										<span>Membership Price: <strong><c:out value="${membershipObj.price }"/></strong></span>
+										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong></span>
+										<span>Membership Expiration Date: <strong><c:out value="${ loggedInUser.memberExpiration}"/></strong></span>
+									</article>
+								</c:when>
+								<c:otherwise>
+									Invalid membership found.
+								</c:otherwise>
+							</c:choose>
 						</c:otherwise>
 					</c:choose>
 				</div>

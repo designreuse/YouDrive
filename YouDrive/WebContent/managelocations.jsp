@@ -112,7 +112,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />			
+						<c:if test="${locationMgr == null }">
+							<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
+						</c:if>
 						<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">

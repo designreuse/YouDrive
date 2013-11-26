@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.management.ImmutableDescriptor;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +56,7 @@ public class UserManagement extends HttpServlet {
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
 		}
+		User loggedInUser = (User)session.getAttribute("loggedInUser");
 		String userID = request.getParameter("userID");
 		String searchType = request.getParameter("searchType");
 		String customerID = request.getParameter("customerID");		
@@ -91,14 +93,18 @@ public class UserManagement extends HttpServlet {
 			try{
 				int uID = Integer.parseInt(customerID);
 				User user = ium.getUser(uID);
-				//Null check is in jsp
-				session.setAttribute("user", user);
-				dispatchedPage = "/editcustomer.jsp";
+				if (loggedInUser.isAdmin() || user.getId() == loggedInUser.getId()){
+					//Null check is in jsp
+					session.setAttribute("user", user);
+					dispatchedPage = "/editcustomer.jsp";
+				}else{
+					request.setAttribute("errorMessage","Not authorized to view this customer.");
+					dispatchedPage = "/user.jsp";
+				}
 			}catch(NumberFormatException e){
 				request.setAttribute("errorMessage", "Invalid userID.");
 			}
 		}else{
-			User loggedInUser = (User) session.getAttribute("loggedInUser");
 			if (loggedInUser != null){
 				if (loggedInUser.isAdmin()){
 					dispatchedPage = "/manageusers.jsp";
@@ -149,7 +155,7 @@ public class UserManagement extends HttpServlet {
 				@SuppressWarnings("unchecked")
 				HashMap<String,String> pg1 = (LinkedHashMap<String, String>) session.getAttribute("registration_page1");
 				if (pg1 != null && !pg1.isEmpty()){				
-					int userID = addRegularUserPg2(request,ium,pg1);
+					int userID = addRegularUserPg2(session,request,ium,pg1);
 					if (userID == 0){
 						dispatchedPage = "/registration_page1.jsp";
 					}else{
@@ -396,7 +402,7 @@ public class UserManagement extends HttpServlet {
 	 * @param page1_details
 	 * @return
 	 */
-	private int addRegularUserPg2(HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
+	private int addRegularUserPg2(HttpSession session,HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
 		int userID = 0;
 		String membershipLevel = request.getParameter("membershipLevel");
 		String address = request.getParameter("address");
@@ -428,7 +434,16 @@ public class UserManagement extends HttpServlet {
 			try{
 				int ccCode = Integer.parseInt(ccSecurityCode);
 				int memberLevel = Integer.parseInt(membershipLevel);
-				if (validateCreditCard(ccNumber)){
+				//Get membership details
+				IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
+				if (imm == null){
+					imm = new MembershipDAO();
+					session.setAttribute("membershipMgr", imm);
+				}
+				Membership m = imm.getMembership(memberLevel);
+				if (m == null){
+					errorMessage = "Invalid membership level selected.";
+				}else if (validateCreditCard(ccNumber)){
 					ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 					if (!expDates.isEmpty()){
 						User user = new User();
@@ -438,8 +453,10 @@ public class UserManagement extends HttpServlet {
 						user.setUsername(page1_details.get("username"));
 						user.setPassword(page1_details.get("password"));
 						Calendar cal = Calendar.getInstance();
-						java.sql.Date creationdate = new java.sql.Date(cal.getTime().getTime());
-						user.setDateCreated(creationdate);
+						Calendar expCal = Calendar.getInstance();
+						expCal.add(Calendar.MONTH, m.getDuration());
+						user.setMemberExpiration(expCal.getTime());
+						user.setDateCreated(cal.getTime());
 						user.setAdmin(false);
 						user.setAddress(address);
 						user.setCcExpirationDate(ccExpirationDate);
@@ -451,26 +468,6 @@ public class UserManagement extends HttpServlet {
 						user.setMembershipLevel(memberLevel);
 						userID = ium.addUser(user);
 						errorMessage = "";
-
-						if (userID > 0){
-							//Add member's expiration date
-							//Look up durations in membership table and add to the user's creation date
-							IMembershipManager imm = new MembershipDAO();
-							if (imm != null){
-								Membership m = imm.getMembership(memberLevel);
-								if (m != null){
-									cal.add(Calendar.MONTH, m.getDuration());
-									java.sql.Date newDate = new java.sql.Date(cal.getTime().getTime());
-									if (!imm.updateExpirationDate(newDate,memberLevel)){
-										errorMessage = "Error saving expiration date to database.";
-									}
-								}else{
-									errorMessage = "Invalid membership plan chosen.";
-								}
-							}
-						}else{
-							errorMessage = "Error creating the user.";
-						}
 					}else{
 						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}

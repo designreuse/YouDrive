@@ -6,6 +6,16 @@ div.logo {
 	margin-top:-38px;
 }
 
+article.membershipDisplay span{
+	font-size:140%;
+}
+
+article.membershipDisplay span:before {
+    content: ' ';
+    clear: right;
+    display: block;
+}
+
 .hidden{
 	display:none;	
 }

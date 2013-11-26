@@ -60,7 +60,34 @@ public class ReservationManagement extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		ServletContext ctx = this.getServletContext();
+		RequestDispatcher dispatcher = null;
+		HttpSession session = request.getSession();
+		IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");
+		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
+		IVehicleTypeManager ivtm = (VehicleTypeDAO) session.getAttribute("vehicleTypeMgr");
+		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
+		if (irm == null){
+			irm = new ReservationDAO();
+			session.setAttribute("reservationMgr", irm);
+		}		
+		if (ivm == null){
+			ivm = new VehicleDAO();
+			session.setAttribute("vehicleMgr", ivm);
+		}	
+		if (ivtm == null){
+			ivtm = new VehicleTypeDAO();
+			session.setAttribute("vehicleTypeMgr", ivtm);
+		}
+		if (ilm == null){
+			ilm = new LocationDAO();
+			session.setAttribute("locationMgr", ilm);
+		}
+		User user = (User) session.getAttribute("loggedInUser");
+		String dispatchedPage = "/user.jsp";
+		String action = request.getParameter("action");
+		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
+		dispatcher.forward(request,response);
 	}
 
 	/**

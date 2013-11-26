@@ -119,4 +119,8 @@ public interface IReservationManager {
 	int isVehicleInUse(int vehicleID);
 
 	int getOpenReservationCount(int vehicleID);
+
+	int cancelReservation(int reservationID);
+
+	ArrayList<Reservation> getOpenReservationsByUser(int userID);
 }

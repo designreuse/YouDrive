@@ -34,10 +34,10 @@ ccNumber varchar(17),
 ccSecurityCode varchar(10),
 ccExpirationDate varchar(7),
 isAdmin boolean,
-memberExpiration date,
+memberExpiration datetime,
 membershipLevel int,
-registrationDate date not null,
-FOREIGN KEY (membershipLevel) references Memberships(id)
+registrationDate datetime not null,
+CONSTRAINT fk_users_memberships FOREIGN KEY (membershipLevel) references Memberships(id)
 ) Engine=InnoDB;
 
 Create table Vehicles(
@@ -51,8 +51,8 @@ lastServiced date not null,
 isAvailable boolean default 0,
 vehicleType int not null,
 assignedLocation int not null,
-FOREIGN KEY (vehicleType) references VehicleTypes(id),
-FOREIGN KEY (assignedLocation) references Locations(id)
+CONSTRAINT fk_vehicles_vehicletypes FOREIGN KEY (vehicleType) references VehicleTypes(id),
+CONSTRAINT fk_vehicles_locations FOREIGN KEY (assignedLocation) references Locations(id)
 ) Engine=InnoDB;
 
 create table Reservations(
@@ -62,9 +62,9 @@ locationID int not null,
 vehicleID int not null,
 reservationStart datetime not null,
 reservationEnd datetime  not null,
-FOREIGN KEY (customerID) references Users(id),
-FOREIGN KEY (locationID) references Locations(id),
-FOREIGN KEY (vehicleID) references Vehicles(id)
+CONSTRAINT fk_reservations_users FOREIGN KEY (customerID) references Users(id),
+CONSTRAINT fk_reservations_locations FOREIGN KEY (locationID) references Locations(id),
+CONSTRAINT fk_reservations_vehicles FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
 
 create table ReservationStatus(
@@ -72,7 +72,7 @@ id int not null primary key auto_increment,
 reservationID int not null,
 dateAdded datetime not null,
 reservationStatus ENUM ('Created', 'Cancelled', 'Returned')  not null,
-FOREIGN KEY (reservationID) references Reservations(id)
+CONSTRAINT fk_reservationstatus_reservations FOREIGN KEY (reservationID) references Reservations(id)
 ) Engine=InnoDB;
 
 create table Comments(
@@ -81,6 +81,6 @@ createdOn datetime not null,
 comment text not null,
 author int not null,
 vehicleID int not null,
-FOREIGN KEY (author) references Users(id),
-FOREIGN KEY (vehicleID) references Vehicles(id)
+CONSTRAINT fk_comments_users FOREIGN KEY (author) references Users(id),
+CONSTRAINT fk_comments_vehicles FOREIGN KEY (vehicleID) references Vehicles(id)
 ) Engine=InnoDB;
