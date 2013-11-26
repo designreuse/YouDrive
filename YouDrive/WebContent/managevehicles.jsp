@@ -19,42 +19,46 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-<script type="text/javascript">
-	//Equivalent to $( document ).ready(function(){});
-	$(function() {
-		$('.navSort').click(function(){
-			//Get href value
-			//Set hidden input field
-			//Submit form which reloads the page
-			searchValue = $(this).attr('href').substring(1);
-			document.getElementById("searchType").value = searchValue;
-			$('#sortVehicleForm').submit();
+	<script type="text/javascript">
+		//Equivalent to $( document ).ready(function(){});
+		$(function() {
+			$('.navSort').click(function(){
+				//Get href value
+				//Set hidden input field
+				//Submit form which reloads the page
+				searchValue = $(this).attr('href').substring(1);
+				document.getElementById("searchType").value = searchValue;
+				$('#sortVehicleForm').submit();
+			});
 		});
-	});
-	
-	/* submit the hidden form to delete the vehicle but need to confirm with user first*/
-	function getVehicleID(vehicleID, vehicleTag){
-		// confirm dialog
-		alertify.confirm("You are about to delete vehicle with tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
-		    if (e) {
-		    	console.log("OK clicked.");
-				document.getElementById("vehicleID").value = locationID;
-				$('#deleteVehicleForm').submit();
-		    } else {
-		        console.log("Cancel clicked.");
-		    }
-		});
-		console.log(vehicleID);
-	}	
-</script>
+		
+		/* submit the hidden form to delete the vehicle but need to confirm with user first*/
+		function getVehicleID(vehicleID, vehicleTag){
+			// confirm dialog
+			alertify.confirm("You are about to delete vehicle with tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("vehicleID").value = vehicleID;
+					$('#deleteVehicleForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(vehicleID);
+		}	
+	</script>
 <title>Manage Vehicles</title>
 </head>
 <body>

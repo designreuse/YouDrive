@@ -233,6 +233,7 @@ public class VehicleDAO implements IVehicleManager {
 			deleteVehicleStmt.executeUpdate();
 			return true;
 		}catch(SQLException e){
+			System.out.println("PRoblem deleting vehicle.");
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with deleteVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			

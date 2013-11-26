@@ -224,6 +224,8 @@ public class VehicleManagement extends HttpServlet {
 						if (v != null){
 							if (deleteVehicle(session,request,ivm,ilm,irm,v)){
 								request.setAttribute("errorMessage", "");
+							}else{
+								request.setAttribute("errorMessage", "Unable to delete the vehicle.");
 							}
 						}else{
 							request.setAttribute("errorMessage", "Vehicle not found.");
@@ -328,6 +330,7 @@ public class VehicleManagement extends HttpServlet {
 			//Vehicle not in use
 			return ivm.deleteVehicle(vID);			
 		}else{
+			//Check if 
 			//Delete vehicle only if there is NO open reservation
 			count = irm.getOpenReservationCount(vID);
 			if (count == 0){

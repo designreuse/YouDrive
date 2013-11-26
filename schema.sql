@@ -40,7 +40,6 @@ registrationDate date not null,
 FOREIGN KEY (membershipLevel) references Memberships(id)
 ) Engine=InnoDB;
 
-
 Create table Vehicles(
 id int not null primary key auto_increment,
 make varchar(255) not null,
