@@ -294,6 +294,8 @@ public class ReservationManagement extends HttpServlet {
 							if (reservationID > 0){
 								int reservationStatusID = irm.addReservationStatus(reservationID,"Created");
 								if (reservationStatusID > 0){
+									//Compute amount User will be charged
+									
 									//Update reservationStatus
 									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
 									ReservationStatus rs = new ReservationStatus(reservationStatusID, reservationID, reservationDate.getTime(), "Created");
@@ -343,8 +345,6 @@ public class ReservationManagement extends HttpServlet {
 									if (returnedDate.compareTo(reservationEnd) < 0 || returnedDate.compareTo(reservationEnd) == 0){
 										//Returned before reservation end
 										System.out.println("No penalty incurred.");
-										request.setAttribute("penalty", "");
-										request.setAttribute("hoursOver","");
 									}else{
 										long differenceInMillis = returnedDate.getTime() - reservationEnd.getTime();
 										long diffHours = differenceInMillis / (60 * 60 * 1000);
@@ -354,6 +354,16 @@ public class ReservationManagement extends HttpServlet {
 										System.out.println("Paying penalty of " + penalty + " for going over by " + diffHours + " hours.");
 										request.setAttribute("penalty", penalty);
 										request.setAttribute("hoursOver",diffHours);
+									}
+									
+									//Add comment to Comments table
+									if (vehicleComment != null && !vehicleComment.isEmpty()){
+										int commentID = ivm.addVehicleComment(r.getVehicleID(), vehicleComment, user.getId());
+										if (commentID > 0){
+											System.out.println("Comment added to database");
+										}else{
+											System.err.println("Comment NOT added to database.");
+										}
 									}
 									
 									//Insert into status table

@@ -111,6 +111,12 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<c:if test="${penalty != null && hoursOver != null }">
+						<div id="pricingDisplay" class="alert alert-info">
+							For going over by <c:out value="${hoursOver }"/>, you were charged 
+							<fmt:formatNumber value="${ penalty}" type="currency" />
+						</div>
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>

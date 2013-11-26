@@ -14,6 +14,7 @@ public class Reservation  implements Serializable{
 	/* Use getTimestamp*/
 	private Date reservationStart;
 	private Date reservationEnd;
+	private double cost;
 	private ArrayList<ReservationStatus> reservationStatusList = new ArrayList<ReservationStatus>();
 	private ReservationStatus reservationStatus;
 	private Vehicle vehicle;
@@ -108,6 +109,14 @@ public class Reservation  implements Serializable{
 
 	public void setReservationStatus(ReservationStatus reservationStatus) {
 		this.reservationStatus = reservationStatus;
+	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
 	}
 	
 }
