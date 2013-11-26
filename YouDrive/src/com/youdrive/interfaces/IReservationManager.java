@@ -117,4 +117,6 @@ public interface IReservationManager {
 	public int addReservationStatus(int reservationID, Date dateAdded, String reservationStatus);
 
 	int isVehicleInUse(int vehicleID);
+
+	int getOpenReservationCount(int vehicleID);
 }

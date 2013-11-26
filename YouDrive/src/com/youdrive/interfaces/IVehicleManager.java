@@ -59,7 +59,7 @@ public interface IVehicleManager {
 	 * @param id
 	 * @return
 	 */
-	public String deleteVehicle(int id);
+	public boolean deleteVehicle(int id);
 	/**
 	 * Get the vehicle Type by the vehicle type id of a vehicle
 	 * @param vehicleTypeID

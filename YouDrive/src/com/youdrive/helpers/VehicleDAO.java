@@ -227,20 +227,17 @@ public class VehicleDAO implements IVehicleManager {
 	}
 	
 	@Override
-	public String deleteVehicle(int id) {
-		String errorCode = "";
+	public boolean deleteVehicle(int id) {
 		try{
 			deleteVehicleStmt.setInt(1, id);
 			deleteVehicleStmt.executeUpdate();
-			return errorCode;
+			return true;
 		}catch(SQLException e){
-			errorCode = String.valueOf(e.getErrorCode());
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			errorCode = "Error";
-			System.err.println("Problem with addVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
+			System.err.println("Problem with deleteVehicle method: " + e.getClass().getName() + ": " + e.getMessage());			
 		}
-		return errorCode;
+		return false;
 	}
 
 

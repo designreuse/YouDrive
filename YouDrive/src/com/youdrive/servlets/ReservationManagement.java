@@ -33,6 +33,7 @@ import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.interfaces.IVehicleTypeManager;
+import com.youdrive.models.Location;
 import com.youdrive.models.Reservation;
 import com.youdrive.models.ReservationStatus;
 import com.youdrive.models.User;
@@ -72,6 +73,7 @@ public class ReservationManagement extends HttpServlet {
 		IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");
 		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
 		IVehicleTypeManager ivtm = (VehicleTypeDAO) session.getAttribute("vehicleTypeMgr");
+		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
 		if (irm == null){
 			irm = new ReservationDAO();
 			session.setAttribute("reservationMgr", irm);
@@ -83,6 +85,10 @@ public class ReservationManagement extends HttpServlet {
 		if (ivtm == null){
 			ivtm = new VehicleTypeDAO();
 			session.setAttribute("vehicleTypeMgr", ivtm);
+		}
+		if (ilm == null){
+			ilm = new LocationDAO();
+			session.setAttribute("locationMgr", ilm);
 		}
 		String dispatchedPage = "/user.jsp";
 		String action = request.getParameter("action");
@@ -113,9 +119,13 @@ public class ReservationManagement extends HttpServlet {
 					request.setAttribute("errorMessage","Missing a dropoff time.");
 				}else{
 					try{
-						int vTypeID = Integer.parseInt(vehicleType);
-						VehicleType vt = ivtm.getVehicleType(vTypeID);
-						if (vt != null){
+						int locationID = Integer.parseInt(location);
+						int vehicleTypeID = Integer.parseInt(vehicleType);
+						VehicleType vt = ivtm.getVehicleType(vehicleTypeID);
+						Location l = ilm.getLocationById(locationID);
+						if (l == null){ 
+							request.setAttribute("errorMessage", "Invalid location selected.");
+						}else if (vt != null){
 							//validate Date
 							if (isThisDateValid(pickupDate) && isThisDateValid(dropoffDate)){
 								//validate times
@@ -139,8 +149,6 @@ public class ReservationManagement extends HttpServlet {
 											java.util.Date sDate = startDate.getTime();
 											java.util.Date eDate = stopDate.getTime();
 											System.out.println("User dates: " + sDate + " end: " + eDate);
-											int locationID = Integer.parseInt(location);
-											int vehicleTypeID = Integer.parseInt(vehicleType);
 											//Get all vehicles of that type at that location
 											ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
 											int size = allVehicles.size();
@@ -201,8 +209,8 @@ public class ReservationManagement extends HttpServlet {
 													}
 													session.setAttribute("startDate", sDate);
 													session.setAttribute("endDate", eDate);
-													session.setAttribute("hourlyPrice", vt.getHourlyPrice());
-													session.setAttribute("dailyPrice", vt.getDailyPrice());
+													session.setAttribute("vehicleType", vt);
+													session.setAttribute("location", l);
 													session.setAttribute("searchResults",results);
 													dispatchedPage = "/reservationcheck.jsp";
 												}else{
@@ -223,7 +231,7 @@ public class ReservationManagement extends HttpServlet {
 							request.setAttribute("errorMessage", "Invalid vehicle type.");
 						}
 					}catch(NumberFormatException e){
-						request.setAttribute("errorMessage","Invalid vehicle type id found.");
+						request.setAttribute("errorMessage","Invalid vehicle type or location id found.");
 					}
 				}
 			}else if (action.equalsIgnoreCase("makeReservation")){

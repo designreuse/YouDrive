@@ -39,6 +39,21 @@
 			$('#sortVehicleForm').submit();
 		});
 	});
+	
+	/* submit the hidden form to delete the vehicle but need to confirm with user first*/
+	function getVehicleID(vehicleID, vehicleTag){
+		// confirm dialog
+		alertify.confirm("You are about to delete vehicle with tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+		    if (e) {
+		    	console.log("OK clicked.");
+				document.getElementById("vehicleID").value = locationID;
+				$('#deleteVehicleForm').submit();
+		    } else {
+		        console.log("Cancel clicked.");
+		    }
+		});
+		console.log(vehicleID);
+	}	
 </script>
 <title>Manage Vehicles</title>
 </head>
@@ -124,16 +139,24 @@
 												<c:param name="viewComments" value="${vehicle.id}" />
 											</c:url>
 											<td><a title="Click to view notes about this vehicle tag : ${vehicle.tag }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
-											<td><a title="Click to delete vehicle tag : ${vehicle.tag }"><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a title="Click to delete vehicle tag : ${vehicle.tag }"><span onclick="getVehicleID('${vehicle.id}','${vehicle.tag }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
 							</div>
+							
 							<%-- Hidden form for the sorting --%>
 							<form id="sortVehicleForm" name="sortVehicleForm" method="get" action="VehicleManagement">
 								<input type="hidden" id="action" name="action" value="sortVehicle"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 							</form>
+							
+							<%-- Hidden form for deleting the membership --%>
+							<form id="deleteVehicleForm" name="deleteVehicleForm" method="post" action="VehicleManagement">
+								<input type="hidden" id="action" name="action" value="deleteVehicle"/>
+								<input type="hidden" id="vehicleID" name="vehicleID" value="" />
+							</form>
+							
 						</c:when>
 						<c:otherwise>
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>

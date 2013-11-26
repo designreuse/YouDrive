@@ -30,7 +30,7 @@
 			var resultParams = ${resultParams};
 			console.log(resultParams);
 			var msg = "You are about to reserve " + vehicletag + " from " + resultParams.pickupDate + " to " + resultParams.dropoffDate;
-			msg += ".\nTo continue, press \"OK\"; otherwise, hit \"Cancel\"";
+			msg += ".To continue, press \"OK\"; otherwise, hit \"Cancel\"";
 			alertify.confirm(msg, function(result) {
 			    if (result) {
 			    	console.log("OK clicked.");
@@ -79,9 +79,7 @@
 	<!-- /.navbar -->
 
 	<div class="container">
-
 		<div class="row row-offcanvas row-offcanvas-right">
-
 			<div class="col-xs-12 col-sm-9">
 				<p class="pull-right visible-xs">
 					<button type="button" class="btn btn-primary btn-xs"
@@ -104,6 +102,13 @@
 							<c:if test="${vehicleTypeMgr  == null}">
 								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
 							</c:if>
+							<div class="alert alert-info">
+								You selected:<br/>
+								Location: <strong><c:out value="${location.name }"/></strong><br/>
+								Vehicle Type: <strong><c:out value="${vehicleType.type }"/></strong><br/>
+								Start Date: <strong><fmt:formatDate type="both" value="${startDate}" /></strong><br/>
+								Stop Date: <strong><fmt:formatDate type="both" value="${endDate}" /> </strong><br/>							
+							</div>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
@@ -121,8 +126,8 @@
 											<td><c:out value="${ vehicle.make }" /></td>
 											<td><c:out value="${ vehicle.model }" /></td>
 											<td><c:out value="${ vehicle.year }" /></td>
-											<td><c:out value="${ hourlyPrice }" /></td>
-											<td><c:out value="${ dailyPrice }" /></td>
+											<td><c:out value="${ vehicleType.hourlyPrice }" /></td>
+											<td><c:out value="${ vehicleType.dailyPrice }" /></td>
 											<td><c:out value="${ vehicle.mileage }" /></td>
 											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
 											<td><button type="button" onclick="getVehicleID('${vehicle.id}','${vehicle.tag }')" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-star"></span> Reserve</button></td>
@@ -170,28 +175,50 @@
 
 	</div>
 	<!--/.container-->
-	
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" 
+		aria-labelledby="aboutModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="aboutModalLabel">About YouDrive</h4>
+				</div>
+				<div class="modal-body">Group Project by Jane Ullah, James
+					Vaughan, Rod Rashidi and Trevor Wilson.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 	
 	<!-- Modal -->
-	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
-		aria-labelledby="aboutModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="aboutModalLabel">About YouDrive</h4>
+	<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="confirmModalLabel">Confirm Your Reservation</h4>
+				</div>
+				<div class="modal-body">
+				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
 			</div>
-			<div class="modal-body">Group Project by Jane Ullah, James
-				Vaughan, Rod Rashidi and Trevor Wilson.</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
+			<!-- /.modal-content -->
 		</div>
-		<!-- /.modal-content -->
-	</div>
-	<!-- /.modal-dialog -->
+		<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
 

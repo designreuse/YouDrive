@@ -35,6 +35,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement checkReservationRangeStmt;
 	private PreparedStatement checkReservationRangeCountStmt;
 	private PreparedStatement makeReservationStmt;
+	private PreparedStatement checkOpenReservationByVehicleStmt;
 	private PreparedStatement addReservationStatusStmt;
 	private PreparedStatement isVehicleInUseStmt;
 	private SimpleDateFormat sdf;
@@ -60,6 +61,7 @@ public class ReservationDAO implements IReservationManager{
 			getCancelledOrReturnedReservationStatusStmt = conn.prepareStatement("select reservationStatus from ReservationStatus where reservationID = ? and reservationStatus != \"Created\"");
 			checkReservationRangeStmt = conn.prepareStatement("select * from Reservations where locationID = ? and vehicleID = ? and NOT reservationStart between ? and ? and NOT reservationEnd between ? and ?");
 			checkReservationRangeCountStmt = conn.prepareStatement("select count(*) from Reservations where locationID = ? and vehicleID = ? and ((reservationStart between ? and ?) or (reservationEnd between ? and ?))");
+			checkOpenReservationByVehicleStmt = conn.prepareCall("select count(*) from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.vehicleID = ? and (rs.reservationStatus = \"Returned\" or rs.reservationStatus = \"Cancelled\")");
 			makeReservationStmt = conn.prepareStatement("insert into Reservations values (DEFAULT,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
@@ -72,6 +74,23 @@ public class ReservationDAO implements IReservationManager{
 		}
 	}
 
+	@Override
+	public int getOpenReservationCount(int vehicleID){
+		int results = -1;
+		try{
+			checkOpenReservationByVehicleStmt.setInt(1,vehicleID);
+			ResultSet rs = checkOpenReservationByVehicleStmt.executeQuery();
+			if (rs.next()){
+				results = rs.getInt(1);
+			}
+		}catch(SQLException e){
+			System.err.println(cs.getError(e.getErrorCode()));
+		}catch(Exception e){
+			System.err.println("Problem with getOpenReservationCount method: " + e.getClass().getName() + ": " + e.getMessage());	
+		}
+		return results;
+	}
+	
 	@Override
 	public int isVehicleInUse(int vehicleID){
 		int results = -1;
