@@ -316,6 +316,32 @@ public class ReservationManagement extends HttpServlet {
 						request.setAttribute("errorMessage", e.getMessage());
 					}
 				}
+			}else if (action.equalsIgnoreCase("returnReservation")){
+				System.out.println("return reservation action");
+				String reservationID = request.getParameter("reservationID_return");
+				dispatchedPage = "/returnvehicle.jsp";
+				if (reservationID != null && !reservationID.isEmpty()){
+					try{
+						int rID = Integer.parseInt(reservationID);
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage","Unable to format reservation id parameter.");
+					}
+				}else{
+					request.setAttribute("errorMessage","Invalid parameters passed.");
+				}
+			}else if (action.equalsIgnoreCase("cancelReservation")){
+				System.out.println("cancel reservation action");
+				String reservationID = request.getParameter("reservationID_cancel");
+				dispatchedPage = "/returnvehicle.jsp";
+				if (reservationID != null && !reservationID.isEmpty()){
+					try{
+						int rID = Integer.parseInt(reservationID);
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage","Unable to format reservation id parameter.");
+					}
+				}else{
+					request.setAttribute("errorMessage","Invalid parameters passed.");
+				}				
 			}else{
 				//
 				dispatchedPage = "/user.jsp";

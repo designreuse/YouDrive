@@ -8,16 +8,52 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
+	<script src="js/alertify.min.js"></script>
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
 	<title>Return Vehicle</title>
+	<script type="text/javascript">
+		/* submit the hidden form to return the vehicle but need to confirm with user first*/
+		function returnReservation(reservationID, vehicleTag){
+			// confirm dialog
+			alertify.confirm("You are about to return reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("reservationID_return").value = reservationID;
+					$('#returnReservationForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(reservationID);
+		}
+		
+		/* submit the hidden form to cancel the reservation but need to confirm with user first*/
+		function cancelReservation(reservationID, vehicleTag){
+			// confirm dialog
+			alertify.confirm("You are about to return reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("reservationID_cancel").value = reservationID;
+					$('#cancelReservationForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(reservationID);
+		}
+	</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -82,30 +118,43 @@
 							<c:if test="${vehicleMgr == null }">
 								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
 							</c:if>
-							<table  class="table table-condensed table-hover">
-								<tr>
-									<th>Reservation #</th>
-									<th>Location </th>
-									<th>Vehicle</th>
-									<th>Start Date</th>
-									<th>End Date</th>
-									<th>Cancel</th>
-									<th>Return</th>
-								</tr>
-								<c:forEach items="${reservationMgr.getOpenReservationsByUser(loggedInUser.id)}" var="reservation" varStatus="status">
-									<tr id="reservation_${reservation.id}">
-										<td><c:out value="${reservation.id}"/></td>
-										<td><c:out value="${vehicleMgr.getVehicleLocation(reservation.locationID)}"/></td>
-										<c:set var="vehicleObj" value="${vehicleMgr.getVehicle(reservation.vehicleID)}" />
-										<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
-										<td><fmt:formatDate type="both" value="${reservation.reservationStart}" /></td>
-										<td><fmt:formatDate type="both" value="${reservation.reservationEnd}" /></td>
-										<td><a title="Click to Return this vehicle."><span class="glyphicon glyphicon-share-alt"></span></a></td>
-										<td><a title="Click to Cancel this reservation."><span class="glyphicon glyphicon-remove"></span></a></td>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th>Reservation #</th>
+										<th>Location </th>
+										<th>Vehicle</th>
+										<th>Start Date</th>
+										<th>End Date</th>
+										<th>Return</th>
+										<th>Cancel</th>
 									</tr>
-								</c:forEach>
-							</select>
-							</table>
+									<c:forEach items="${reservationMgr.getOpenReservationsByUser(loggedInUser.id)}" var="reservation" varStatus="status">
+										<tr id="reservation_${reservation.id}">
+											<td><c:out value="${reservation.id}"/></td>
+											<td><c:out value="${vehicleMgr.getVehicleLocation(reservation.locationID)}"/></td>
+											<c:set var="vehicleObj" value="${vehicleMgr.getVehicle(reservation.vehicleID)}" />
+											<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
+											<td><fmt:formatDate type="both" value="${reservation.reservationStart}" /></td>
+											<td><fmt:formatDate type="both" value="${reservation.reservationEnd}" /></td>
+											<td><a title="Click to Return Reservation # ${reservation.id }"><span onclick="returnReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-share-alt"></span></a></td>
+											<td><a title="Click to Cancel Reservation # ${reservation.id }"><span onclick="cancelReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-remove"></span></a></td>
+										</tr>
+									</c:forEach>
+								</table>
+							</div>
+							<%-- Hidden form which gets submitted when user returns a reservation --%>			
+							<form id="returnReservationForm" name="returnReservationForm" method="post" action="ReservationManagement">
+								<input type="hidden" id="action" name="action" value="returnReservation"/>
+								<input type="hidden" id="reservationID_return" name="reservationID_return" value="" />
+							</form>
+							
+							<%-- Hidden form which gets submitted when user cancels a reservation --%>			
+							<form id="cancelReservationForm" name="cancelReservationForm" method="post" action="ReservationManagement">
+								<input type="hidden" id="action" name="action" value="cancelReservation"/>
+								<input type="hidden" id="reservationID_cancel" name="reservationID_cancel" value="" />
+							</form>
+							
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -135,7 +184,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>
