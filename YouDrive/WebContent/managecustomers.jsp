@@ -108,7 +108,7 @@
 											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
 											<td><c:out value="${ user.username}" /></td>
 											<td><c:out value="${ user.email}" /></td>
-											<td><c:out value="${ user.memberExpiration}"/></td>
+											<td><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ user.memberExpiration}"/></td>
 											<c:url value="UserManagement" var="url">
 												<c:param name="customerID" value="${user.id}" />
 											</c:url>
