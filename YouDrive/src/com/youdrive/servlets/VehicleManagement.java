@@ -327,7 +327,9 @@ public class VehicleManagement extends HttpServlet {
 		if (count == -1){
 			errorMsg = "Error finding vehicle status.";
 		}else if (count == 0){
-			//Vehicle not in use
+			//Vehicle not in use in reservations
+			//Delete vehicle comments;
+			System.out.println("Vehicle not in use in any reservations so delete safely.");
 			return ivm.deleteVehicle(vID);			
 		}else{
 			//Check if 

@@ -28,6 +28,7 @@ public class VehicleDAO implements IVehicleManager {
 	private PreparedStatement getVehiclesByLocationAndTypeStmt;
 	private PreparedStatement getVehiclesByLocationNameStmt;
 	private PreparedStatement getVehicleCommentsStmt;
+	private PreparedStatement deleteVehicleCommentsStmt;
 	private PreparedStatement addVehicleCommentStmt;
 	private PreparedStatement isVehicleInUseStmt;
 	private SimpleDateFormat sdf;
