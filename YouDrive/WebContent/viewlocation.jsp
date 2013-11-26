@@ -97,7 +97,6 @@
 										<th><a href="#4" class="navSort">Mileage</a></th>
 										<th><a href="#5" class="navSort">Last Serviced</a></th>
 										<th><a href="#6" class="navSort">Vehicle Type</a></th>
-										<th>Reserve</th>
 									</tr>
 									<%-- Created a custom EL function to sort the list on demand --%>
 									<c:forEach items="${a:vehicleSort(allVehicles,searchType)}" var="vehicle" varStatus="status">
@@ -108,12 +107,7 @@
 											<td><c:out value="${ vehicle.tag }" /></td>
 											<td><c:out value="${ vehicle.mileage }" /></td>
 											<td><fmt:formatDate pattern="MM/dd/yyyy" type="date" value="${vehicle.lastServiced}" /></td>
-											<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>
-											<c:url value="UserReservationManager" var="url">
-												<c:param name="vehicleID" value="${vehicle.id}" />
-											</c:url>
-											<td><a title="Reserve this vehicle" href="<c:out value="${url }" />">Reserve</a></td>
-											
+											<td><c:out value="${ vehicleMgr.getVehicleType(vehicle.vehicleType) }" /></td>											
 										</tr>
 									</c:forEach>
 								</table>	
