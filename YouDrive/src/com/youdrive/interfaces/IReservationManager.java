@@ -118,7 +118,7 @@ public interface IReservationManager {
 
 	int isVehicleInUse(int vehicleID);
 
-	int getOpenReservationCount(int vehicleID);
+	int getCancelledOrReturnedReservationCount(int vehicleID);
 
 	int cancelReservation(int reservationID);
 
