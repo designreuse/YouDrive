@@ -101,11 +101,12 @@
 									<c:forEach items="${a:locationSort(allLocations,searchType)}" var="location"
 										varStatus="status">
 										<tr id="${ location.id}">
-											<td><c:out value="${ location.name }" /></td>
-											<td><c:out value="${ location.address}" /></td>
-											<c:url value="LocationManagement" var="url">
+											<c:url value="LocationBrowser" var="url">
 												<c:param name="locationID" value="${location.id}" />
 											</c:url>
+											<td><a title="View this location" href="<c:out value="${url }" />"><c:out value="${ location.name }" /></a></td>
+											<td><c:out value="${ location.address}" /></td>
+											
 										</tr>
 									</c:forEach>
 								</table>
