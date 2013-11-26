@@ -89,7 +89,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
+						<c:if test="${userMgr == null }">
+							<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />
+						</c:if>
 						<c:set var="allCustomers" value="${userMgr.getAllCustomers() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">

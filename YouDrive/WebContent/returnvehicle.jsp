@@ -76,6 +76,12 @@
 							<c:if test="${reservationMgr == null }">
 								<jsp:useBean id="reservationMgr" class="com.youdrive.helpers.ReservationDAO" scope="session" />	
 							</c:if>
+							<c:if test="${locationMgr == null }">
+								<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
+							</c:if>
+							<c:if test="${vehicleMgr == null }">
+								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
+							</c:if>
 							<table  class="table table-condensed table-hover">
 								<tr>
 									<th>Reservation #</th>
@@ -83,14 +89,19 @@
 									<th>Vehicle</th>
 									<th>Start Date</th>
 									<th>End Date</th>
+									<th>Cancel</th>
+									<th>Return</th>
 								</tr>
 								<c:forEach items="${reservationMgr.getOpenReservationsByUser(loggedInUser.id)}" var="reservation" varStatus="status">
 									<tr id="reservation_${reservation.id}">
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
+										<td><c:out value="${reservation.id}"/></td>
+										<td><c:out value="${vehicleMgr.getVehicleLocation(reservation.locationID)}"/></td>
+										<c:set var="vehicleObj" value="${vehicleMgr.getVehicle(reservation.vehicleID)}" />
+										<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
+										<td><fmt:formatDate type="both" value="${reservation.reservationStart}" /></td>
+										<td><fmt:formatDate type="both" value="${reservation.reservationEnd}" /></td>
+										<td><a title="Click to Return this vehicle."><span class="glyphicon glyphicon-share-alt"></span></a></td>
+										<td><a title="Click to Cancel this reservation."><span class="glyphicon glyphicon-remove"></span></a></td>
 									</tr>
 								</c:forEach>
 							</select>

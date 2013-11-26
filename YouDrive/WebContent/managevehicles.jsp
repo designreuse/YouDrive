@@ -106,8 +106,10 @@
 						</div>
 					</c:if>
 					<c:choose>
-						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">		
-							<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
+						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">	
+							<c:if test="${vehicleMgr == null }">
+								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
+							</c:if>
 							<c:set var="allVehicles" value="${vehicleMgr.getAllVehicles() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
