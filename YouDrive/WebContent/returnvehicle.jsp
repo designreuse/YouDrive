@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,16 +27,22 @@
 	<script type="text/javascript">
 		/* submit the hidden form to return the vehicle but need to confirm with user first*/
 		function returnReservation(reservationID, vehicleTag){
-			// confirm dialog
-			alertify.confirm("You are about to return reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			var msg = "You are about to return reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". Please enter comments about the vehicle's condition if there were problems. To continue, press \"OK\"; otherwise, hit \"Cancel\"";
+			// prompt dialog
+			alertify.prompt(msg, function (e, str) {
+			    // str is the input text
 			    if (e) {
+			        // user clicked "ok"
 			    	console.log("OK clicked.");
 					document.getElementById("reservationID_return").value = reservationID;
+					document.getElementById("returnedVehicleComment").value = str;
 					$('#returnReservationForm').submit();
 			    } else {
-			        console.log("Cancel clicked.");
+			        // user clicked "cancel"
+			    	console.log("Cancel clicked.");
 			    }
-			});
+			}, "Vehicle returned in good condition.");
+			
 			console.log(reservationID);
 		}
 		
@@ -118,6 +125,7 @@
 							<c:if test="${vehicleMgr == null }">
 								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
 							</c:if>
+							<h2>Returning a vehicle late will incur a flat $50 in addition to the standard hourly rate for the car.</h2>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
@@ -126,26 +134,33 @@
 										<th>Vehicle</th>
 										<th>Start Date</th>
 										<th>End Date</th>
+										<th class="hidden">Hours Late</th>
 										<th>Return</th>
 										<th>Cancel</th>
 									</tr>
-									<c:forEach items="${reservationMgr.getOpenReservationsByUser(loggedInUser.id)}" var="reservation" varStatus="status">
-										<tr id="reservation_${reservation.id}">
-											<td><c:out value="${reservation.id}"/></td>
-											<td><c:out value="${vehicleMgr.getVehicleLocation(reservation.locationID)}"/></td>
-											<c:set var="vehicleObj" value="${vehicleMgr.getVehicle(reservation.vehicleID)}" />
-											<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
-											<td><fmt:formatDate type="both" value="${reservation.reservationStart}" /></td>
-											<td><fmt:formatDate type="both" value="${reservation.reservationEnd}" /></td>
-											<td><a title="Click to Return Reservation # ${reservation.id }"><span onclick="returnReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-share-alt"></span></a></td>
-											<td><a title="Click to Cancel Reservation # ${reservation.id }"><span onclick="cancelReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-remove"></span></a></td>
-										</tr>
+									<c:forEach items="${reservationMgr.getUserReservations(loggedInUser.id)}" var="reservation" varStatus="status">
+										<c:set var="reservationStatusList" value="${reservation.reservationStatusList}" />
+										<c:if test="${fn:length(reservationStatusList) == 1}">
+											<tr id="reservation_${reservation.id}">
+												<td><c:out value="${reservation.id}"/></td>
+												<td><c:out value="${vehicleMgr.getVehicleLocation(reservation.locationID)}"/></td>
+												<c:set var="vehicleObj" value="${vehicleMgr.getVehicle(reservation.vehicleID)}" />
+												<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
+												<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${reservation.reservationStart}" /></td>
+												<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${reservation.reservationEnd}" /></td>
+												<td class="hidden">
+												</td>
+												<td><a title="Click to Return Reservation # ${reservation.id }"><span onclick="returnReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-share-alt"></span></a></td>
+												<td><a title="Click to Cancel Reservation # ${reservation.id }"><span onclick="cancelReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-remove"></span></a></td>
+											</tr>
+										</c:if>
 									</c:forEach>
 								</table>
 							</div>
 							<%-- Hidden form which gets submitted when user returns a reservation --%>			
 							<form id="returnReservationForm" name="returnReservationForm" method="post" action="ReservationManagement">
 								<input type="hidden" id="action" name="action" value="returnReservation"/>
+								<input type="hidden" id="returnedVehicleComment" name="returnedVehicleComment" value="" />
 								<input type="hidden" id="reservationID_return" name="reservationID_return" value="" />
 							</form>
 							

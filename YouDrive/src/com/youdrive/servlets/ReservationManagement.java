@@ -317,17 +317,45 @@ public class ReservationManagement extends HttpServlet {
 					}
 				}
 			}else if (action.equalsIgnoreCase("returnReservation")){
-				System.out.println("return reservation action");
+				/*The user should notify the system as soon as the car is returned to the rental location.  
+				 * The user is charged for the vehicle time starting with the reservation time and ending at the return time.  
+				 * A late fee is $50 plus the additional hourly charge.  The user may enter information about the condition of the returned vehicle. 
+				 * Also, the user should be able to provide comments about the vehicle and the rental service in general, if desired. */
+				System.out.println("Return Reservation Action");
 				String reservationID = request.getParameter("reservationID_return");
+				String vehicleComment = request.getParameter("returnedVehicleComment");
 				dispatchedPage = "/returnvehicle.jsp";
 				if (reservationID != null && !reservationID.isEmpty()){
 					try{
 						int rID = Integer.parseInt(reservationID);
 						Reservation r = irm.getReservation(rID);
 						User user = (User)session.getAttribute("loggedInUser");
+						//Make sure user is logged in
 						if (user != null){
+							//Make sure reservation exists
 							if (r != null){
-								if (r.getCustomerID() == user.getId()){
+								//reservation needs to be owned by the user
+								if (r.getCustomerID() == user.getId()){									
+									//Check if reservation is late
+									Calendar returnDate = Calendar.getInstance();
+									java.util.Date returnedDate = returnDate.getTime();
+									java.util.Date reservationEnd = r.getReservationEnd();
+									if (returnedDate.compareTo(reservationEnd) < 0 || returnedDate.compareTo(reservationEnd) == 0){
+										//Returned before reservation end
+										System.out.println("No penalty incurred.");
+										request.setAttribute("penalty", "");
+										request.setAttribute("hoursOver","");
+									}else{
+										long differenceInMillis = returnedDate.getTime() - reservationEnd.getTime();
+										long diffHours = differenceInMillis / (60 * 60 * 1000);
+										Vehicle v = ivm.getVehicle(r.getVehicleID());
+										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
+										double penalty = 50.00 + diffHours * vt.getHourlyPrice();
+										System.out.println("Paying penalty of " + penalty + " for going over by " + diffHours + " hours.");
+										request.setAttribute("penalty", penalty);
+										request.setAttribute("hoursOver",diffHours);
+									}
+									
 									//Insert into status table
 									int statusID = irm.addReservationStatus(r.getId(), "Returned");
 									if (statusID > 0){
@@ -353,6 +381,11 @@ public class ReservationManagement extends HttpServlet {
 					request.setAttribute("errorMessage","Invalid parameters passed.");
 				}
 			}else if (action.equalsIgnoreCase("cancelReservation")){
+				/*
+				 * The user should be able to cancel an existing reservation up to one hour ahead of the scheduled pickup time. 
+				 * Otherwise, a minimum charge of one-hour rental should be applied.
+				 * 
+				 */
 				System.out.println("cancel reservation action");
 				String reservationID = request.getParameter("reservationID_cancel");
 				dispatchedPage = "/returnvehicle.jsp";

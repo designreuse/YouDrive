@@ -26,6 +26,12 @@ public class IReservationManagerTest {
 		int count = irm.getVehicleReservationRangeCount(6, start,end);
 		assertEquals("testGetVehicleReservationRangeCount",1,count);
 	}
+	
+	@Test
+	public void userReservations(){
+		ArrayList<Reservation> r = irm.getUserReservations(5);
+		assertEquals("userreservations",1,r.size());
+	}
 
 	@Test
 	public void testGetLocationReservationRangeCount() {

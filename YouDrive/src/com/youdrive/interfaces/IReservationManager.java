@@ -122,7 +122,7 @@ public interface IReservationManager {
 
 	int cancelReservation(int reservationID);
 
-	ArrayList<Reservation> getOpenReservationsByUser(int userID);
+	ArrayList<Reservation> getUserReservations(int userID);
 
 	Reservation getReservation(int reservationID);
 }

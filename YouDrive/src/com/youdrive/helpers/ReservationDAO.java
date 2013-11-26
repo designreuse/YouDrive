@@ -41,6 +41,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement isVehicleInUseStmt;
 	private PreparedStatement cancelReservationStmt;
 	private PreparedStatement getReservationStmt;
+	private PreparedStatement getUserReservationsStmt;
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
@@ -70,8 +71,9 @@ public class ReservationDAO implements IReservationManager{
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
 			getOpenReservationsByUserStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on r.id = rs.reservationID where r.customerID = ?");
 			cancelReservationStmt = conn.prepareStatement("insert into ReservationStatus values(DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			getOpenReservationsByUserStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus != \"Cancelled\" and rs.reservationStatus != \"Returned\" and customerID = ?");
+			getOpenReservationsByUserStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus != \"Cancelled\" and rs.reservationStatus != \"Returned\" and r.customerID = ?");
 			getReservationStmt = conn.prepareStatement("select * from Reservations where id = ?");
+			getUserReservationsStmt = conn.prepareCall("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.customerID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -104,11 +106,13 @@ public class ReservationDAO implements IReservationManager{
 	}
 	
 	@Override
-	public ArrayList<Reservation> getOpenReservationsByUser(int userID){
+	public ArrayList<Reservation> getUserReservations(int userID){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
 		try{
-			getOpenReservationsByUserStmt.setInt(1,userID);
-			ResultSet rs = getOpenReservationsByUserStmt.executeQuery();
+			getUserReservationsStmt.setInt(1,userID);
+			ResultSet rs = getUserReservationsStmt.executeQuery();
+			Reservation temp = null;
+			int prevReservationID = 0;
 			while (rs.next()){
 				int reservationID = rs.getInt("id");
 				int customerID = rs.getInt("customerID");
@@ -119,9 +123,14 @@ public class ReservationDAO implements IReservationManager{
 				int reservationStatusID = rs.getInt("reservationStatusID");
 				java.util.Date dateAdded = rs.getTimestamp("dateAdded");
 				String status = rs.getString("reservationStatus");
-				Reservation temp = new Reservation(reservationID, customerID, locationID, vehicleID, startDate, endDate);
-				temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
-				results.add(temp);
+				if (prevReservationID != reservationID){
+					temp = new Reservation(reservationID, customerID, locationID, vehicleID, startDate, endDate);
+					temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
+					results.add(temp);
+				}else{
+					temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
+				}
+				prevReservationID = reservationID;
 			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
