@@ -173,13 +173,14 @@ public class UserManagement extends HttpServlet {
 				if (user != null){
 					request.setAttribute("errorMessage","");
 					//Send user to right landing page
-					if (user.isAdmin()){
-						dispatchedPage = "/admin.jsp";
+					if (user.isActive()){
+						//Stash logged in user to session context
+						session.setAttribute("loggedInUser", user);
+						dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
 					}else{
-						dispatchedPage = "/user.jsp";
+						request.setAttribute("errorMessage", "Account deactivated.");
+						dispatchedPage = "/login.jsp";
 					}
-					//Stash logged in user to session context
-					session.setAttribute("loggedInUser", user);
 				}else{
 					request.setAttribute("errorMessage", "Invalid credentials.");
 					dispatchedPage = "/login.jsp";
@@ -263,10 +264,24 @@ public class UserManagement extends HttpServlet {
 						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
 					}
 				}
-			}else if (action.equalsIgnoreCase("deleteAdminUser")){
-				System.out.println("deleteAdminUser action");
-				boolean result = deleteAdmin(request,session,ium);
-				dispatchedPage = "/manageusers.jsp";
+			}else if (action.equalsIgnoreCase("deactivateUser")){
+				System.out.println("deactivateUser action");
+				User currentUser = (User)session.getAttribute("loggedInUser");
+				String page = request.getParameter("page");
+				dispatchedPage = "/admin.jsp";
+				if (currentUser != null && currentUser.isActive()){
+					if (!page.equalsIgnoreCase("admins") && !page.equalsIgnoreCase("customers")){
+						request.setAttribute("errorMessage", "Invalid POST request.");
+					}else{
+						dispatchedPage = (page.equalsIgnoreCase("admins")) ? "/manageusers.jsp":"/managecustomers.jsp";
+						if (!deactivateUser(request,session,ium,currentUser)){
+							request.setAttribute("errorMessage", "Unable to delete this user.");
+						}
+					}
+				}else{
+					request.setAttribute("errorMessage", "Not authorized to perform this request.");
+				}
+				
 			}else{
 				dispatchedPage = "/login.jsp";
 			}
@@ -643,23 +658,22 @@ public class UserManagement extends HttpServlet {
 		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
 	}
-
-	private boolean deleteAdmin(HttpServletRequest request, HttpSession session, IUserManager ium){
-		System.out.println("Calling deleteAdmin");
+	
+	private boolean deactivateUser(HttpServletRequest request, HttpSession session, IUserManager ium, User currentUser){
+		System.out.println("Calling deactivateCustomer module");
 		String errorMessage = "";
 		String userID = request.getParameter("userID");
 		if (userID != null && !userID.isEmpty()){
 			try{
 				int uID = Integer.parseInt(userID);
 				User u = ium.getUser(uID);
-				User currentUser = (User)session.getAttribute("loggedInUser");
-				//Only admins can delete an admin
+				//Only admins can delete another customer
 				if (currentUser != null && currentUser.isAdmin()){
 					//Look up object in database
 					if (u != null){
 						//Don't let logged in admin delete self.
 						if (u.getId() != currentUser.getId()){				
-							boolean result = ium.deleteAdminUser(uID);
+							boolean result = ium.deactivateUser(uID);
 							if (!result){
 								errorMessage = "Error deleting Admin User.";
 							}else{
@@ -680,5 +694,5 @@ public class UserManagement extends HttpServlet {
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return false;
-	}
+	}	
 }

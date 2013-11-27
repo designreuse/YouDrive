@@ -57,7 +57,7 @@ public class MembershipDAO implements IMembershipManager{
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
-			
+			System.err.println("Problem with getMembership: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return member;
 	}

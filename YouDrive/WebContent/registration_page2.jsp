@@ -62,6 +62,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${registration_page1 != null && registration_page1.size() > 0 }">
+							<c:if test="${membershipMgr == null }">
+								<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
+							</c:if>
 							<c:set var="defaultmembership" value="${membershipMgr.getMembership(1)}" />
 							<div class="forms">
 								<form id="registerUser" name="registerUser" action="UserManagement" method="post">
@@ -136,9 +139,9 @@
 									<input required type="text"	id="ccSecurityCode" name="ccSecurityCode" /><br /> 
 									<label	for="ccExpiration">Card Expires:</label><br/>
 									<input required	type="text" maxlength="7" id="ccExpiration" name="ccExpiration" placeholder="Enter as: MM/YYYY" /><br /> 
-									<span>Membership Price: <strong><fmt:formatNumber value="${ defaultmembership.price}" type="currency" /></strong></span>
-									<input type="hidden" id="action" name="action" value="registerUser2" /> 
+									<span>Membership Price: <strong><fmt:formatNumber value="${ defaultmembership.price}" type="currency" /></strong></span><br/>
 									<input type="hidden" id="membershipLevel" name="membershipLevel" value="${defaultmembership.id}" />
+									<input type="hidden" id="action" name="action" value="registerUser2" /> 
 									<input	type="submit" value="Register" /> 
 									<input type="reset" value="Reset" />
 									<input type="hidden" id="firstName" name="firstName" value="<c:out value="${ registration_page1.get('firstName')}"/>" />

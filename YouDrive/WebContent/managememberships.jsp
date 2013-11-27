@@ -108,7 +108,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
+						<c:if test="${membershipMgr == null }">
+							<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
+						</c:if>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>

@@ -19,6 +19,7 @@ public class User implements Serializable{
 	private int ccSecurityCode;
 	private String ccExpirationDate;
 	private boolean isAdmin;
+	private boolean isActive;
 	private Date memberExpiration;
 	private Date dateCreated;
 	private int membershipLevel;
@@ -187,5 +188,13 @@ public class User implements Serializable{
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }

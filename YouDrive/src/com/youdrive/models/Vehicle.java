@@ -13,15 +13,13 @@ public class Vehicle implements Serializable{
 	private String tag;
 	private int mileage;
 	private Date lastServiced;
-	private boolean isAvailable;
 	private int vehicleType;
 	private int assignedLocation;
 	private ArrayList<Comment> vehicleComments = new ArrayList<Comment>();
 	
 	public Vehicle() {  }
 	
-	public Vehicle(int id, String make, String model, int year, String tag, int mileage, Date lastServiced, 
-			boolean isAvailable, int vehicleType, int assignedLocation){
+	public Vehicle(int id, String make, String model, int year, String tag, int mileage, Date lastServiced, int vehicleType, int assignedLocation){
 		this.id = id;
 		this.make = make;
 		this.model = model;
@@ -29,7 +27,6 @@ public class Vehicle implements Serializable{
 		this.tag = tag;
 		this.mileage = mileage;
 		this.lastServiced = lastServiced;
-		this.isAvailable = isAvailable;
 		this.vehicleType = vehicleType;
 		this.assignedLocation = assignedLocation;
 	}
@@ -88,15 +85,6 @@ public class Vehicle implements Serializable{
 
 	public void setLastServiced(Date lastServiced) {
 		this.lastServiced = lastServiced;
-	}
-
-	public boolean isAvailable() {
-		return isAvailable;
-	}
-
-	
-	public void setAvailable(boolean isAvailable) {
-		this.isAvailable = isAvailable;
 	}
 
 	public int getVehicleType() {

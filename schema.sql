@@ -33,10 +33,11 @@ ccType varchar(255),
 ccNumber varchar(17),
 ccSecurityCode varchar(10),
 ccExpirationDate varchar(7),
-isAdmin boolean,
+isAdmin boolean not null default 0,
 memberExpiration datetime,
 membershipLevel int,
 registrationDate datetime not null,
+isActive boolean not null default 1,
 INDEX membership_ind(membershipLevel),
 CONSTRAINT fk_users_memberships 
 FOREIGN KEY (membershipLevel) REFERENCES Memberships(id)
@@ -51,7 +52,6 @@ year int not null,
 tag varchar(255) unique not null,
 mileage int not null,
 lastServiced date not null,
-isAvailable boolean default 0,
 vehicleType int not null,
 assignedLocation int not null,
 INDEX vehicletype_ind(vehicleType),
@@ -73,11 +73,11 @@ INDEX user_ind(customerID),
 INDEX location_ind(locationID),
 INDEX vehicle_ind(vehicleID),
 CONSTRAINT fk_reservations_users FOREIGN KEY (customerID) references Users(id)
-ON UPDATE CASCADE, 
+ON UPDATE CASCADE ON DELETE CASCADE, 
 CONSTRAINT fk_reservations_locations FOREIGN KEY (locationID) references Locations(id)
-ON UPDATE CASCADE, 
+ON UPDATE CASCADE ON DELETE CASCADE, 
 CONSTRAINT fk_reservations_vehicles FOREIGN KEY (vehicleID) references Vehicles(id)
-ON UPDATE CASCADE
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;
 
 create table ReservationStatus(
@@ -87,7 +87,7 @@ dateAdded datetime not null,
 reservationStatus ENUM ('Created', 'Cancelled', 'Returned')  not null,
 INDEX reservations_ind(reservationID),
 CONSTRAINT fk_reservationstatus_reservations FOREIGN KEY (reservationID) references Reservations(id)
-ON UPDATE CASCADE
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;
 
 create table Comments(

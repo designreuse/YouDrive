@@ -528,7 +528,6 @@ public class ReservationDAO implements IReservationManager{
 				v.setTag(tag);
 				v.setMileage(mileage);
 				v.setLastServiced(lastServiced);
-				v.setAvailable(isAvailable);
 				v.setVehicleType(vehicleType);
 				v.setAssignedLocation(assignedLocation);
 				//Create VehicleType object
@@ -586,7 +585,6 @@ public class ReservationDAO implements IReservationManager{
 				v.setTag(tag);
 				v.setMileage(mileage);
 				v.setLastServiced(lastServiced);
-				v.setAvailable(isAvailable);
 				v.setVehicleType(vehicleType);
 				v.setAssignedLocation(assignedLocation);
 				//Create VehicleType object
@@ -644,7 +642,6 @@ public class ReservationDAO implements IReservationManager{
 				v.setTag(tag);
 				v.setMileage(mileage);
 				v.setLastServiced(lastServiced);
-				v.setAvailable(isAvailable);
 				v.setVehicleType(vehicleType);
 				v.setAssignedLocation(assignedLocation);
 				//Create VehicleType object
@@ -703,7 +700,6 @@ public class ReservationDAO implements IReservationManager{
 				v.setTag(tag);
 				v.setMileage(mileage);
 				v.setLastServiced(lastServiced);
-				v.setAvailable(isAvailable);
 				v.setVehicleType(vehicleType);
 				v.setAssignedLocation(assignedLocation);
 				//Create VehicleType object
