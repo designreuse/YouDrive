@@ -2,7 +2,7 @@ YouDrive
 ========
 POC for the YouDrive project (part of the Software Engineering class requirements).
 
-0. Create database called YouDrive on localhost. If you decide to create a differently named database, update the JDBC_URL value in Constants.java in the .util package.
+0. Create database called team7 on localhost with the password "overload". If you decide to create a differently named database, update the JDBC_URL value in Constants.java in the .util package.
 1. Create the tables in the order outlined in the schema.sql document
 2. Create the first admin user by using some variation of this sql script: insert into Users values (DEFAULT,"username","password","firstName","lastName",DEFAULT,DEFAULT,"email@example.com",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,NOW());
 3. Go to /admin.jsp to start adding/editing/deleting items.
