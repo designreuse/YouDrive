@@ -24,10 +24,10 @@
 	    <![endif]-->
 	<title>Reservation Confirmation</title>
 	<script type="text/javascript">
-	/*Fade out the div after 30s*/
+	/*Fade out the div after 30s
 		$(document).ready( function() {
         	$('#errorDisplay').delay(30000).fadeOut();
-    	});
+    	});*/
 	</script>
 	
 </head>
@@ -78,6 +78,9 @@
 					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
 						<div id="errorDisplay" class="alert alert-success">
 							<c:out value="${errorMessage }" />
+							<br/>
+							You have been charged <fmt:formatNumber value="${amountCharged}" type="currency" />
+							for this reservation.
 						</div>
 					</c:if>
 					

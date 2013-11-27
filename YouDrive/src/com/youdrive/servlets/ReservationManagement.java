@@ -199,10 +199,10 @@ public class ReservationManagement extends HttpServlet {
 															System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
 															//x.compareTo(y) < 0 if x is before y
 															//x.compareTo(y) > 0 if x is after y
-															if ((rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) < 0)
-																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
-																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
-																	|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
+															if ((rStartDate.compareTo(sDate) <= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) <= 0)
+																	|| (rStartDate.compareTo(sDate) >= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) >= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) <= 0 && rEndDate.compareTo(sDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) <= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) >= 0 && rEndDate.compareTo(sDate) > 0) ){
 
 																//Check reservationStatus if overlap is found.
 																String reservationStatus = irm.getStatus(r.getId());
@@ -270,6 +270,7 @@ public class ReservationManagement extends HttpServlet {
 				int locationID = (int)session.getAttribute("locationID");
 				java.util.Date startDate = (java.util.Date) session.getAttribute("startDate");
 				java.util.Date stopDate = (java.util.Date) session.getAttribute("endDate");
+				VehicleType vt = (VehicleType)session.getAttribute("vehicleType");
 				dispatchedPage = "/reservecheck.jsp";
 
 				if(user == null){ 
@@ -299,6 +300,26 @@ public class ReservationManagement extends HttpServlet {
 									//Update reservationStatus
 									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
 									ReservationStatus rs = new ReservationStatus(reservationStatusID, reservationID, reservationDate.getTime(), "Created");
+									
+									long differenceInMillis = stopDate.getTime() - startDate.getTime();
+									long diffSeconds = differenceInMillis / 1000;
+									long diffMinutes = differenceInMillis / (60 * 1000);
+									long hourDiff = diffMinutes % 60;
+									long diffHours = differenceInMillis / (60 * 60 * 1000);
+									long diffDays = differenceInMillis / (24 * 60 * 60 * 1000);
+									System.out.println("diffSeconds: " + diffSeconds + " diffMinutes: " + diffMinutes + " diffHours: " + diffHours + " hourDiff: " + hourDiff + " diffDays: " + diffDays);
+									double cost = 0.0;
+									if (diffDays == 0){
+										cost += vt.getDailyPrice() * diffDays;
+										diffHours -= diffDays * 24;
+										System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " daily cost: " + cost);
+									}
+									if (diffHours > 0){
+										double hourlyCost = vt.getHourlyPrice() * diffHours;
+										System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " hourly cost: " + cost);
+										cost += hourlyCost;
+									}
+									request.setAttribute("amountCharged",cost);
 									request.setAttribute("reservedVehicle", v);
 									request.setAttribute("reservation", r);
 									request.setAttribute("reservationStatus", rs);
@@ -347,10 +368,15 @@ public class ReservationManagement extends HttpServlet {
 										System.out.println("No penalty incurred.");
 									}else{
 										long differenceInMillis = returnedDate.getTime() - reservationEnd.getTime();
+										long diffSeconds = differenceInMillis / 1000;
+										long diffMinutes = differenceInMillis / (60 * 1000);
+										long hourDiff = diffMinutes % 60;
 										long diffHours = differenceInMillis / (60 * 60 * 1000);
 										Vehicle v = ivm.getVehicle(r.getVehicleID());
 										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
 										double penalty = 50.00 + diffHours * vt.getHourlyPrice();
+										
+										
 										System.out.println("Paying penalty of " + penalty + " for going over by " + diffHours + " hours.");
 										request.setAttribute("penalty", penalty);
 										request.setAttribute("hoursOver",diffHours);
