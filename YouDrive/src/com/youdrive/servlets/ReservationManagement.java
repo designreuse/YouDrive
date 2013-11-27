@@ -326,7 +326,7 @@ public class ReservationManagement extends HttpServlet {
 				System.out.println("Return Reservation Action");
 				String reservationID = request.getParameter("reservationID_return");
 				String vehicleComment = request.getParameter("returnedVehicleComment");
-				dispatchedPage = "/returnvehicle.jsp";
+				dispatchedPage = "/userreservations.jsp";
 				if (reservationID != null && !reservationID.isEmpty()){
 					try{
 						int rID = Integer.parseInt(reservationID);
@@ -398,7 +398,7 @@ public class ReservationManagement extends HttpServlet {
 				 */
 				System.out.println("cancel reservation action");
 				String reservationID = request.getParameter("reservationID_cancel");
-				dispatchedPage = "/returnvehicle.jsp";
+				dispatchedPage = "/userreservations.jsp";
 				if (reservationID != null && !reservationID.isEmpty()){
 					try{
 						int rID = Integer.parseInt(reservationID);

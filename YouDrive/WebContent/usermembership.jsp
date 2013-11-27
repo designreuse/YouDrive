@@ -84,8 +84,8 @@
 									</h3>
 									<article class="membershipDisplay">
 										<span >Membership: <strong><c:out value="${membershipObj.name }"/></strong></span>
-										<span>Membership Price: <strong><c:out value="${membershipObj.price }"/></strong></span>
-										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong></span>
+										<span>Membership Price: <strong><fmt:formatNumber value="${membershipObj.price }" type="currency" /> </strong></span>
+										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong> months</span>
 										<span>Membership Expiration Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ loggedInUser.memberExpiration}"/></strong></span>
 									</article>
 								</c:when>

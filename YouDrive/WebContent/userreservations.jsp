@@ -50,7 +50,7 @@
 		/* submit the hidden form to cancel the reservation but need to confirm with user first*/
 		function cancelReservation(reservationID, vehicleTag){
 			// confirm dialog
-			alertify.confirm("You are about to return reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			alertify.confirm("You are about to cancel reservation #" + reservationID + " for vehicle tag #" + vehicleTag + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
 			    if (e) {
 			    	console.log("OK clicked.");
 					document.getElementById("reservationID_cancel").value = reservationID;
@@ -114,7 +114,7 @@
 					</c:if>
 					<c:if test="${penalty != null && hoursOver != null }">
 						<div id="pricingDisplay" class="alert alert-info">
-							For going over by <c:out value="${hoursOver }"/>, you were charged 
+							For going over by <c:out value="${hoursOver }"/> hours, you were charged 
 							<fmt:formatNumber value="${ penalty}" type="currency" />
 						</div>
 					</c:if>
