@@ -3,6 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%java.text.DateFormat df = new java.text.SimpleDateFormat("MM/dd/yyyy hh:mm:ss a"); %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -131,7 +132,10 @@
 							<c:if test="${vehicleMgr == null }">
 								<jsp:useBean id="vehicleMgr" class="com.youdrive.helpers.VehicleDAO" scope="session" />
 							</c:if>
-							<h2>Returning a vehicle late will incur a flat $50 in addition to the standard hourly rate for the car.</h2>
+							<jsp:useBean id="now" class="java.util.Date"/>
+							<h2>Returning a vehicle late will incur a flat $50 in addition to the standard hourly rate for the car.<br/>
+							Current Date: <%= df.format(new java.util.Date()) %>
+							</h2>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>

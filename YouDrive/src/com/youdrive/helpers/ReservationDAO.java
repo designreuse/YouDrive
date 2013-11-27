@@ -30,7 +30,6 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement getCreatedReservationsStmt;
 	private PreparedStatement checkLocationsInFutureReservationsStmt;
 	private PreparedStatement getReservationsStmt;
-	private PreparedStatement getOpenReservationsByUserStmt;
 	private PreparedStatement getReservationStatusStmt;
 	private PreparedStatement getCancelledOrReturnedReservationStatusStmt;
 	private PreparedStatement checkReservationRangeStmt;
@@ -69,9 +68,7 @@ public class ReservationDAO implements IReservationManager{
 			makeReservationStmt = conn.prepareStatement("insert into Reservations values (DEFAULT,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			addReservationStatusStmt = conn.prepareStatement("insert into ReservationStatus values (DEFAULT,?,NOW(),?)",Statement.RETURN_GENERATED_KEYS);
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
-			getOpenReservationsByUserStmt = conn.prepareStatement("select * from Reservations r left outer join ReservationStatus rs on r.id = rs.reservationID where r.customerID = ?");
 			cancelReservationStmt = conn.prepareStatement("insert into ReservationStatus values(DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-			getOpenReservationsByUserStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where rs.reservationStatus != \"Cancelled\" and rs.reservationStatus != \"Returned\" and r.customerID = ?");
 			getReservationStmt = conn.prepareStatement("select * from Reservations where id = ?");
 			getUserReservationsStmt = conn.prepareCall("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.customerID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
