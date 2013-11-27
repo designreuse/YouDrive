@@ -151,7 +151,7 @@
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item active" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
-		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
+					<a class="list-group-item" href="userreservations.jsp">My Reservations</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>	
 		            <c:url value="UserManagement" var="url">
 						<c:param name="customerID" value="${loggedInUser.id}" />

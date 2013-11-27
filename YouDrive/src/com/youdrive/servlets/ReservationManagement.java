@@ -402,6 +402,38 @@ public class ReservationManagement extends HttpServlet {
 				if (reservationID != null && !reservationID.isEmpty()){
 					try{
 						int rID = Integer.parseInt(reservationID);
+						Reservation r = irm.getReservation(rID);
+						if (r != null){
+							User user = (User)session.getAttribute("loggedInUser");
+							if (user != null){
+								if ((user.getId() == r.getCustomerID() || user.isAdmin()) && user.isActive()){
+									//Make sure the cancellation date is at least 1 hr before pickup time
+									//The user should be able to cancel an existing reservation up to one hour 
+									//ahead of the scheduled pickup time.  Otherwise, a minimum charge of one-hour rental should be applied.
+									Calendar benchmarkDate = Calendar.getInstance();
+									benchmarkDate.setTime(r.getReservationStart());
+									benchmarkDate.add(Calendar.HOUR, -1); //User can cancel up to 1hr before pickup time
+									
+									Calendar currentDate = Calendar.getInstance();
+									if (currentDate.compareTo(benchmarkDate) <= 0){
+										int statusID = irm.addReservationStatus(r.getId(), "Cancelled");
+										if (statusID > 0){
+											request.setAttribute("errorMessage", "");
+										}else{
+											request.setAttribute("errorMessage", "Unable to cancel this reservation.");
+										}
+									}else{
+										request.setAttribute("errorMessage", "Reservation cannot be cancelled less than an hour before pickup time.");
+									}
+								}else{
+									request.setAttribute("errorMessage", "Not authorized to perform this action.");
+								}
+							}else{
+								request.setAttribute("errorMessage", "Please login to cancel this reservation.");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Invalid reservation object.");
+						}
 					}catch(NumberFormatException e){
 						request.setAttribute("errorMessage","Unable to format reservation id parameter.");
 					}

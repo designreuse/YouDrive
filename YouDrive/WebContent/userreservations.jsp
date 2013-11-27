@@ -158,8 +158,10 @@
 												<td><c:out value="${vehicleObj.make}"/>, <c:out value="${vehicleObj.model}"/></td>
 												<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${reservation.reservationStart}" /></td>
 												<td><fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${reservation.reservationEnd}" /></td>
-												<td class="hidden">
+												<td class="hidden" id="dateAdded_${reservation.id }">
+													<c:set var="reservationStatus" value="${reservationStatusList.get(0)}" />
 												</td>
+												
 												<td><a title="Click to Return Reservation # ${reservation.id }"><span onclick="returnReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-share-alt"></span></a></td>
 												<td><a title="Click to Cancel Reservation # ${reservation.id }"><span onclick="cancelReservation('${reservation.id}','${vehicleObj.tag }')" class="glyphicon glyphicon-remove"></span></a></td>
 											</tr>
@@ -193,7 +195,7 @@
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
 		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
-		            <a class="list-group-item active" href="returnvehicle.jsp">Return Vehicle</a>
+					<a class="list-group-item active" href="userreservations.jsp">My Reservations</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		   
 		            <c:url value="UserManagement" var="url">
 						<c:param name="customerID" value="${loggedInUser.id}" />

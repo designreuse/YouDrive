@@ -11,7 +11,6 @@ public class Reservation  implements Serializable{
 	private int customerID;
 	private int locationID;
 	private int vehicleID;
-	/* Use getTimestamp*/
 	private Date reservationStart;
 	private Date reservationEnd;
 	private double cost;
