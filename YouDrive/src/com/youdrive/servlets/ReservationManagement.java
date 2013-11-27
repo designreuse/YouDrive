@@ -301,24 +301,8 @@ public class ReservationManagement extends HttpServlet {
 									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
 									ReservationStatus rs = new ReservationStatus(reservationStatusID, reservationID, reservationDate.getTime(), "Created");
 									
-									long differenceInMillis = stopDate.getTime() - startDate.getTime();
-									long diffSeconds = differenceInMillis / 1000;
-									long diffMinutes = differenceInMillis / (60 * 1000);
-									long hourDiff = diffMinutes % 60;
-									long diffHours = differenceInMillis / (60 * 60 * 1000);
-									long diffDays = differenceInMillis / (24 * 60 * 60 * 1000);
-									System.out.println("diffSeconds: " + diffSeconds + " diffMinutes: " + diffMinutes + " diffHours: " + diffHours + " hourDiff: " + hourDiff + " diffDays: " + diffDays);
-									double cost = 0.0;
-									if (diffDays == 0){
-										cost += vt.getDailyPrice() * diffDays;
-										diffHours -= diffDays * 24;
-										System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " daily cost: " + cost);
-									}
-									if (diffHours > 0){
-										double hourlyCost = vt.getHourlyPrice() * diffHours;
-										System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " hourly cost: " + cost);
-										cost += hourlyCost;
-									}
+									double cost = calculateCost(vt,r.getReservationStart(),r.getReservationEnd());
+										
 									request.setAttribute("amountCharged",cost);
 									request.setAttribute("reservedVehicle", v);
 									request.setAttribute("reservation", r);
@@ -478,7 +462,41 @@ public class ReservationManagement extends HttpServlet {
 		dispatcher.forward(request,response);
 	}
 
-
+	/**
+	 * Calculate how much customer will be charged
+	 * @param vt
+	 * @param startDate
+	 * @param stopDate
+	 * @return
+	 */
+	public double calculateCost(VehicleType vt, java.util.Date startDate, java.util.Date stopDate){
+		double cost = 0.0;
+		long differenceInMillis = stopDate.getTime() - startDate.getTime();
+		long diffSeconds = differenceInMillis / 1000;
+		long diffMinutes = differenceInMillis / (60 * 1000);
+		long diffHours = differenceInMillis / (60 * 60 * 1000);
+		long diffDays = differenceInMillis / (24 * 60 * 60 * 1000);
+		System.out.println("diffSeconds: " + diffSeconds + " diffMinutes: " + diffMinutes + " diffHours: " + diffHours + " diffDays: " + diffDays);
+		if (diffDays > 0){
+			cost += vt.getDailyPrice() * diffDays;
+			diffHours -= diffDays * 24;
+			System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " daily cost: " + cost);
+		}
+		if (diffHours > 0){
+			double hourlyCost = vt.getHourlyPrice() * diffHours;
+			System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " hourly cost: " + cost);
+			cost += hourlyCost;			
+			long diff = diffMinutes - (diffHours * 60);
+			if (diff < 60){
+				cost += vt.getHourlyPrice();
+			}
+		}
+		if (diffMinutes < 60){
+			cost += vt.getHourlyPrice();
+		}
+		return cost;
+	}
+	
 	//http://www.mkyong.com/java/how-to-check-if-date-is-valid-in-java/
 	/**
 	 * Return true if the Date is an actual date
