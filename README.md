@@ -2,7 +2,8 @@ YouDrive
 ========
 POC for the YouDrive project (part of the Software Engineering class requirements).
 
-0. Create database called team7 on localhost with the password "overload". If you decide to create a differently named database, update the JDBC_URL value in Constants.java in the .util package.
+0. Create a mysql user called "team7" with password "overload"
+1. Create database called team7 on localhost. Connection details are in Constants.java if you want to take a look.
 1. Create the tables in the order outlined in the schema.sql document
 2. Populate the tables using data in quick-data.sql
 4. jane:test, james:test, trevor:test, rod:test are username:password pairs that are admins
