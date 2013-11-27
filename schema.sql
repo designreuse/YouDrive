@@ -33,13 +33,16 @@ ccType varchar(255),
 ccNumber varchar(17),
 ccSecurityCode varchar(10),
 ccExpirationDate varchar(7),
-isAdmin boolean,
-memberExpiration date,
+isAdmin boolean not null default 0,
+memberExpiration datetime,
 membershipLevel int,
-registrationDate date not null,
-FOREIGN KEY (membershipLevel) references Memberships(id)
+registrationDate datetime not null,
+isActive boolean not null default 1,
+INDEX membership_ind(membershipLevel),
+CONSTRAINT fk_users_memberships 
+FOREIGN KEY (membershipLevel) REFERENCES Memberships(id)
+ON UPDATE CASCADE
 ) Engine=InnoDB;
-
 
 Create table Vehicles(
 id int not null primary key auto_increment,
@@ -49,11 +52,14 @@ year int not null,
 tag varchar(255) unique not null,
 mileage int not null,
 lastServiced date not null,
-isAvailable boolean default 0,
 vehicleType int not null,
 assignedLocation int not null,
-FOREIGN KEY (vehicleType) references VehicleTypes(id),
-FOREIGN KEY (assignedLocation) references Locations(id)
+INDEX vehicletype_ind(vehicleType),
+INDEX location_ind(assignedLocation),
+CONSTRAINT fk_vehicles_vehicletypes FOREIGN KEY (vehicleType) references VehicleTypes(id)
+ON UPDATE CASCADE ON DELETE CASCADE, 
+CONSTRAINT fk_vehicles_locations FOREIGN KEY (assignedLocation) references Locations(id)
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;
 
 create table Reservations(
@@ -63,9 +69,15 @@ locationID int not null,
 vehicleID int not null,
 reservationStart datetime not null,
 reservationEnd datetime  not null,
-FOREIGN KEY (customerID) references Users(id),
-FOREIGN KEY (locationID) references Locations(id),
-FOREIGN KEY (vehicleID) references Vehicles(id)
+INDEX user_ind(customerID),
+INDEX location_ind(locationID),
+INDEX vehicle_ind(vehicleID),
+CONSTRAINT fk_reservations_users FOREIGN KEY (customerID) references Users(id)
+ON UPDATE CASCADE ON DELETE CASCADE, 
+CONSTRAINT fk_reservations_locations FOREIGN KEY (locationID) references Locations(id)
+ON UPDATE CASCADE ON DELETE CASCADE, 
+CONSTRAINT fk_reservations_vehicles FOREIGN KEY (vehicleID) references Vehicles(id)
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;
 
 create table ReservationStatus(
@@ -73,7 +85,9 @@ id int not null primary key auto_increment,
 reservationID int not null,
 dateAdded datetime not null,
 reservationStatus ENUM ('Created', 'Cancelled', 'Returned')  not null,
-FOREIGN KEY (reservationID) references Reservations(id)
+INDEX reservations_ind(reservationID),
+CONSTRAINT fk_reservationstatus_reservations FOREIGN KEY (reservationID) references Reservations(id)
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;
 
 create table Comments(
@@ -82,6 +96,10 @@ createdOn datetime not null,
 comment text not null,
 author int not null,
 vehicleID int not null,
-FOREIGN KEY (author) references Users(id),
-FOREIGN KEY (vehicleID) references Vehicles(id)
+INDEX users_ind(author),
+INDEX vehicle_ind(vehicleID),
+CONSTRAINT fk_comments_users FOREIGN KEY (author) references Users(id)
+ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT fk_comments_vehicles FOREIGN KEY (vehicleID) references Vehicles(id)
+ON UPDATE CASCADE ON DELETE CASCADE
 ) Engine=InnoDB;

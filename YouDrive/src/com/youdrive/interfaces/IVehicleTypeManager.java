@@ -56,5 +56,7 @@ public interface IVehicleTypeManager {
 	 * @return
 	 */
 	public int getCountOfVehicleType(int typeID);
+	double getHourlyPrice(int vehicleTypeID);
+	double getDailyPrice(int vehicleTypeID);
 
 }

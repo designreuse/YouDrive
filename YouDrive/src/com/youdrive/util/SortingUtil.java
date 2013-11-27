@@ -138,18 +138,18 @@ public final class SortingUtil {
 			});
 			break;
 		case(2):
-			System.out.println("Sort By Hourly Price");
+			System.out.println("Sort By Daily Price");
 			Collections.sort(vehicleTypes, new Comparator<VehicleType>() {
 				public int compare(VehicleType o1, VehicleType o2){
-					return Double.compare(o1.getHourlyPrice(), o2.getHourlyPrice());
+					return  Double.compare(o1.getDailyPrice(), o2.getDailyPrice()); // Compare by name, for example
 				}
 			});
 			break;
 		default:
-			System.out.println("Sort By Daily Price");
+			System.out.println("Sort By Type");
 			Collections.sort(vehicleTypes, new Comparator<VehicleType>() {
 				public int compare(VehicleType o1, VehicleType o2){
-					return String.valueOf(o1.getDailyPrice()).compareTo(String.valueOf(o2.getDailyPrice())); // Compare by name, for example
+					return o1.getType().compareTo(o2.getType()); // Compare by name, for example
 				}
 			});
 		}

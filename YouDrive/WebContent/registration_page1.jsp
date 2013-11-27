@@ -5,32 +5,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" href="css/homepage.css">
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<title>YouDrive Registration</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<link rel="stylesheet" href="css/homepage.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
+	<link rel="stylesheet" href="css/offcanvas.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/offcanvas.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+	<title>YouDrive Registration</title>
 </head>
 <body>
-	<h3>YouDrive Registration</h3>
-	<div class="signup">
-		<p class="error">
-			<c:out value="${errorMessage }" />
-		</p>
-		<form id="registerUser" name="registerUser" action="UserManagement" method="post">
-			<label for="firstName">First Name:</label> 
-			<input required type="text" id="firstName" name="firstName" /><br /> 
-			<label for="lastName">Last Name:</label> 
-			<input required type="text"	id="lastName" name="lastName" /><br /> 
-			<label for="email">Email Address:</label> 
-			<input required type="email" id="email" name="email" /><br />
-			<label for="username">Username:</label> 
-			<input required type="text"	id="username" name="username" /><br />
-			<label for="password">Password:</label>
-			<input required type="password" id="password" name="password" /><br />
-			<input type="hidden" id="action" name="action" value="registerUser1" />
-			<input type="submit" value="Next" /> <input type="reset"
-				value="Reset" />
-		</form>
+	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://localhost:8080/YouDrive">YouDrive</a>
+			</div>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#about" data-toggle="modal" data-target="#aboutModal">About</a></li>
+				</ul>
+				<c:if test="${loggedInUser != null }">
+					<p class="navbar-right userInfo">Hello, <c:out value="${loggedInUser.firstName }" /></p>
+				</c:if>
+			</div>
+			<!-- /.nav-collapse -->
+		</div>
+		<!-- /.container -->
 	</div>
+	<!-- /.navbar -->
+	
+	<div class="container">
+		<div class="row row-offcanvas row-offcanvas-right">
+
+			<div class="col-xs-12 col-sm-9">
+				<p class="pull-right visible-xs">
+					<button type="button" class="btn btn-primary btn-xs"
+						data-toggle="offcanvas">Toggle nav</button>
+				</p>
+				<div class="row">
+					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
+						<div id="errorDisplay" class="alert alert-danger">
+							<c:out value="${errorMessage }" />
+						</div>
+					</c:if>
+					<div class="forms">
+						<form id="registerUser" name="registerUser" action="UserManagement" method="post">
+							<label for="firstName">First Name:</label> 
+							<input required type="text" id="firstName" name="firstName" /><br /> 
+							<label for="lastName">Last Name:</label> 
+							<input required type="text"	id="lastName" name="lastName" /><br /> 
+							<label for="email">Email Address:</label> 
+							<input required type="email" id="email" name="email" /><br />
+							<label for="username">Username:</label> 
+							<input required type="text"	id="username" name="username" /><br />
+							<label for="password">Password:</label>
+							<input required type="password" id="password" name="password" /><br />
+							<input type="hidden" id="action" name="action" value="registerUser1" />
+							<input type="submit" value="Next" /> <input type="reset"
+								value="Reset" />
+						</form>
+					</div>
+				</div>
+				<!--/row-->
+			</div>
+			<!--/span-->
+			<!--/span-->
+		</div>
+		<!--/row-->
+
+		<hr>
+
+		<footer>
+			<p>&copy; YouDrive 2013</p>
+		</footer>
+
+	</div>
+	<!--/.container-->
+	
+		<!-- Modal -->
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+		aria-labelledby="aboutModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="aboutModalLabel">About YouDrive</h4>
+			</div>
+			<div class="modal-body">Group Project by Jane Ullah, James
+				Vaughan, Rod Rashidi and Trevor Wilson.</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 </body>
 </html>

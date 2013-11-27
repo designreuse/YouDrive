@@ -59,7 +59,7 @@ public interface IVehicleManager {
 	 * @param id
 	 * @return
 	 */
-	public String deleteVehicle(int id);
+	public boolean deleteVehicle(int id);
 	/**
 	 * Get the vehicle Type by the vehicle type id of a vehicle
 	 * @param vehicleTypeID
@@ -81,6 +81,14 @@ public interface IVehicleManager {
 	 */
 	public boolean updateVehicle(int id, String make, String model, int year, String tag, int mileage, String lastServiced, 
 			int vehicleType, int assignedLocation);
+	/**
+	 * Retrieves the list of comments associated with the vehicle object
+	 * @param vehicleID
+	 * @return
+	 */
 	public ArrayList<Comment> getVehicleComments(int vehicleID);
 	public  int addVehicleComment(int vehicleID, String comment, int author);
+	public ArrayList<Vehicle> getAllVehiclesByLocationAndType(int locationID, int vehicleTypeID);
+	public ArrayList<Vehicle> searchVehicles(String searchTerms);
+	public ArrayList<Vehicle> searchVehiclesAtLocation(String searchTerms, int locationID);
 }

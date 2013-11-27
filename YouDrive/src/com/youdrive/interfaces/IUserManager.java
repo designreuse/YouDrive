@@ -96,6 +96,6 @@ public interface IUserManager {
 	 * @return
 	 */
 	public ArrayList<User> getAllCustomers();
-	boolean deleteAdminUser(int userID);
+	public boolean deactivateUser(int userID);
 	
 }

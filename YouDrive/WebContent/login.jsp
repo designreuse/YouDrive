@@ -28,7 +28,7 @@
 			<label for="password">Password:</label>
 			<input required type="password" id="password" name="password" /><br />
 			<input type="hidden" id="action" name="action" value="login" /> 
-			<button class="btn btn-lg btn-primary btn-block" type="submit" id="action" name="action" value="login">login</button>
+			<button class="btn btn-lg btn-primary btn-block" type="submit" id="action" name="action" value="login">Login</button>
 			<button class="btn btn-lg btn-block" type="reset">Reset</button>
 			<button class="btn btn-lg btn-default btn-block" onclick="window.location.replace('registration_page1.jsp')">Register</button>
 		</form>

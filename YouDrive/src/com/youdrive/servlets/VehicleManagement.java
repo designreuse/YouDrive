@@ -17,8 +17,10 @@ import javax.servlet.http.HttpSession;
 
 
 import com.youdrive.helpers.LocationDAO;
+import com.youdrive.helpers.ReservationDAO;
 import com.youdrive.helpers.VehicleDAO;
 import com.youdrive.interfaces.ILocationManager;
+import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IVehicleManager;
 import com.youdrive.models.Location;
 import com.youdrive.models.User;
@@ -81,7 +83,8 @@ public class VehicleManagement extends HttpServlet {
 			}finally{
 				request.setAttribute("searchType", sType);
 			}
-			dispatchedPage = "/managevehicles.jsp";
+			User user = (User) session.getAttribute("loggedInUser");
+			dispatchedPage = (user.isAdmin())?"/managevehicles.jsp":"/reservationcheck.jsp";
 		}else if (viewComments != null && !viewComments.isEmpty()){
 			System.out.println("Retrieving comments.");
 			try{
@@ -119,6 +122,7 @@ public class VehicleManagement extends HttpServlet {
 		HttpSession session = request.getSession();
 		IVehicleManager ivm = (VehicleDAO) session.getAttribute("vehicleMgr");
 		ILocationManager ilm = (LocationDAO) session.getAttribute("locationMgr");
+		IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");
 		if (ivm == null){
 			ivm = new VehicleDAO();
 			session.setAttribute("vehicleMgr", ivm);
@@ -126,6 +130,10 @@ public class VehicleManagement extends HttpServlet {
 		if (ilm == null){
 			ilm = new LocationDAO();
 			session.setAttribute("locationMgr", ilm);
+		}
+		if (irm == null){
+			irm = new ReservationDAO();
+			session.setAttribute("reservationMgr", irm);
 		}
 		String action = request.getParameter("action");
 		//Adding a single vehicle
@@ -207,6 +215,26 @@ public class VehicleManagement extends HttpServlet {
 						dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 					}
 				}
+			}else if (action.equalsIgnoreCase("deleteVehicle")){
+				String vehicleIDStr = request.getParameter("vehicleID");
+				if (vehicleIDStr != null && !vehicleIDStr.isEmpty()){
+					try{
+						int vehicleID = Integer.parseInt(vehicleIDStr);
+						Vehicle v = ivm.getVehicle(vehicleID);
+						if (v != null){
+							if (deleteVehicle(session,request,ivm,ilm,irm,v)){
+								request.setAttribute("errorMessage", "");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Vehicle not found.");
+						}
+					}catch(NumberFormatException e){
+						request.setAttribute("errorMessage", "Unable to parse vehicle id.");
+					}
+				}else{
+					request.setAttribute("errorMessage", "Missing vehicle ID");
+				}
+				dispatcher = ctx.getRequestDispatcher("/managevehicles.jsp");
 			}else{
 				dispatcher = ctx.getRequestDispatcher("/login.jsp");
 			}
@@ -279,6 +307,53 @@ public class VehicleManagement extends HttpServlet {
 		return vehicleID;	
 	}
 
+	/**
+	 * Delete the vehicle
+	 * @param session
+	 * @param request
+	 * @param ivm
+	 * @param ilm
+	 * @param irm
+	 * @param vehicle
+	 * @return
+	 */
+	private boolean deleteVehicle(HttpSession session, HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm, IReservationManager irm, Vehicle vehicle){
+		//Check if vehicle is involved in any active reservations
+		String errorMsg = "";
+		int vID = vehicle.getId();
+		int count = irm.isVehicleInUse(vID);
+		if (count == -1){
+			errorMsg = "Error finding vehicle status.";
+		}else if (count == 0){
+			//Vehicle not in use in reservations
+			//Delete vehicle comments;
+			System.out.println("Vehicle not in use in any reservations so delete safely.");
+			return ivm.deleteVehicle(vID);			
+		}else{
+			//Check if 
+			//Delete vehicle only if there is NO open reservation
+			count = irm.getCancelledOrReturnedReservationCount(vID);
+			if (count == 0){
+				errorMsg = "Open reservations found with this vehicle. Please return or cancel the reservation hold on this vehicle first.";
+			}else if (count < 0){
+				errorMsg = "Error executing the SQL statement.";
+			}else{
+				return ivm.deleteVehicle(vID);
+			}
+		}
+		request.setAttribute("errorMessage", errorMsg);
+		return false;
+	}
+	
+	/**
+	 * Edit a vehicle details.
+	 * @param session
+	 * @param request
+	 * @param ivm
+	 * @param ilm
+	 * @param vehicle
+	 * @return
+	 */
 	private boolean editVehicle(HttpSession session, HttpServletRequest request, IVehicleManager ivm, ILocationManager ilm,Vehicle vehicle){
 		String errorMessage = "";
 		int vehicleID = vehicle.getId();

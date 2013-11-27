@@ -20,27 +20,46 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 	    <![endif]-->
-<script type="text/javascript">
-	//Equivalent to $( document ).ready(function(){});
-	$(function() {
-		$('.navSort').click(function(){
-			//Get href value
-			//Set hidden input field
-			//Submit form which reloads the page
-			searchValue = $(this).attr('href').substring(1);
-			document.getElementById("searchType").value = searchValue;
-			$('#sortCustomerForm').submit();
+	<script type="text/javascript">
+		//Equivalent to $( document ).ready(function(){});
+		$(function() {
+			$('.navSort').click(function(){
+				//Get href value
+				//Set hidden input field
+				//Submit form which reloads the page
+				searchValue = $(this).attr('href').substring(1);
+				document.getElementById("searchType").value = searchValue;
+				$('#sortCustomerForm').submit();
+			});
 		});
-	});
-</script>
+		
+		/* submit the hidden form to delete the location but need to confirm with user first*/
+		function getCustomerID(customerID, username){
+			// confirm dialog
+			alertify.confirm("You are about to delete " + username + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("userID").value = customerID;
+					$('#deactivateCustomerForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(customerID);
+		}
+	</script>
 <title>Manage Customers</title>
 </head>
 <body>
@@ -89,7 +108,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />		
+						<c:if test="${userMgr == null }">
+							<jsp:useBean id="userMgr" class="com.youdrive.helpers.UserDAO" scope="session" />
+						</c:if>
 						<c:set var="allCustomers" value="${userMgr.getAllCustomers() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
@@ -106,12 +127,12 @@
 											<td><c:out value="${ user.lastName }" />, <c:out value="${ user.firstName}" /></td>
 											<td><c:out value="${ user.username}" /></td>
 											<td><c:out value="${ user.email}" /></td>
-											<td><c:out value="${ user.memberExpiration}"/></td>
+											<td><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ user.memberExpiration}"/></td>
 											<c:url value="UserManagement" var="url">
 												<c:param name="customerID" value="${user.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a title="Click to edit this customer: ${user.username }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this customer: ${user.username }"><span onclick="getCustomerID('${user.id}','${user.username }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>	
@@ -120,6 +141,14 @@
 							<form id="sortCustomerForm" name="sortCustomerForm" method="get" action="UserManagement">
 								<input type="hidden" id="action" name="action" value="sortCustomer"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
+							
+							
+							<%-- Hidden form which gets submitted when user clicks on a user to delete--%>	
+							<form id="deactivateCustomerForm" name="deactivateCustomerForm" method="post" action="UserManagement">
+								<input type="hidden" id="action" name="action" value="deactivateUser"/>
+								<input type="hidden" id="page" name="page" value="customers" />
+								<input type="hidden" id="userID" name="userID" value="" />
 							</form>
 						</c:when>
 						<c:otherwise>
@@ -156,7 +185,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>

@@ -19,9 +19,13 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+	<script src="js/alertify.min.js"></script>
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -44,6 +48,21 @@
 				$('#sortLocationForm').submit();
 			});
 		});
+		
+		/* submit the hidden form to delete the location but need to confirm with user first*/
+		function getLocationID(locationID, locationName){
+			// confirm dialog
+			alertify.confirm("You are about to delete " + locationName + ". To continue, press \"OK\"; otherwise, hit \"Cancel\"", function (e) {
+			    if (e) {
+			    	console.log("OK clicked.");
+					document.getElementById("locationID").value = locationID;
+					$('#deleteLocationForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+			console.log(locationID);
+		}
 	</script>
 <title>Manage Locations</title>
 </head>
@@ -93,7 +112,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />			
+						<c:if test="${locationMgr == null }">
+							<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
+						</c:if>
 						<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
@@ -115,8 +136,8 @@
 											<c:url value="LocationManagement" var="url">
 												<c:param name="locationID" value="${location.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a  title="Click to edit this location: ${ location.name }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this location: ${location.name }"><span onclick="getLocationID('${location.id}','${location.name }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
@@ -126,6 +147,13 @@
 								<input type="hidden" id="action" name="action" value="sortLocation"/>
 								<input type="hidden" id="searchType" name="searchType" value="" />
 							</form>
+							
+							<%-- Hidden form for deleting the membership --%>
+							<form id="deleteLocationForm" name="deleteLocationForm" method="post" action="LocationManagement">
+								<input type="hidden" id="action" name="action" value="deleteLocation"/>
+								<input type="hidden" id="locationID" name="locationID" value="" />
+							</form>
+							
 						</c:when>
 						<c:otherwise>
 							<p class="error">Please <a href="login.jsp">login</a> as an admin to access this page.</p>
@@ -161,7 +189,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>

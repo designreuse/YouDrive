@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.LocationDAO;
+import com.youdrive.helpers.ReservationDAO;
 import com.youdrive.interfaces.ILocationManager;
+import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.models.Location;
 
 /**
@@ -116,7 +118,16 @@ public class LocationManagement extends HttpServlet {
 					dispatchedPage = "/editlocation.jsp";
 				}
 			}else if (action.equalsIgnoreCase("deleteLocation")){
-
+				IReservationManager irm = (ReservationDAO)session.getAttribute("reserveMgr");
+				if (irm == null){
+					irm = new ReservationDAO();
+					session.setAttribute("reserveMgr", irm);
+				}
+				dispatchedPage = "/managelocations.jsp";
+				boolean result = deleteLocation(request,ilm,irm);
+				if (result){
+					System.out.println("Removed the location.");
+				}
 			}
 		}else{
 			request.setAttribute("errorMessage", "Unknown POST request");
@@ -124,6 +135,60 @@ public class LocationManagement extends HttpServlet {
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
+	}
+	
+	/**
+	 * Delete a Location
+	 * @param request
+	 * @param ilm
+	 * @param irm
+	 * @param location
+	 * @return
+	 */
+	private boolean deleteLocation(HttpServletRequest request, ILocationManager ilm, IReservationManager irm){
+		String locID = request.getParameter("locationID");
+		String errorMessage = "";
+		if (locID == null || locID.isEmpty()){
+			errorMessage = "Invalid location id found.";					
+		}else{
+			try{
+				int locationID = Integer.parseInt(locID);
+				//Check if this location is a valid object
+				Location l = ilm.getLocationById(locationID);
+				if (l != null){
+					//Check if this location is in use for active reservations
+					int count = irm.checkIfLocationInUse(locationID);
+					if (count == -1){
+						errorMessage = "Unspecified exception getting count of active reservations using this location.";
+					}else if (count > 0){
+						errorMessage = "Location in use for " + count +  " reservations.";
+					}else{
+						//Check if vehicles are assigned to this location
+						count = ilm.getCountOfLocations(locationID);
+						if (count == -1){
+							errorMessage = "Unspecified exception getting the count of all vehicles assigned to this location.";
+						}else if (count > 0){
+							errorMessage = count + " vehicles assigned to this location. Re-assign them first.";
+						}else{
+							//Delete the location now
+							boolean result = ilm.deleteLocationById(locationID);
+							if (!result){
+								errorMessage = "Unable to delete this Location. Please contact the admin.";
+							}else{
+								//Successfully deleted a location!
+							}
+						}
+					}
+				}else{
+					errorMessage = "Location not found in system.";
+				}
+			}catch(NumberFormatException e){
+				errorMessage = "Invalid location ID parameter found.";
+			}
+		}
+		request.setAttribute("errorMessage", errorMessage);
+		return false;
+		
 	}
 
 	/**

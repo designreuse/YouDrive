@@ -73,7 +73,26 @@
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>My Membership</p>
+							<c:if test="${ membershipMgr == null}">
+								<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />	
+							</c:if>
+							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}" />
+							<c:choose>
+								<c:when test="${membershipObj != null }">
+									<h3>
+										Your Membership Details
+									</h3>
+									<article class="membershipDisplay">
+										<span >Membership: <strong><c:out value="${membershipObj.name }"/></strong></span>
+										<span>Membership Price: <strong><fmt:formatNumber value="${membershipObj.price }" type="currency" /> </strong></span>
+										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong> months</span>
+										<span>Membership Expiration Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ loggedInUser.memberExpiration}"/></strong></span>
+									</article>
+								</c:when>
+								<c:otherwise>
+									Invalid membership found.
+								</c:otherwise>
+							</c:choose>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -85,8 +104,9 @@
 				<div class="list-group">
 					<a class="list-group-item"><strong>Navigation</strong></a>
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
-		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
-		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
+		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>		            
+		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
+					<a class="list-group-item" href="userreservations.jsp">My Reservations</a>
 		            <a class="list-group-item active" href="usermembership.jsp">My Membership</a>
 		            <c:url value="UserManagement" var="url">
 						<c:param name="customerID" value="${loggedInUser.id}" />
@@ -102,7 +122,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>

@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.management.ImmutableDescriptor;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +56,7 @@ public class UserManagement extends HttpServlet {
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
 		}
+		User loggedInUser = (User)session.getAttribute("loggedInUser");
 		String userID = request.getParameter("userID");
 		String searchType = request.getParameter("searchType");
 		String customerID = request.getParameter("customerID");		
@@ -91,14 +93,18 @@ public class UserManagement extends HttpServlet {
 			try{
 				int uID = Integer.parseInt(customerID);
 				User user = ium.getUser(uID);
-				//Null check is in jsp
-				session.setAttribute("user", user);
-				dispatchedPage = "/editcustomer.jsp";
+				if (loggedInUser.isAdmin() || user.getId() == loggedInUser.getId()){
+					//Null check is in jsp
+					session.setAttribute("user", user);
+					dispatchedPage = "/editcustomer.jsp";
+				}else{
+					request.setAttribute("errorMessage","Not authorized to view this customer.");
+					dispatchedPage = "/user.jsp";
+				}
 			}catch(NumberFormatException e){
 				request.setAttribute("errorMessage", "Invalid userID.");
 			}
 		}else{
-			User loggedInUser = (User) session.getAttribute("loggedInUser");
 			if (loggedInUser != null){
 				if (loggedInUser.isAdmin()){
 					dispatchedPage = "/manageusers.jsp";
@@ -149,7 +155,7 @@ public class UserManagement extends HttpServlet {
 				@SuppressWarnings("unchecked")
 				HashMap<String,String> pg1 = (LinkedHashMap<String, String>) session.getAttribute("registration_page1");
 				if (pg1 != null && !pg1.isEmpty()){				
-					int userID = addRegularUserPg2(request,ium,pg1);
+					int userID = addRegularUserPg2(session,request,ium,pg1);
 					if (userID == 0){
 						dispatchedPage = "/registration_page1.jsp";
 					}else{
@@ -167,13 +173,14 @@ public class UserManagement extends HttpServlet {
 				if (user != null){
 					request.setAttribute("errorMessage","");
 					//Send user to right landing page
-					if (user.isAdmin()){
-						dispatchedPage = "/admin.jsp";
+					if (user.isActive()){
+						//Stash logged in user to session context
+						session.setAttribute("loggedInUser", user);
+						dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
 					}else{
-						dispatchedPage = "/user.jsp";
+						request.setAttribute("errorMessage", "Account deactivated.");
+						dispatchedPage = "/login.jsp";
 					}
-					//Stash logged in user to session context
-					session.setAttribute("loggedInUser", user);
 				}else{
 					request.setAttribute("errorMessage", "Invalid credentials.");
 					dispatchedPage = "/login.jsp";
@@ -257,10 +264,24 @@ public class UserManagement extends HttpServlet {
 						dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/user.jsp";
 					}
 				}
-			}else if (action.equalsIgnoreCase("deleteAdminUser")){
-				System.out.println("deleteAdminUser action");
-				boolean result = deleteAdmin(request,session,ium);
-				dispatchedPage = "/manageusers.jsp";
+			}else if (action.equalsIgnoreCase("deactivateUser")){
+				System.out.println("deactivateUser action");
+				User currentUser = (User)session.getAttribute("loggedInUser");
+				String page = request.getParameter("page");
+				dispatchedPage = "/admin.jsp";
+				if (currentUser != null && currentUser.isActive()){
+					if (!page.equalsIgnoreCase("admins") && !page.equalsIgnoreCase("customers")){
+						request.setAttribute("errorMessage", "Invalid POST request.");
+					}else{
+						dispatchedPage = (page.equalsIgnoreCase("admins")) ? "/manageusers.jsp":"/managecustomers.jsp";
+						if (!deactivateUser(request,session,ium,currentUser)){
+							request.setAttribute("errorMessage", "Unable to delete this user.");
+						}
+					}
+				}else{
+					request.setAttribute("errorMessage", "Not authorized to perform this request.");
+				}
+				
 			}else{
 				dispatchedPage = "/login.jsp";
 			}
@@ -396,7 +417,7 @@ public class UserManagement extends HttpServlet {
 	 * @param page1_details
 	 * @return
 	 */
-	private int addRegularUserPg2(HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
+	private int addRegularUserPg2(HttpSession session,HttpServletRequest request, IUserManager ium,HashMap<String,String> page1_details) {
 		int userID = 0;
 		String membershipLevel = request.getParameter("membershipLevel");
 		String address = request.getParameter("address");
@@ -428,7 +449,16 @@ public class UserManagement extends HttpServlet {
 			try{
 				int ccCode = Integer.parseInt(ccSecurityCode);
 				int memberLevel = Integer.parseInt(membershipLevel);
-				if (validateCreditCard(ccNumber)){
+				//Get membership details
+				IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
+				if (imm == null){
+					imm = new MembershipDAO();
+					session.setAttribute("membershipMgr", imm);
+				}
+				Membership m = imm.getMembership(memberLevel);
+				if (m == null){
+					errorMessage = "Invalid membership level selected.";
+				}else if (validateCreditCard(ccNumber)){
 					ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 					if (!expDates.isEmpty()){
 						User user = new User();
@@ -438,8 +468,10 @@ public class UserManagement extends HttpServlet {
 						user.setUsername(page1_details.get("username"));
 						user.setPassword(page1_details.get("password"));
 						Calendar cal = Calendar.getInstance();
-						java.sql.Date creationdate = new java.sql.Date(cal.getTime().getTime());
-						user.setDateCreated(creationdate);
+						Calendar expCal = Calendar.getInstance();
+						expCal.add(Calendar.MONTH, m.getDuration());
+						user.setMemberExpiration(expCal.getTime());
+						user.setDateCreated(cal.getTime());
 						user.setAdmin(false);
 						user.setAddress(address);
 						user.setCcExpirationDate(ccExpirationDate);
@@ -451,26 +483,6 @@ public class UserManagement extends HttpServlet {
 						user.setMembershipLevel(memberLevel);
 						userID = ium.addUser(user);
 						errorMessage = "";
-
-						if (userID > 0){
-							//Add member's expiration date
-							//Look up durations in membership table and add to the user's creation date
-							IMembershipManager imm = new MembershipDAO();
-							if (imm != null){
-								Membership m = imm.getMembership(memberLevel);
-								if (m != null){
-									cal.add(Calendar.MONTH, m.getDuration());
-									java.sql.Date newDate = new java.sql.Date(cal.getTime().getTime());
-									if (!imm.updateExpirationDate(newDate,memberLevel)){
-										errorMessage = "Error saving expiration date to database.";
-									}
-								}else{
-									errorMessage = "Invalid membership plan chosen.";
-								}
-							}
-						}else{
-							errorMessage = "Error creating the user.";
-						}
 					}else{
 						errorMessage = "Invalid expiration dates. Please enter MM/YYYY format.";
 					}
@@ -646,23 +658,22 @@ public class UserManagement extends HttpServlet {
 		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
 	}
-
-	private boolean deleteAdmin(HttpServletRequest request, HttpSession session, IUserManager ium){
-		System.out.println("Calling deleteAdmin");
+	
+	private boolean deactivateUser(HttpServletRequest request, HttpSession session, IUserManager ium, User currentUser){
+		System.out.println("Calling deactivateCustomer module");
 		String errorMessage = "";
 		String userID = request.getParameter("userID");
 		if (userID != null && !userID.isEmpty()){
 			try{
 				int uID = Integer.parseInt(userID);
 				User u = ium.getUser(uID);
-				User currentUser = (User)session.getAttribute("loggedInUser");
-				//Only admins can delete an admin
+				//Only admins can delete another customer
 				if (currentUser != null && currentUser.isAdmin()){
 					//Look up object in database
 					if (u != null){
 						//Don't let logged in admin delete self.
 						if (u.getId() != currentUser.getId()){				
-							boolean result = ium.deleteAdminUser(uID);
+							boolean result = ium.deactivateUser(uID);
 							if (!result){
 								errorMessage = "Error deleting Admin User.";
 							}else{
@@ -683,5 +694,5 @@ public class UserManagement extends HttpServlet {
 		}
 		request.setAttribute("errorMessage", errorMessage);
 		return false;
-	}
+	}	
 }

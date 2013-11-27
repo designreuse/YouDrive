@@ -2,6 +2,8 @@
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="a" uri="/sortItems" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,6 +19,23 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <script type="text/javascript">
+		//Equivalent to $( document ).ready(function(){});
+		$(function() {
+			/* When user clicks a clickable table header, the href value which corresponds to the sorting type requested
+			is obtained, a hidden input field is updated with this value and the hidden form is submitted.
+			HACKY method but it works. I wish I could directly update the JSP variable from JavaScript but
+			this method updates the JSP variable by going through GET*/
+			$('.navSort').click(function(){
+				//Get href value
+				//Set hidden input field
+				//Submit form which reloads the page
+				searchValue = $(this).attr('href').substring(1);
+				document.getElementById("searchType").value = searchValue;
+				$('#sortLocationForm').submit();
+			});
+		});
+	</script>
 	<title>Browse Locations</title>
 </head>
 <body>
@@ -63,12 +82,43 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<h2>All Locations</h2>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Browse Locations</p>
+							<%-- Instantiate locationmgr if it doesn't exists --%>
+							<c:if test="${locationMgr == null }">						
+								<jsp:useBean id="locationMgr" class="com.youdrive.helpers.LocationDAO" scope="session" />
+							</c:if>		
+							<c:set var="allLocations" value="${locationMgr.getAllLocations() }" scope="session"/>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th><a href="#0" class="navSort">Name</a></th>
+										<th><a href="#1" class="navSort">Address</a></th>
+									</tr>
+									<c:forEach items="${a:locationSort(allLocations,searchType)}" var="location"
+										varStatus="status">
+										<tr id="${ location.id}">
+											<c:url value="LocationBrowser" var="url">
+												<c:param name="locationID" value="${location.id}" />
+											</c:url>
+											<td><a title="View this location" href="<c:out value="${url }" />"><c:out value="${ location.name }" /></a></td>
+											<td><c:out value="${ location.address}" /></td>
+											
+										</tr>
+									</c:forEach>
+								</table>
+							</div>
+							
+							<%-- Hidden form which gets submitted when user clicks on a clickable table heading --%>			
+							<form id="sortLocationForm" name="sortLocationForm" method="get" action="LocationBrowser">
+								<input type="hidden" id="action" name="action" value="sortLocation"/>
+								<input type="hidden" id="searchType" name="searchType" value="" />
+							</form>
+							
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -81,7 +131,8 @@
 					<a class="list-group-item"><strong>Navigation</strong></a>
 		            <a class="list-group-item active" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
-		            <a class="list-group-item" href="returnvehicle.jsp">Return Vehicle</a>
+		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
+					<a class="list-group-item" href="userreservations.jsp">My Reservations</a>
 		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>	
 		            <c:url value="UserManagement" var="url">
 						<c:param name="customerID" value="${loggedInUser.id}" />

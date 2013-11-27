@@ -8,16 +8,28 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-	<title>Return Vehicle</title>
+	<script src="js/alertify.min.js"></script>
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
+	<title>Reservation Confirmation</title>
+	<script type="text/javascript">
+	/*Fade out the div after 30s*/
+		$(document).ready( function() {
+        	$('#errorDisplay').delay(30000).fadeOut();
+    	});
+	</script>
+	
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -64,16 +76,37 @@
 				</p>
 				<div class="row">
 					<c:if test="${errorMessage != null && errorMessage.length() > 0}">
-						<div id="errorDisplay" class="alert alert-danger">
+						<div id="errorDisplay" class="alert alert-success">
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
 						</c:when>
 						<c:otherwise>
-							<p>Return Vehicle</p>
+							<c:if test="${vehicleTypeMgr  == null}">
+								<jsp:useBean id="vehicleTypeMgr" class="com.youdrive.helpers.VehicleTypeDAO" scope="session" />		
+							</c:if>
+							<div class="table-responsive">
+								<table class="table table-condensed table-hover">
+									<tr>
+										<th>Reservation ID</th>
+										<th>Date Booked</th>
+										<th>Start Date</th>
+										<th>Stop Date</th>
+										<th>Vehicle Details</th>
+									</tr>
+									<tr>
+										<td><c:out value="${reservation.id }"/></td>
+										<td><fmt:formatDate type="both" value="${reservationStatus.dateAdded}" /></td>
+										<td><fmt:formatDate type="both" value="${startDate}" /></td>
+										<td><fmt:formatDate type="both" value="${endDate}" /></td>
+										<td><c:out value="${ reservedVehicle.make}"/>, <c:out value="${ reservedVehicle.model}"/> (<c:out value="${ reservedVehicle.tag}"/>)</td>
+									</tr>
+								</table>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</div>
@@ -83,15 +116,16 @@
 
 			<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 				<div class="list-group">
-					<a class="list-group-item"><strong>Navigation</strong></a>
+					<a class="list-group-item active"><strong>Navigation</strong></a>
 		            <a class="list-group-item" href="browselocations.jsp">Browse Locations</a>
 		            <a class="list-group-item" href="browsevehicles.jsp">Browse Vehicles</a>
-		            <a class="list-group-item active" href="returnvehicle.jsp">Return Vehicle</a>
-		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>		   
+		            <a class="list-group-item" href="reservevehicle.jsp">Reserve Vehicle</a>
+					<a class="list-group-item" href="userreservations.jsp">My Reservations</a>
+		            <a class="list-group-item" href="usermembership.jsp">My Membership</a>
 		            <c:url value="UserManagement" var="url">
 						<c:param name="customerID" value="${loggedInUser.id}" />
 					</c:url>
-					<a class="list-group-item" href="<c:out value="${url }" />">My Details</a> 	           
+		            <a class="list-group-item" href="<c:out value="${url }" />">My Details</a>       
 		            <a class="list-group-item" href="logout.jsp">Logout</a>
 				</div>
 			</div>
@@ -102,7 +136,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>

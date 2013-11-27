@@ -108,7 +108,9 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser != null && loggedInUser.isAdmin() }">
-						<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
+						<c:if test="${membershipMgr == null }">
+							<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />
+						</c:if>
 							<div class="table-responsive">
 								<table class="table table-condensed table-hover">
 									<tr>
@@ -126,8 +128,8 @@
 											<c:url value="MembershipManagement" var="url">
 												<c:param name="membershipID" value="${membership.id}" />
 											</c:url>
-											<td><a href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a><span onclick="getMembershipID('${membership.id}','${membership.name }')" class="glyphicon glyphicon-trash"></span></a></td>
+											<td><a  title="Click to edit this membership plan: ${ membership.name }" href="<c:out value="${url }" />"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a title="Click to delete this membership plan: ${ membership.name }"><span onclick="getMembershipID('${membership.id}','${membership.name }')" class="glyphicon glyphicon-trash"></span></a></td>
 										</tr>
 									</c:forEach>
 								</table>
@@ -179,7 +181,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>

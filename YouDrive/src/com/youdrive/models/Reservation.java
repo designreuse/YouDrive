@@ -1,6 +1,7 @@
 package com.youdrive.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Reservation  implements Serializable{
@@ -10,9 +11,14 @@ public class Reservation  implements Serializable{
 	private int customerID;
 	private int locationID;
 	private int vehicleID;
-	/* Use getTimestamp*/
 	private Date reservationStart;
 	private Date reservationEnd;
+	private double cost;
+	private ArrayList<ReservationStatus> reservationStatusList = new ArrayList<ReservationStatus>();
+	private ReservationStatus reservationStatus;
+	private Vehicle vehicle;
+	private VehicleType vehicleType;
+	
 	
 	public Reservation(int id, int customerID, int locationID, int vehicleID, Date reservationStart, Date reservationEnd) {
 		this.id = id;
@@ -23,6 +29,14 @@ public class Reservation  implements Serializable{
 		this.reservationEnd = reservationEnd;
 	}
 
+	public void addReservationStatus(ReservationStatus rs){
+		reservationStatusList.add(rs);
+	}
+	
+	public ArrayList<ReservationStatus> getReservationStatusList(){
+		return reservationStatusList;
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -31,6 +45,7 @@ public class Reservation  implements Serializable{
 		this.id = id;
 	}
 
+	
 	public int getCustomerID() {
 		return customerID;
 	}
@@ -69,6 +84,38 @@ public class Reservation  implements Serializable{
 
 	public void setReservationEnd(Date reservationEnd) {
 		this.reservationEnd = reservationEnd;
+	}
+
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public VehicleType getVehicleType() {
+		return vehicleType;
+	}
+
+	public void setVehicleType(VehicleType vehicleType) {
+		this.vehicleType = vehicleType;
+	}
+
+	public ReservationStatus getReservationStatus() {
+		return reservationStatus;
+	}
+
+	public void setReservationStatus(ReservationStatus reservationStatus) {
+		this.reservationStatus = reservationStatus;
+	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
 	}
 	
 }

@@ -70,7 +70,6 @@
 								<div class="forms">
 									<form class="form-signin" method="post" action="LocationManagement" name="editLocation"
 										id="editLocation">
-											<label style="color:red;">Editing <c:out value="${location.name }"/></label>
 											<label for="locationName">Location Name:</label>
 											<input  required type="text"id="locationName" name="locationName"
 												value="<c:out value="${location.name }"/>" />
@@ -127,7 +126,7 @@
 		<hr>
 
 		<footer>
-			<p>&copy; Company 2013</p>
+			<p>&copy; YouDrive 2013</p>
 		</footer>
 
 	</div>
