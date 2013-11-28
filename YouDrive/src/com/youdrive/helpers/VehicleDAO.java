@@ -46,7 +46,7 @@ public class VehicleDAO implements IVehicleManager {
 			getVehicleTypeStmt = conn.prepareStatement("select type from " + Constants.VEHICLE_TYPES + " where id = ?");
 			getVehiclesByLocationIdStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.id = ?");
 			getVehiclesByLocationNameStmt = conn.prepareStatement("select * from " + Constants.VEHICLES + " v left outer join " + Constants.LOCATIONS + " l on v.assignedLocation = l.id where l.name = ?");
-			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,DEFAULT,?,?)",Statement.RETURN_GENERATED_KEYS);
+			addVehicleStmt = conn.prepareStatement("insert into " + Constants.VEHICLES + " values (DEFAULT,?,?,?,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			deleteVehicleStmt = conn.prepareStatement("delete from " + Constants.VEHICLES + " where id = ?");
 			updateVehicleStmt = conn.prepareStatement("update " + Constants.VEHICLES + " set make = ?, model = ?, year = ?,tag=?,mileage=?,lastServiced=?,vehicleType=?,assignedLocation=? where id = ?");
 			getVehicleCommentsStmt = conn.prepareStatement("select * from Comments where vehicleID = ?");
