@@ -545,12 +545,26 @@ public class UserManagement extends HttpServlet {
 		}else if (password == null || password.isEmpty()){
 			errorMessage = "Missing password";
 		}else if (isAdmin){
-			//TODO check for duplicate
-			if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
-				return true;
-			}else{
-				errorMessage = "Unable to update the user details.";
+			//if email address is being changed
+			boolean isEmailInUse = false, isUsernameInUse = false;
+			if (!(user.getEmail().equalsIgnoreCase(email))){
+				isEmailInUse = ium.isEmailInUse(email);
 			}
+			if (!username.equalsIgnoreCase(user.getUsername())){
+				isUsernameInUse  = ium.isUsernameInUse(username);
+			}
+				
+			if (!isEmailInUse && !isUsernameInUse){
+				if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
+					return true;
+				}else{
+					errorMessage = "Unable to update the user details.";
+				}
+			}else if (isEmailInUse){
+				errorMessage = "Please choose a different email address.";
+			}else if (isUsernameInUse){
+				errorMessage = "Please choose a different username.";
+			}			
 		}else{
 			//Admin editing a non=admin user so require extra stuff
 			String state = request.getParameter("state");
@@ -585,29 +599,24 @@ public class UserManagement extends HttpServlet {
 						//Validate expiration date
 						ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 						if (!expDates.isEmpty()){
-							boolean isEmailInUse = false;
 							//if email address is being changed
+							boolean isEmailInUse = false, isUsernameInUse = false;
 							if (!(user.getEmail().equalsIgnoreCase(email))){
-								isEmailInUse = ium.isEmailInUse(email);								
+								isEmailInUse = ium.isEmailInUse(email);
 							}
-							if (!isEmailInUse){
-								if (!username.equalsIgnoreCase(user.getUsername())){
-									//Check if new username is in use
-									boolean isUsernameInUse = ium.isUsernameInUse(username);
-									if (isUsernameInUse){
-										errorMessage = "Please pick a different username.";
-									}else if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
-										return true;										
-									}else{
-										errorMessage = "Unable to update the user details.";
-									}
-								}else if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+							if (!username.equalsIgnoreCase(user.getUsername())){
+								isUsernameInUse  = ium.isUsernameInUse(username);
+							}
+							if (!isEmailInUse && !isUsernameInUse){
+								if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
 									return true;
 								}else{
-									errorMessage = "Unable to update the user details.";
+									errorMessage = "Unable to update user details.";
 								}
-							}else{
-								errorMessage = "Please use a different email address.";
+							}else if (isEmailInUse){
+								errorMessage = "Please choose a different email address.";
+							}else if (isUsernameInUse){
+								errorMessage = "Please choose a different username.";
 							}
 						}else{
 							errorMessage = "Invalid expiration date. Use MM/YYYY format or make sure the date is in the future.";
