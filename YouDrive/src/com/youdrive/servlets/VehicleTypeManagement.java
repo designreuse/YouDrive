@@ -169,6 +169,8 @@ public class VehicleTypeManagement extends HttpServlet {
 					errorMessage = "Hourly Pricing must be greater than or equal to zero.";
 				}else if (dailyPrice < 0){
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
+				}else if (dailyPrice < hourlyPrice){
+					errorMessage = "Daily pricing must be greater than or equal to hourly pricing.";
 				}else{
 					boolean isTypeInUse = ivtm.isTypeInUse(type);
 					//If the vehicle type has not been created OR the type is unchanged.
@@ -215,8 +217,10 @@ public class VehicleTypeManagement extends HttpServlet {
 				Double dailyPrice = Double.parseDouble(dPrice);
 				if (hourlyPrice < 0 ){
 					errorMessage = "Hourly Pricing must be greater than or equal to zero.";
-				}else if (dailyPrice < 9){
+				}else if (dailyPrice < 0){
 					errorMessage = "Daily Pricing must be greater than or equal to zero.";
+				}else if (dailyPrice < hourlyPrice){
+					errorMessage = "Daily pricing must be greater than or equal to hourly pricing.";
 				}else{
 					boolean isTypeInUse = ivtm.isTypeInUse(type);
 					if (!isTypeInUse){
