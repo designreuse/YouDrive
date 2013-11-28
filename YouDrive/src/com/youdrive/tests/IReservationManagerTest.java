@@ -40,5 +40,11 @@ public class IReservationManagerTest {
 		}
 		assertEquals("getReservations",14,r.size());
 	}
+	
+	@Test 
+	public void testisLocationInUser(){
+		int count = irm.checkIfLocationInUse(4);
+		assertEquals("testisLocationInUser",2,count);
+	}
 
 }

@@ -26,6 +26,7 @@ public class ReservationDAO implements IReservationManager{
 	private PreparedStatement makeReservationStmt;
 	private PreparedStatement checkOpenReservationByVehicleStmt;
 	private PreparedStatement addReservationStatusStmt;
+	private PreparedStatement getAllLocationsStmt;
 	private PreparedStatement isVehicleInUseStmt;
 	private PreparedStatement cancelReservationStmt;
 	private PreparedStatement getReservationStmt;
@@ -33,7 +34,7 @@ public class ReservationDAO implements IReservationManager{
 	private SimpleDateFormat sdf;
 	private Constants cs = Constants.getInstance();
 	private Connection conn;
-	
+
 	public ReservationDAO(){
 		try{
 			conn = ConnectionManager.getInstance();
@@ -48,7 +49,8 @@ public class ReservationDAO implements IReservationManager{
 			isVehicleInUseStmt = conn.prepareStatement("select count(*) from Reservations where vehicleID = ?");
 			cancelReservationStmt = conn.prepareStatement("insert into ReservationStatus values(DEFAULT,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			getReservationStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.id = ?");
-			getUserReservationsStmt = conn.prepareCall("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.customerID = ?");
+			getUserReservationsStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.customerID = ?");
+			getAllLocationsStmt = conn.prepareStatement("select r.*,rs.id as reservationStatusID,rs.dateAdded,rs.reservationStatus from Reservations r left outer join ReservationStatus rs on rs.reservationID = r.id where r.locationID = ?");
 			sdf = new SimpleDateFormat("MM/dd/yyyy");
 			System.out.println("Instantiated ReservationDAO");
 		}catch(SQLException e){
@@ -87,7 +89,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return temp;
 	}
-	
+
 	@Override
 	public ArrayList<Reservation> getUserReservations(int userID){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
@@ -111,7 +113,7 @@ public class ReservationDAO implements IReservationManager{
 					results.add(temp);
 				}
 				temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
-				
+
 				prevReservationID = reservationID;
 			}
 		}catch(SQLException e){
@@ -121,7 +123,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}		
-	
+
 	@Override
 	public int cancelReservation(int reservationID){
 		int results = -1;
@@ -138,7 +140,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}	
-	
+
 	@Override
 	public int getCancelledOrReturnedReservationCount(int vehicleID){
 		//Returns 0 if no cancelled/return reservations found
@@ -156,7 +158,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 	@Override
 	public int isVehicleInUse(int vehicleID){
 		int results = -1;
@@ -173,9 +175,9 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 	@Override 
-	public String getStatus(int reservationID){
+	public String getCancelledOrReturnedStatus(int reservationID){
 		String results = "";
 		try{
 			getCancelledOrReturnedReservationStatusStmt.setInt(1,reservationID);
@@ -190,7 +192,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 
 	@Override
 	public ArrayList<ReservationStatus> getReservationStatus(int reservationID){
@@ -212,7 +214,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 	@Override
 	public ArrayList<Reservation> getAllReservations(int locationID, int vehicleID){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
@@ -235,7 +237,7 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 	@Override
 	public ArrayList<Reservation> getVehiclesInUse(int locationID, int vehicleID){
 		ArrayList<Reservation> results = new ArrayList<Reservation>();
@@ -257,21 +259,44 @@ public class ReservationDAO implements IReservationManager{
 		}
 		return results;
 	}
-	
+
 	@Override
 	public int checkIfLocationInUse(int locationID){
+		int count = 0;
 		try{
-			checkLocationsInFutureReservationsStmt.setInt(1, locationID);
-			ResultSet rs = checkLocationsInFutureReservationsStmt.executeQuery();
-			if (rs.next()){
-				return rs.getInt(1);
-			}	
+			ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+			getAllLocationsStmt.setInt(1, locationID);
+			ResultSet locs = getAllLocationsStmt.executeQuery();
+			int prevReservationID = 0;
+			Reservation temp = null;
+			while (locs.next()){
+				int reservationID = locs.getInt("id");
+				int customerID = locs.getInt("customerID");
+				int vehicleID = locs.getInt("vehicleID");
+				java.util.Date sd = locs.getTimestamp("reservationStart");
+				java.util.Date ed = locs.getTimestamp("reservationEnd");
+				int statusID = locs.getInt("reservationStatusID");
+				java.util.Date da = locs.getTimestamp("dateAdded");
+				String status = locs.getString("reservationStatus");
+				if (prevReservationID != reservationID){
+					temp = new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed);
+					reservations.add(temp);
+				}
+				temp.addReservationStatus(new ReservationStatus(statusID,reservationID,da,status));
+				prevReservationID = reservationID;
+			}
+			for (Reservation r : reservations){
+				ArrayList<ReservationStatus> rList = r.getReservationStatusList();
+				if (rList.size() == 1){
+					count += 1;
+				}
+			}
 		}catch(SQLException e){
 			System.err.println(cs.getError(e.getErrorCode()));
 		}catch(Exception e){
 			System.err.println("Problem with checkIfLocationInUse method: " + e.getClass().getName() + ": " + e.getMessage());	
 		}
-		return -1;
+		return count;
 	}
 
 

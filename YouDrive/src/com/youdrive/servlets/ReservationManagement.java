@@ -205,7 +205,7 @@ public class ReservationManagement extends HttpServlet {
 																	|| (rStartDate.compareTo(sDate) <= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) >= 0 && rEndDate.compareTo(sDate) > 0) ){
 
 																//Check reservationStatus if overlap is found.
-																String reservationStatus = irm.getStatus(r.getId());
+																String reservationStatus = irm.getCancelledOrReturnedStatus(r.getId());
 																if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
 																	System.err.println("Found single sample of vehicle and location combination that overlaps. Breaking from inner for loop.");
 																	foundOverlap = true;
