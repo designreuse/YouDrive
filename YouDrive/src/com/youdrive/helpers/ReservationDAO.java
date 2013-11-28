@@ -76,9 +76,8 @@ public class ReservationDAO implements IReservationManager{
 				String status = rs.getString("reservationStatus");
 				if (prevReservationID != reservationID){
 					temp = new Reservation(reservationID, customerID, locationID, vehicleID, sd, ed);
-				}else{
-					temp.addReservationStatus(new ReservationStatus(statusID,reservationID,da,status));
 				}
+				temp.addReservationStatus(new ReservationStatus(statusID,reservationID,da,status));
 				prevReservationID = reservationID;
 			}
 		}catch(SQLException e){
@@ -109,11 +108,10 @@ public class ReservationDAO implements IReservationManager{
 				String status = rs.getString("reservationStatus");
 				if (prevReservationID != reservationID){
 					temp = new Reservation(reservationID, customerID, locationID, vehicleID, startDate, endDate);
-					temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
 					results.add(temp);
-				}else{
-					temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
 				}
+				temp.addReservationStatus(new ReservationStatus(reservationStatusID, reservationID, dateAdded, status));
+				
 				prevReservationID = reservationID;
 			}
 		}catch(SQLException e){
