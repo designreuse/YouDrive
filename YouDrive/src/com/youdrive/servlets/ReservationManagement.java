@@ -178,7 +178,29 @@ public class ReservationManagement extends HttpServlet {
 											System.out.println("User dates: " + sDate + " end: " + eDate);
 											//Get all vehicles of that type at that location
 											ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
+
 											int size = allVehicles.size();
+											ArrayList<Location> allLocations = ilm.getAllLocations();
+											
+											if (size == 0){
+												//Find next location with good amount of vehicles
+												int max = 0;
+												ArrayList<ArrayList<Vehicle>> masterList = new ArrayList<ArrayList<Vehicle>>();
+												String newLocation = "";
+												for (Location ll : allLocations){
+													if (locationID != ll.getId()){
+														ArrayList<Vehicle> temp = ivm.getAllVehiclesByLocationAndType(ll.getId(),vehicleTypeID);
+														if (temp.size() > max){
+															allVehicles = temp;
+															newLocation = ll.getName();
+														}
+														masterList.add(temp);
+													}
+												}
+												request.setAttribute("errorMessage", "No vehicles found in " +  l.getName() + ". Now looking up similar vehicles in " + newLocation);
+												size = allVehicles.size();
+											}
+											
 											if (size == 0){
 												request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
 											}else{
