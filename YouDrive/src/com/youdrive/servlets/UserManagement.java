@@ -591,7 +591,17 @@ public class UserManagement extends HttpServlet {
 								isEmailInUse = ium.isEmailInUse(email);								
 							}
 							if (!isEmailInUse){
-								if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+								if (!username.equalsIgnoreCase(user.getUsername())){
+									//Check if new username is in use
+									boolean isUsernameInUse = ium.isUsernameInUse(username);
+									if (isUsernameInUse){
+										errorMessage = "Please pick a different username.";
+									}else if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
+										return true;										
+									}else{
+										errorMessage = "Unable to update the user details.";
+									}
+								}else if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
 									return true;
 								}else{
 									errorMessage = "Unable to update the user details.";
