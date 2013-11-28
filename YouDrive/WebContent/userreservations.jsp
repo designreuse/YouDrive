@@ -112,9 +112,9 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
-					<c:if test="${penalty != null && hoursOver != null }">
+					<c:if test="${penalty != null && timeOver != null }">
 						<div id="pricingDisplay" class="alert alert-info">
-							For going over by <c:out value="${hoursOver }"/> hours, you were charged 
+							For going over by <c:out value="${timeOver }"/>, you were charged 
 							<fmt:formatNumber value="${ penalty}" type="currency" />
 						</div>
 					</c:if>

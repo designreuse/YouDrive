@@ -373,19 +373,15 @@ public class ReservationManagement extends HttpServlet {
 										//Returned before reservation end
 										System.out.println("No penalty incurred.");
 									}else{
-										long differenceInMillis = returnedDate.getTime() - reservationEnd.getTime();
-										long diffSeconds = differenceInMillis / 1000;
-										long diffMinutes = differenceInMillis / (60 * 1000);
-										long hourDiff = diffMinutes % 60;
-										long diffHours = differenceInMillis / (60 * 60 * 1000);
 										Vehicle v = ivm.getVehicle(r.getVehicleID());
 										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
-										double penalty = 50.00 + diffHours * vt.getHourlyPrice();
-										
-										
-										System.out.println("Paying penalty of " + penalty + " for going over by " + diffHours + " hours.");
-										request.setAttribute("penalty", penalty);
-										request.setAttribute("hoursOver",diffHours);
+										String penalty = calculateOverage(vt,returnedDate,reservationEnd);
+										int dollarIndex = penalty.indexOf("$");
+										double penaltyCost = Double.parseDouble(penalty.substring(0,dollarIndex));
+										penalty = penalty.substring(dollarIndex+1);
+										System.out.println("Paying penalty of " + penaltyCost + " for going over by " + penalty);
+										request.setAttribute("penalty", penaltyCost);
+										request.setAttribute("timeOver",penalty);
 									}
 									
 									//Add comment to Comments table
@@ -485,7 +481,55 @@ public class ReservationManagement extends HttpServlet {
 	}
 
 	/**
+	 * Calculate how much to charge the user if they returned the vehicle
+	 * past reservation end date
+	 * @param vt
+	 * @param dateReturned
+	 * @param reservationEnd
+	 * @return
+	 */
+	public String calculateOverage(VehicleType vt, java.util.Date dateReturned, java.util.Date reservationEnd){
+		double overage = 0.0;
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		long daysInMilli = hoursInMilli * 24;
+		
+		long different = dateReturned.getTime() - reservationEnd.getTime();
+ 
+		long elapsedDays = different / daysInMilli;
+		different = different % daysInMilli;
+ 
+		long elapsedHours = different / hoursInMilli;
+		different = different % hoursInMilli;
+ 
+		long elapsedMinutes = different / minutesInMilli;
+		different = different % minutesInMilli;
+ 
+		long elapsedSeconds = different / secondsInMilli;
+		System.out.printf(
+			    "%d days, %d hours, %d minutes, %d seconds%n", 
+			    elapsedDays,
+			    elapsedHours, elapsedMinutes, elapsedSeconds);
+		
+		if (elapsedDays > 0){
+			overage += vt.getDailyPrice() * elapsedDays;
+		}
+		if (elapsedHours > 0){
+			double hourlyCost = vt.getHourlyPrice() * elapsedHours;
+			overage += hourlyCost;
+		}
+		if (elapsedMinutes != 0){
+			overage += vt.getHourlyPrice();
+		}
+		
+		return overage + "$" + elapsedDays + " days," + elapsedHours + " hours, and " + elapsedMinutes + " minutes";
+	}
+	
+	
+	/**
 	 * Calculate how much customer will be charged
+	 * http://www.mkyong.com/java/java-time-elapsed-in-days-hours-minutes-seconds/
 	 * @param vt
 	 * @param startDate
 	 * @param stopDate
@@ -493,27 +537,36 @@ public class ReservationManagement extends HttpServlet {
 	 */
 	public double calculateCost(VehicleType vt, java.util.Date startDate, java.util.Date stopDate){
 		double cost = 0.0;
-		long differenceInMillis = stopDate.getTime() - startDate.getTime();
-		long diffSeconds = differenceInMillis / 1000;
-		long diffMinutes = differenceInMillis / (60 * 1000);
-		long diffHours = differenceInMillis / (60 * 60 * 1000);
-		long diffDays = differenceInMillis / (24 * 60 * 60 * 1000);
-		System.out.println("diffSeconds: " + diffSeconds + " diffMinutes: " + diffMinutes + " diffHours: " + diffHours + " diffDays: " + diffDays);
-		if (diffDays > 0){
-			cost += vt.getDailyPrice() * diffDays;
-			diffHours -= diffDays * 24;
-			System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " daily cost: " + cost);
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		long daysInMilli = hoursInMilli * 24;
+		
+		long different = stopDate.getTime() - startDate.getTime();
+ 
+		long elapsedDays = different / daysInMilli;
+		different = different % daysInMilli;
+ 
+		long elapsedHours = different / hoursInMilli;
+		different = different % hoursInMilli;
+ 
+		long elapsedMinutes = different / minutesInMilli;
+		different = different % minutesInMilli;
+ 
+		long elapsedSeconds = different / secondsInMilli;
+		System.out.printf(
+			    "%d days, %d hours, %d minutes, %d seconds%n", 
+			    elapsedDays,
+			    elapsedHours, elapsedMinutes, elapsedSeconds);
+		
+		if (elapsedDays > 0){
+			cost += vt.getDailyPrice() * elapsedDays;
 		}
-		if (diffHours > 0){
-			double hourlyCost = vt.getHourlyPrice() * diffHours;
-			System.out.println("Days: " + diffDays + " diffHours: " + diffHours + " hourly cost: " + cost);
-			cost += hourlyCost;			
-			long diff = diffMinutes - (diffHours * 60);
-			if (diff < 60){
-				cost += vt.getHourlyPrice();
-			}
+		if (elapsedHours > 0){
+			double hourlyCost = vt.getHourlyPrice() * elapsedHours;
+			cost += hourlyCost;
 		}
-		if (diffMinutes < 60){
+		if (elapsedMinutes != 0){
 			cost += vt.getHourlyPrice();
 		}
 		return cost;

@@ -79,7 +79,7 @@
 						<div id="errorDisplay" class="alert alert-success">
 							<c:out value="${errorMessage }" />
 							<br/>
-							You have been charged <fmt:formatNumber value="${amountCharged}" type="currency" />
+							You will be charged <fmt:formatNumber value="${amountCharged}" type="currency" />
 							for this reservation.
 						</div>
 					</c:if>
