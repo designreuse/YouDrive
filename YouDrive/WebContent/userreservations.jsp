@@ -118,6 +118,10 @@
 							<fmt:formatNumber value="${ penalty}" type="currency" />
 						</div>
 					</c:if>
+					<c:if test="${amountCharged != null && timeUsed != null}">
+						Your credit card has been charged <fmt:formatNumber value="${amountCharged}" type="currency" /> for 
+						the duration of  <c:out value="${timeUsed }"/>.
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>

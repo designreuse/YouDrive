@@ -87,6 +87,22 @@
 										<span>Membership Price: <strong><fmt:formatNumber value="${membershipObj.price }" type="currency" /> </strong></span>
 										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong> months</span>
 										<span>Membership Expiration Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ loggedInUser.memberExpiration}"/></strong></span>
+										
+										<br/><br/>
+										<%-- Extend Membership Form --%>
+										<form id="extendMembershipForm" name="extendMembershipForm" method="post" action="MembershipManagement">
+											<input type="hidden" type="hidden" id="action" name="action" value="extendMembership" />
+											<input type="hidden"  id="customerID" name="customerID" value="${loggedInUser.id }"/>
+											<button type="submit" class="btn btn-success btn-lg">Extend Membership</button>
+										</form>
+										
+										<br/>
+										<%-- Terminate Membership form --%>
+										<form id="terminateMembershipForm" name="terminateMembershipForm" method="post" action="MembershipManagement">
+											<input type="hidden" id="action" name="action" value="terminateUserMembership" />
+											<input type="hidden" id="customerID" name="customerID" value="${loggedInUser.id }"/>
+											<button type="submit" class="btn btn-danger">Terminate Membership</button>
+										</form>
 									</article>
 								</c:when>
 								<c:otherwise>

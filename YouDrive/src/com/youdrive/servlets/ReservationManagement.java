@@ -372,6 +372,14 @@ public class ReservationManagement extends HttpServlet {
 									if (returnedDate.compareTo(reservationEnd) < 0 || returnedDate.compareTo(reservationEnd) == 0){
 										//Returned before reservation end
 										System.out.println("No penalty incurred.");
+										/*Vehicle v = ivm.getVehicle(r.getVehicleID());
+										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
+										String amtCharged = calculateOverage(vt,r.getReservationStart(),returnedDate);
+										int dollarIndex = amtCharged.indexOf("$");
+										double amountCharged = Double.parseDouble(amtCharged.substring(0,dollarIndex));
+										String timeUsed = amtCharged.substring(dollarIndex+1);
+										request.setAttribute("amountCharged", amountCharged);
+										request.setAttribute("timeUsed", timeUsed);*/
 									}else{
 										Vehicle v = ivm.getVehicle(r.getVehicleID());
 										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());

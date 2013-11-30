@@ -699,7 +699,7 @@ public class UserManagement extends HttpServlet {
 					if (u != null){
 						//Don't let logged in admin delete self.
 						if (u.getId() != currentUser.getId()){
-							//check if user has active reservations;
+							//TODO check if user has active reservations;
 							
 							boolean result = ium.deactivateUser(uID);
 							if (!result){
