@@ -177,7 +177,7 @@ public class MembershipManagement extends HttpServlet {
 										//Invalidate user and maybe session
 										if (!loggedInUser.isAdmin()){
 											session.setAttribute("loggedInUser", null);
-											//session.invalidate();
+											session.invalidate();
 										}
 									}
 								}else{

@@ -45,7 +45,7 @@ public class UserDAO implements IUserManager {
 			updateRegularUserStmt = conn.prepareStatement("update " + Constants.USERS + " set username = ?,password=?,firstName=?,lastName=?,state=?,license=?,email=?,address=?,ccType=?,ccNumber=?,ccSecurityCode=?,ccExpirationDate=? where id = ?");
 			checkUsernameStmt = conn.prepareStatement("select username from " + Constants.USERS + " where username = ?");
 			checkEmailStmt  = conn.prepareStatement("select email from " + Constants.USERS + " where email = ?");
-			deactivateUserStmt = conn.prepareStatement("update " + Constants.USERS + " set isActive = 0 where id = ?");
+			deactivateUserStmt = conn.prepareStatement("update " + Constants.USERS + " set memberExpiration = null, isActive = 0 where id = ?");
 			System.out.println("Instantiated UserDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
