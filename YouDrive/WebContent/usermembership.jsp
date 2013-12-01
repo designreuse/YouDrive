@@ -8,16 +8,33 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
+	<script src="js/alertify.min.js"></script>
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
 	<title>My Membership</title>
+	<script type="text/javascript">
+		function confirmTermination(){
+			var msg = "You are about to terminate your membership. If you have active reservations, you will not be able to cancel your membership until you have returned or cancelled your reservations. You will be immediately logged out after performing this operation. Click \"OK\" to continue.";
+			alertify.confirm(msg, function(result) {
+			    if (result) {
+					$('#terminateMembershipForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+		}
+	</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -98,10 +115,11 @@
 										
 										<br/>
 										<%-- Terminate Membership form --%>
+										
+										<button type="submit" onclick="confirmTermination()" class="btn btn-danger">Terminate Membership</button>
 										<form id="terminateMembershipForm" name="terminateMembershipForm" method="post" action="MembershipManagement">
 											<input type="hidden" id="action" name="action" value="terminateUserMembership" />
 											<input type="hidden" id="customerID" name="customerID" value="${loggedInUser.id }"/>
-											<button type="submit" class="btn btn-danger">Terminate Membership</button>
 										</form>
 									</article>
 								</c:when>
