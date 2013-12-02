@@ -27,6 +27,7 @@ public class UserDAO implements IUserManager {
 	private PreparedStatement checkUsernameStmt;
 	private PreparedStatement checkEmailStmt;
 	private PreparedStatement deactivateUserStmt;
+	private PreparedStatement extendMembershipStmt;
 
 	private Constants cs = Constants.getInstance();
 	private Connection conn = null;
@@ -46,6 +47,7 @@ public class UserDAO implements IUserManager {
 			checkUsernameStmt = conn.prepareStatement("select username from " + Constants.USERS + " where username = ?");
 			checkEmailStmt  = conn.prepareStatement("select email from " + Constants.USERS + " where email = ?");
 			deactivateUserStmt = conn.prepareStatement("update " + Constants.USERS + " set memberExpiration = null, isActive = 0 where id = ?");
+			extendMembershipStmt = conn.prepareStatement("update " + Constants.USERS + " set memberExpiration = ? where id = ?");
 			System.out.println("Instantiated UserDAO");
 		}catch(SQLException e){
 			System.err.println(e.getErrorCode());
@@ -54,6 +56,21 @@ public class UserDAO implements IUserManager {
 		}
 	}
 
+	@Override
+	public boolean extendMembership(java.util.Date newExpirationDate, int userID){
+		try{
+			extendMembershipStmt.setTimestamp(1, new java.sql.Timestamp(newExpirationDate.getTime()));
+			extendMembershipStmt.setInt(2, userID);
+			extendMembershipStmt.executeUpdate();
+			return true;
+		}catch(SQLException e){
+			System.err.println(e.getErrorCode());
+		}catch(Exception e){
+			System.err.println("Problem with extendMembership: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return false;
+	}
+	
 	@Override
 	public int addAdminUser(String username, String password, String firstName, String lastName, String email) {
 		int userID = 0;

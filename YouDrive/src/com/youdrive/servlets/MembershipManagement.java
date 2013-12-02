@@ -85,10 +85,15 @@ public class MembershipManagement extends HttpServlet {
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
 		IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
+		IUserManager ium = (UserDAO)session.getAttribute("userMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
 			session.setAttribute("membershipMgr", imm);
 		}
+		if (ium == null){
+			ium = new UserDAO();
+			session.setAttribute("userMgr", ium);
+		}		
 		String dispatchedPage = "";
 		String action = request.getParameter("action");
 		if (action != null && !action.isEmpty()){
@@ -138,14 +143,21 @@ public class MembershipManagement extends HttpServlet {
 				//By default, extend by 6 months. 
 				//TODO allow use to choose new plan to extend to.
 				//Assumes the user on usermembership.jsp is a customer. 
+				System.out.println("extendMembership action called.");
 				User user = (User)session.getAttribute("loggedInUser");
 				if (user != null){
 					if (user.isActive()){
-						dispatchedPage = (user.isAdmin()) ? "/managecustomers.jsp":"/index.jsp";
+						dispatchedPage = (user.isAdmin()) ? "/managecustomers.jsp":"/usermembership.jsp";
 						//Id of 1 in Memberships table should be the default plan
 						Membership defaultPlan = imm.getMembership(1);
 						if (defaultPlan != null){
-							if (extendMembership(request,session,user, defaultPlan)){
+							java.util.Date currentExpDate = user.getMemberExpiration();
+							Calendar newExpirationDate = Calendar.getInstance();
+							newExpirationDate.setTime(currentExpDate);
+							newExpirationDate.add(Calendar.MONTH, defaultPlan.getDuration());
+							boolean result = ium.extendMembership(newExpirationDate.getTime(), user.getId());
+							
+							if (result){
 								request.setAttribute("infoMessage","Successfully extended your membership plan. Your card has been charged $" + defaultPlan.getPrice());
 							}else{
 								request.setAttribute("errorMessage", "Unable to extend your membership at this time.");
@@ -169,13 +181,7 @@ public class MembershipManagement extends HttpServlet {
 				if (loggedInUser != null){
 					if (userID != null && !userID.isEmpty()){
 						try{
-							int uID = Integer.parseInt(userID);
-							IUserManager ium = (UserDAO) session.getAttribute("userMgr");
-							if (ium == null){
-								ium = new UserDAO();
-								session.setAttribute("userMgr", ium);
-							}		
-
+							int uID = Integer.parseInt(userID);	
 							IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");						
 							if (irm == null){
 								irm = new ReservationDAO();
@@ -234,15 +240,6 @@ public class MembershipManagement extends HttpServlet {
 		dispatcher.forward(request,response);
 	}
 
-	private boolean extendMembership(HttpServletRequest request, HttpSession session, User user, Membership defaultPlan) {
-		java.util.Date currentExpDate = user.getMemberExpiration();
-		Calendar newExpirationDate = Calendar.getInstance();
-		newExpirationDate.setTime(currentExpDate);
-		newExpirationDate.add(Calendar.MONTH, defaultPlan.getDuration());
-		
-		
-		return false;
-	}
 
 	private int addMembership(HttpServletRequest request,IMembershipManager imm){
 		int membershipID = 0;

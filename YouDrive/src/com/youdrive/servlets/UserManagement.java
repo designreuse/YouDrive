@@ -181,9 +181,16 @@ public class UserManagement extends HttpServlet {
 					request.setAttribute("errorMessage","");
 					//Send user to right landing page
 					if (user.isActive()){
-						//Stash logged in user to session context
-						session.setAttribute("loggedInUser", user);
-						dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
+						//Check user's expiration date;
+						java.util.Date currentDate = Calendar.getInstance().getTime();
+						if (currentDate.compareTo(user.getMemberExpiration()) < 0){
+							//Stash logged in user to session context
+							session.setAttribute("loggedInUser", user);
+							dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
+						}else{
+							request.setAttribute("errorMessage", "Membership has expired.");
+							dispatchedPage = "/login.jsp";
+						}
 					}else{
 						request.setAttribute("errorMessage", "Account deactivated.");
 						dispatchedPage = "/login.jsp";
@@ -288,7 +295,7 @@ public class UserManagement extends HttpServlet {
 				}else{
 					request.setAttribute("errorMessage", "Not authorized to perform this request.");
 				}
-				
+
 			}else{
 				dispatchedPage = "/login.jsp";
 			}
@@ -553,7 +560,7 @@ public class UserManagement extends HttpServlet {
 			if (!username.equalsIgnoreCase(user.getUsername())){
 				isUsernameInUse  = ium.isUsernameInUse(username);
 			}
-				
+
 			if (!isEmailInUse && !isUsernameInUse){
 				if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
 					return true;
@@ -684,7 +691,7 @@ public class UserManagement extends HttpServlet {
 		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
 	}
-	
+
 	private boolean deactivateUser(HttpServletRequest request, HttpSession session, IUserManager ium, IReservationManager irm, User currentUser){
 		System.out.println("Calling deactivateCustomer module");
 		String errorMessage = "";
@@ -700,7 +707,7 @@ public class UserManagement extends HttpServlet {
 						//Don't let logged in admin delete self.
 						if (u.getId() != currentUser.getId()){
 							//TODO check if user has active reservations;
-							
+
 							boolean result = ium.deactivateUser(uID);
 							if (!result){
 								errorMessage = "Error deleting Admin User.";
