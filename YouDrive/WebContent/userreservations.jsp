@@ -73,7 +73,7 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://localhost:8080/YouDrive">YouDrive</a>
+				<a class="navbar-brand" href="index.jsp">YouDrive</a>
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
@@ -112,11 +112,15 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
-					<c:if test="${penalty != null && hoursOver != null }">
+					<c:if test="${penalty != null && timeOver != null }">
 						<div id="pricingDisplay" class="alert alert-info">
-							For going over by <c:out value="${hoursOver }"/> hours, you were charged 
+							For going over by <c:out value="${timeOver }"/>, you were charged 
 							<fmt:formatNumber value="${ penalty}" type="currency" />
 						</div>
+					</c:if>
+					<c:if test="${amountCharged != null && timeUsed != null}">
+						Your credit card has been charged <fmt:formatNumber value="${amountCharged}" type="currency" /> for 
+						the duration of  <c:out value="${timeUsed }"/>.
 					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">

@@ -23,8 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.youdrive.helpers.MembershipDAO;
+import com.youdrive.helpers.ReservationDAO;
 import com.youdrive.helpers.UserDAO;
 import com.youdrive.interfaces.IMembershipManager;
+import com.youdrive.interfaces.IReservationManager;
 import com.youdrive.interfaces.IUserManager;
 import com.youdrive.models.User;
 import com.youdrive.models.Membership;
@@ -125,9 +127,14 @@ public class UserManagement extends HttpServlet {
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
 		IUserManager ium = (UserDAO) session.getAttribute("userMgr");
+		IReservationManager irm = (ReservationDAO)session.getAttribute("reservationMgr");
 		if (ium == null){
 			ium = new UserDAO();
 			session.setAttribute("userMgr", ium);
+		}
+		if (irm == null){
+			irm = new ReservationDAO();
+			session.setAttribute("reservationMgr", irm);
 		}
 		String action = request.getParameter("action");
 		//TODO replace dispatcher = blah blah with single call at bottom
@@ -174,9 +181,22 @@ public class UserManagement extends HttpServlet {
 					request.setAttribute("errorMessage","");
 					//Send user to right landing page
 					if (user.isActive()){
-						//Stash logged in user to session context
-						session.setAttribute("loggedInUser", user);
-						dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
+						if (user.isAdmin()){
+							//Stash logged in user to session context
+							session.setAttribute("loggedInUser", user);
+							dispatchedPage = "/admin.jsp";
+						}else{
+							//Check user's expiration date;
+							java.util.Date currentDate = Calendar.getInstance().getTime();
+							if (currentDate.compareTo(user.getMemberExpiration()) < 0){
+								//Stash logged in user to session context
+								session.setAttribute("loggedInUser", user);
+								dispatchedPage = "/user.jsp";
+							}else{
+								request.setAttribute("errorMessage", "Membership has expired.");
+								dispatchedPage = "/login.jsp";
+							}
+						}
 					}else{
 						request.setAttribute("errorMessage", "Account deactivated.");
 						dispatchedPage = "/login.jsp";
@@ -274,14 +294,14 @@ public class UserManagement extends HttpServlet {
 						request.setAttribute("errorMessage", "Invalid POST request.");
 					}else{
 						dispatchedPage = (page.equalsIgnoreCase("admins")) ? "/manageusers.jsp":"/managecustomers.jsp";
-						if (!deactivateUser(request,session,ium,currentUser)){
+						if (!deactivateUser(request,session,ium,irm,currentUser)){
 							request.setAttribute("errorMessage", "Unable to delete this user.");
 						}
 					}
 				}else{
 					request.setAttribute("errorMessage", "Not authorized to perform this request.");
 				}
-				
+
 			}else{
 				dispatchedPage = "/login.jsp";
 			}
@@ -538,12 +558,26 @@ public class UserManagement extends HttpServlet {
 		}else if (password == null || password.isEmpty()){
 			errorMessage = "Missing password";
 		}else if (isAdmin){
-			//TODO check for duplicate
-			if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
-				return true;
-			}else{
-				errorMessage = "Unable to update the user details.";
+			//if email address is being changed
+			boolean isEmailInUse = false, isUsernameInUse = false;
+			if (!(user.getEmail().equalsIgnoreCase(email))){
+				isEmailInUse = ium.isEmailInUse(email);
 			}
+			if (!username.equalsIgnoreCase(user.getUsername())){
+				isUsernameInUse  = ium.isUsernameInUse(username);
+			}
+
+			if (!isEmailInUse && !isUsernameInUse){
+				if (ium.updateAdminUser(id, username, password, firstName, lastName, email)){
+					return true;
+				}else{
+					errorMessage = "Unable to update the user details.";
+				}
+			}else if (isEmailInUse){
+				errorMessage = "Please choose a different email address.";
+			}else if (isUsernameInUse){
+				errorMessage = "Please choose a different username.";
+			}			
 		}else{
 			//Admin editing a non=admin user so require extra stuff
 			String state = request.getParameter("state");
@@ -578,19 +612,24 @@ public class UserManagement extends HttpServlet {
 						//Validate expiration date
 						ArrayList<Integer> expDates = validateExpirationDate(ccExpirationDate);
 						if (!expDates.isEmpty()){
-							boolean isEmailInUse = false;
 							//if email address is being changed
+							boolean isEmailInUse = false, isUsernameInUse = false;
 							if (!(user.getEmail().equalsIgnoreCase(email))){
-								isEmailInUse = ium.isEmailInUse(email);								
+								isEmailInUse = ium.isEmailInUse(email);
 							}
-							if (!isEmailInUse){
+							if (!username.equalsIgnoreCase(user.getUsername())){
+								isUsernameInUse  = ium.isUsernameInUse(username);
+							}
+							if (!isEmailInUse && !isUsernameInUse){
 								if (ium.updateUser(id, username, password, firstName, lastName, state, license, email, address, ccType, ccNum, ccSecurityCode, ccExpirationDate)){
 									return true;
 								}else{
-									errorMessage = "Unable to update the user details.";
+									errorMessage = "Unable to update user details.";
 								}
-							}else{
-								errorMessage = "Please use a different email address.";
+							}else if (isEmailInUse){
+								errorMessage = "Please choose a different email address.";
+							}else if (isUsernameInUse){
+								errorMessage = "Please choose a different username.";
 							}
 						}else{
 							errorMessage = "Invalid expiration date. Use MM/YYYY format or make sure the date is in the future.";
@@ -658,8 +697,8 @@ public class UserManagement extends HttpServlet {
 		}
 		return (ccNumber.matches("[0-9]+") && ccNumber.length() == 16); 
 	}
-	
-	private boolean deactivateUser(HttpServletRequest request, HttpSession session, IUserManager ium, User currentUser){
+
+	private boolean deactivateUser(HttpServletRequest request, HttpSession session, IUserManager ium, IReservationManager irm, User currentUser){
 		System.out.println("Calling deactivateCustomer module");
 		String errorMessage = "";
 		String userID = request.getParameter("userID");
@@ -672,7 +711,9 @@ public class UserManagement extends HttpServlet {
 					//Look up object in database
 					if (u != null){
 						//Don't let logged in admin delete self.
-						if (u.getId() != currentUser.getId()){				
+						if (u.getId() != currentUser.getId()){
+							//TODO check if user has active reservations;
+
 							boolean result = ium.deactivateUser(uID);
 							if (!result){
 								errorMessage = "Error deleting Admin User.";

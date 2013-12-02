@@ -158,9 +158,7 @@ public class LocationManagement extends HttpServlet {
 				if (l != null){
 					//Check if this location is in use for active reservations
 					int count = irm.checkIfLocationInUse(locationID);
-					if (count == -1){
-						errorMessage = "Unspecified exception getting count of active reservations using this location.";
-					}else if (count > 0){
+					if (count > 0){
 						errorMessage = "Location in use for " + count +  " reservations.";
 					}else{
 						//Check if vehicles are assigned to this location

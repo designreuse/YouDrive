@@ -1,6 +1,7 @@
 package com.youdrive.interfaces;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.youdrive.models.User;
 
@@ -96,6 +97,18 @@ public interface IUserManager {
 	 * @return
 	 */
 	public ArrayList<User> getAllCustomers();
+	/**
+	 * Deactivate a user i.e. "delete" them
+	 * @param userID
+	 * @return boolean
+	 */
 	public boolean deactivateUser(int userID);
+	/**
+	 * Extend a user's membership.
+	 * @param newExpirationDate
+	 * @param userID
+	 * @return boolean
+	 */
+	boolean extendMembership(Date newExpirationDate, int userID);
 	
 }

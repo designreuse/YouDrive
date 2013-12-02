@@ -2,12 +2,15 @@ YouDrive
 ========
 POC for the YouDrive project (part of the Software Engineering class requirements).
 
-0. Create database called YouDrive on localhost. If you decide to create a differently named database, update the JDBC_URL value in Constants.java in the .util package.
+0. Create a mysql user called "team7" with password "overload"
+1. Create database called team7 on localhost. Connection details are in Constants.java if you want to take a look.
 1. Create the tables in the order outlined in the schema.sql document
-2. Create the first admin user by using some variation of this sql script: insert into Users values (DEFAULT,"username","password","firstName","lastName",DEFAULT,DEFAULT,"email@example.com",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,DEFAULT,DEFAULT,NOW());
-3. Go to /admin.jsp to start adding/editing/deleting items.
+2. Populate the tables using data in quick-data.sql
 4. jane:test, james:test, trevor:test, rod:test are username:password pairs that are admins
-5. Hosted here: http://uml.cs.uga.edu:8080/Jane_Doe_invest/ (This is not the final URL but just something to make sure the app will run on uml) - 11/18/2013
+5. test:test is a customer:password pair that is not an admin
+5. Hosted here: http://uml.cs.uga.edu:8080/team7_youride (This is the official url)
+6. http://cobweb.cs.uga.edu/~kochut/Teaching/x050/ProjectInfo-Programming.html
+7. http://cobweb.cs.uga.edu/~kochut/Teaching/x050/TermProject.html
 
 
 

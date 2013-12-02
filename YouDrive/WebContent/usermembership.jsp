@@ -8,16 +8,44 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="css/homepage.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/signin.css">
 	<link rel="stylesheet" href="css/offcanvas.css">
+	<!-- Stylesheet for fancy pants alert box :) -->
+	<link rel="stylesheet" href="css/alertify.core.css" />
+	<link rel="stylesheet" href="css/alertify.bootstrap.css" />
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
+	<script src="js/alertify.min.js"></script>
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
 	<title>My Membership</title>
+	<script type="text/javascript">
+		function confirmTermination(){
+			var msg = "You are about to terminate your membership. If you have active reservations, you will not be able to cancel your membership until you have returned or cancelled your reservations. You will be immediately logged out after performing this operation. Click \"OK\" to continue.";
+			alertify.confirm(msg, function(result) {
+			    if (result) {
+					$('#terminateMembershipForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+		}
+		
+		function confirmExtension(){
+			var msg = "You are about to extend your membership for 6 months which will be added to the current membership expiration date. You will be charged the $150.00 for this plan.";
+			alertify.confirm(msg, function(result) {
+			    if (result) {
+					$('#extendMembershipForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+		}
+	</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -29,7 +57,7 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://localhost:8080/YouDrive">YouDrive</a>
+				<a class="navbar-brand" href="index.jsp">YouDrive</a>
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
@@ -68,6 +96,11 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<c:if test="${infoMessage != null && infoMessage.length() > 0}">
+						<div id="infoDisplay" class="alert alert-success">
+							<c:out value="${infoMessage }" />
+						</div>
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
@@ -76,7 +109,7 @@
 							<c:if test="${ membershipMgr == null}">
 								<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />	
 							</c:if>
-							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}" />
+							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}"/>
 							<c:choose>
 								<c:when test="${membershipObj != null }">
 									<h3>
@@ -87,6 +120,23 @@
 										<span>Membership Price: <strong><fmt:formatNumber value="${membershipObj.price }" type="currency" /> </strong></span>
 										<span>Membership Duration: <strong><c:out value="${membershipObj.duration }"/></strong> months</span>
 										<span>Membership Expiration Date: <strong><fmt:formatDate type="both" dateStyle="long" timeStyle="short" value="${ loggedInUser.memberExpiration}"/></strong></span>
+										
+										<br/><br/>
+										<%-- Extend Membership Form --%>
+										<button onclick="confirmExtension()" class="btn btn-success btn-lg">Extend Membership</button>
+										<form id="extendMembershipForm" name="extendMembershipForm" method="post" action="MembershipManagement">
+											<input type="hidden" type="hidden" id="action" name="action" value="extendMembership" />
+											<input type="hidden"  id="customerID" name="customerID" value="${loggedInUser.id }"/>
+										</form>
+										
+										<br/>
+										<%-- Terminate Membership form --%>
+										
+										<button onclick="confirmTermination()" class="btn btn-danger">Terminate Membership</button>
+										<form id="terminateMembershipForm" name="terminateMembershipForm" method="post" action="MembershipManagement">
+											<input type="hidden" id="action" name="action" value="terminateUserMembership" />
+											<input type="hidden" id="customerID" name="customerID" value="${loggedInUser.id }"/>
+										</form>
 									</article>
 								</c:when>
 								<c:otherwise>

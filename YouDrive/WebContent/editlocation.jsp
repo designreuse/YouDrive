@@ -30,7 +30,7 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://localhost:8080/YouDrive">YouDrive</a>
+				<a class="navbar-brand" href="index.jsp">YouDrive</a>
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
@@ -79,7 +79,7 @@
 												value="<c:out value="${location.address }"/>" />
 											<br />
 											<label for="capacity">Location Capacity:</label>
-											<input  required type="text" id="capacity" name="capacity"
+											<input  required type="number" id="capacity" name="capacity"
 												value="<c:out value="${location.capacity }"/>" />
 											<br />
 											<input type="hidden" name="action" id="action" value="editLocation" />

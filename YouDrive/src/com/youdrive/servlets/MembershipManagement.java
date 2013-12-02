@@ -1,6 +1,8 @@
 package com.youdrive.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -11,9 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.youdrive.helpers.LocationDAO;
 import com.youdrive.helpers.MembershipDAO;
+import com.youdrive.helpers.ReservationDAO;
+import com.youdrive.helpers.UserDAO;
+import com.youdrive.helpers.VehicleDAO;
+import com.youdrive.helpers.VehicleTypeDAO;
+import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.interfaces.IMembershipManager;
+import com.youdrive.interfaces.IReservationManager;
+import com.youdrive.interfaces.IUserManager;
+import com.youdrive.interfaces.IVehicleManager;
+import com.youdrive.interfaces.IVehicleTypeManager;
 import com.youdrive.models.Membership;
+import com.youdrive.models.Reservation;
+import com.youdrive.models.User;
 
 /**
  * Servlet implementation class MembershipManagement
@@ -71,10 +85,15 @@ public class MembershipManagement extends HttpServlet {
 		RequestDispatcher dispatcher = null;
 		HttpSession session = request.getSession();
 		IMembershipManager imm = (MembershipDAO) session.getAttribute("membershipMgr");
+		IUserManager ium = (UserDAO)session.getAttribute("userMgr");
 		if (imm == null){
 			imm = new MembershipDAO();
 			session.setAttribute("membershipMgr", imm);
 		}
+		if (ium == null){
+			ium = new UserDAO();
+			session.setAttribute("userMgr", ium);
+		}		
 		String dispatchedPage = "";
 		String action = request.getParameter("action");
 		if (action != null && !action.isEmpty()){
@@ -117,8 +136,101 @@ public class MembershipManagement extends HttpServlet {
 					}
 				}
 			}else if (action.equalsIgnoreCase("deleteMembership")){
+				//Admin function for removing membership plans
 				deleteMembership(request,imm);
 				dispatchedPage = "/managememberships.jsp";
+			}else if (action.equalsIgnoreCase("extendMembership")){
+				//By default, extend by 6 months. 
+				//TODO allow use to choose new plan to extend to.
+				//Assumes the user on usermembership.jsp is a customer. 
+				System.out.println("extendMembership action called.");
+				User user = (User)session.getAttribute("loggedInUser");
+				if (user != null){
+					if (user.isActive()){
+						dispatchedPage = (user.isAdmin()) ? "/managecustomers.jsp":"/usermembership.jsp";
+						//Id of 1 in Memberships table should be the default plan
+						Membership defaultPlan = imm.getMembership(1);
+						if (defaultPlan != null){
+							java.util.Date currentExpDate = user.getMemberExpiration();
+							Calendar newExpirationDate = Calendar.getInstance();
+							newExpirationDate.setTime(currentExpDate);
+							newExpirationDate.add(Calendar.MONTH, defaultPlan.getDuration());
+							boolean result = ium.extendMembership(newExpirationDate.getTime(), user.getId());
+							
+							if (result){
+								user.setMemberExpiration(newExpirationDate.getTime());
+								request.setAttribute("infoMessage","Successfully extended your membership plan. Your card has been charged $" + defaultPlan.getPrice());
+							}else{
+								request.setAttribute("errorMessage", "Unable to extend your membership at this time.");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Invalid membership plan selected. Admin problem.");
+						}
+					}else{
+						dispatchedPage = "/login.jsp";
+						request.setAttribute("errorMessage", "Your account has been deactivated.");
+					}
+				}else{
+					dispatchedPage = "/login.jsp";
+					request.setAttribute("errorMessage", "You are not logged in.");
+				}
+			}else if (action.equalsIgnoreCase("terminateUserMembership")){
+				System.out.println("Terminate Membership action called.");
+				String userID = request.getParameter("customerID");
+				User loggedInUser = (User)session.getAttribute("loggedInUser");
+				dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/usermembership.jsp";
+				if (loggedInUser != null){
+					if (userID != null && !userID.isEmpty()){
+						try{
+							int uID = Integer.parseInt(userID);	
+							IReservationManager irm = (ReservationDAO) session.getAttribute("reservationMgr");						
+							if (irm == null){
+								irm = new ReservationDAO();
+								session.setAttribute("reservationMgr", irm);
+							}
+							User user = ium.getUser(uID);
+							if (user != null){
+								//Check if user has outstanding reservations
+								//and prompt them to return first. If not, then delete user
+								//Delete the user
+								ArrayList<Reservation> userReservations = irm.getUserReservations(uID);
+								boolean foundActiveReservations = false;
+								for (Reservation r : userReservations){
+									//ReservationStatusList will only be of size 1 if it hasn't been returned or cancelled
+									if (r.getReservationStatusList().size() == 1){
+										foundActiveReservations = true;
+										break;
+									}
+								}
+
+								if (!foundActiveReservations){
+									boolean result = ium.deactivateUser(uID);
+									if (!result){
+										request.setAttribute("errorMessage", "Unable to terminate this membership. Please contact an admin.");
+									}else{
+										dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/index.jsp";
+										//Invalidate user and maybe session
+										if (!loggedInUser.isAdmin()){
+											loggedInUser.setActive(false);
+											session.setAttribute("loggedInUser", null);
+											session.invalidate();
+										}
+									}
+								}else{
+									request.setAttribute("errorMessage", "Active reservations found. Please return or cancel all reservations before cancelling your membership.");
+								}
+							}else{
+								request.setAttribute("errorMessage", "The selected user does not exist.");
+							}
+						}catch(NumberFormatException e){
+							request.setAttribute("errorMessage", "Invalid customer ID found.");
+						}
+					}else{
+						request.setAttribute("errorMessage", "No customer ID parameter found.");
+					}
+				}else{
+					request.setAttribute("errorMessage", "Not authorized to perform this action.");
+				}
 			}else{
 				dispatchedPage = "/index.jsp";
 			}
@@ -129,6 +241,7 @@ public class MembershipManagement extends HttpServlet {
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
 	}
+
 
 	private int addMembership(HttpServletRequest request,IMembershipManager imm){
 		int membershipID = 0;

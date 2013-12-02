@@ -178,11 +178,46 @@ public class ReservationManagement extends HttpServlet {
 											System.out.println("User dates: " + sDate + " end: " + eDate);
 											//Get all vehicles of that type at that location
 											ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
+
 											int size = allVehicles.size();
+											ArrayList<Vehicle> results = new ArrayList<Vehicle>();
+											ArrayList<Location> allLocations = ilm.getAllLocations();
+											boolean isNewLocFound = false;
+
+											int newLocationID = 0, newVehicleTypeID = 0;
+											if (size == 0){
+												//Find next location with good amount of vehicles
+												int max = 0;
+												ArrayList<ArrayList<Vehicle>> masterList = new ArrayList<ArrayList<Vehicle>>();
+												String newLocation = "";
+												for (Location ll : allLocations){
+													if (locationID != ll.getId()){
+														ArrayList<Vehicle> temp = ivm.getAllVehiclesByLocationAndType(ll.getId(),vehicleTypeID);
+														if (temp.size() > max){
+															allVehicles = temp;
+															newLocation = ll.getName();
+															isNewLocFound = true;
+															newLocationID = ll.getId();
+															newVehicleTypeID = vehicleTypeID;
+														}
+														masterList.add(temp);
+													}
+												}
+												request.setAttribute("errorMessage", "No vehicles found in " +  l.getName() + ". Now looking up similar vehicles in " + newLocation);
+												size = allVehicles.size();
+											}
+											
+											//Update the location and vehicle type objects
+											if (isNewLocFound){
+												locationID = newLocationID;
+												vehicleTypeID = newVehicleTypeID;
+												vt = ivtm.getVehicleType(vehicleTypeID);
+												l = ilm.getLocationById(locationID);
+											}
+											
 											if (size == 0){
 												request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
 											}else{
-												ArrayList<Vehicle> results = new ArrayList<Vehicle>();
 												//Going through list and
 												for (Vehicle v : allVehicles){
 													//Get reservations in Reservations that fit this location id and vehicle id
@@ -199,13 +234,13 @@ public class ReservationManagement extends HttpServlet {
 															System.out.println("Reservation dates: " + rStartDate + " End: " + rEndDate);												
 															//x.compareTo(y) < 0 if x is before y
 															//x.compareTo(y) > 0 if x is after y
-															if ((rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) < 0)
-																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
-																	|| (rStartDate.compareTo(sDate) > 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0) 
-																	|| (rStartDate.compareTo(sDate) < 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) > 0 && rEndDate.compareTo(sDate) > 0) ){
+															if ((rStartDate.compareTo(sDate) <= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) <= 0)
+																	|| (rStartDate.compareTo(sDate) >= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(sDate) > 0 && rEndDate.compareTo(eDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) >= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) <= 0 && rEndDate.compareTo(sDate) > 0) 
+																	|| (rStartDate.compareTo(sDate) <= 0 && rStartDate.compareTo(eDate) < 0 && rEndDate.compareTo(eDate) >= 0 && rEndDate.compareTo(sDate) > 0) ){
 
 																//Check reservationStatus if overlap is found.
-																String reservationStatus = irm.getStatus(r.getId());
+																String reservationStatus = irm.getCancelledOrReturnedStatus(r.getId());
 																if (!(reservationStatus.equalsIgnoreCase("Cancelled")) && !(reservationStatus.equalsIgnoreCase("Returned"))){
 																	System.err.println("Found single sample of vehicle and location combination that overlaps. Breaking from inner for loop.");
 																	foundOverlap = true;
@@ -241,7 +276,11 @@ public class ReservationManagement extends HttpServlet {
 													session.setAttribute("searchResults",results);
 													dispatchedPage = "/reservationcheck.jsp";
 												}else{
-													request.setAttribute("errorMessage", "Change parameters. Found vehicles reserved that overlap your start/end dates/times");
+													String  message = "Change parameters. Found vehicles reserved that overlap your start/end dates/times";
+													if (isNewLocFound){
+														message = "No vehicles found using the chosen location and vehicle type combination. Your search was conducted with an alternate location " + l.getName() + " and there were overlapping reservations found.";
+													}
+													request.setAttribute("errorMessage", message);
 												}
 											}
 										}
@@ -270,6 +309,7 @@ public class ReservationManagement extends HttpServlet {
 				int locationID = (int)session.getAttribute("locationID");
 				java.util.Date startDate = (java.util.Date) session.getAttribute("startDate");
 				java.util.Date stopDate = (java.util.Date) session.getAttribute("endDate");
+				VehicleType vt = (VehicleType)session.getAttribute("vehicleType");
 				dispatchedPage = "/reservecheck.jsp";
 
 				if(user == null){ 
@@ -299,6 +339,10 @@ public class ReservationManagement extends HttpServlet {
 									//Update reservationStatus
 									Reservation r = new Reservation(reservationID,user.getId(), locationID, vID, startDate, stopDate);
 									ReservationStatus rs = new ReservationStatus(reservationStatusID, reservationID, reservationDate.getTime(), "Created");
+									
+									double cost = calculateCost(vt,r.getReservationStart(),r.getReservationEnd());
+										
+									request.setAttribute("amountCharged",cost);
 									request.setAttribute("reservedVehicle", v);
 									request.setAttribute("reservation", r);
 									request.setAttribute("reservationStatus", rs);
@@ -345,15 +389,24 @@ public class ReservationManagement extends HttpServlet {
 									if (returnedDate.compareTo(reservationEnd) < 0 || returnedDate.compareTo(reservationEnd) == 0){
 										//Returned before reservation end
 										System.out.println("No penalty incurred.");
+										/*Vehicle v = ivm.getVehicle(r.getVehicleID());
+										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
+										String amtCharged = calculateOverage(vt,r.getReservationStart(),returnedDate);
+										int dollarIndex = amtCharged.indexOf("$");
+										double amountCharged = Double.parseDouble(amtCharged.substring(0,dollarIndex));
+										String timeUsed = amtCharged.substring(dollarIndex+1);
+										request.setAttribute("amountCharged", amountCharged);
+										request.setAttribute("timeUsed", timeUsed);*/
 									}else{
-										long differenceInMillis = returnedDate.getTime() - reservationEnd.getTime();
-										long diffHours = differenceInMillis / (60 * 60 * 1000);
 										Vehicle v = ivm.getVehicle(r.getVehicleID());
 										VehicleType vt = ivtm.getVehicleType(v.getVehicleType());
-										double penalty = 50.00 + diffHours * vt.getHourlyPrice();
-										System.out.println("Paying penalty of " + penalty + " for going over by " + diffHours + " hours.");
-										request.setAttribute("penalty", penalty);
-										request.setAttribute("hoursOver",diffHours);
+										String penalty = calculateOverage(vt,returnedDate,reservationEnd);
+										int dollarIndex = penalty.indexOf("$");
+										double penaltyCost = Double.parseDouble(penalty.substring(0,dollarIndex));
+										penalty = penalty.substring(dollarIndex+1);
+										System.out.println("Paying penalty of " + penaltyCost + " for going over by " + penalty);
+										request.setAttribute("penalty", penaltyCost);
+										request.setAttribute("timeOver",penalty);
 									}
 									
 									//Add comment to Comments table
@@ -452,7 +505,98 @@ public class ReservationManagement extends HttpServlet {
 		dispatcher.forward(request,response);
 	}
 
-
+	/**
+	 * Calculate how much to charge the user if they returned the vehicle
+	 * past reservation end date
+	 * @param vt
+	 * @param dateReturned
+	 * @param reservationEnd
+	 * @return
+	 */
+	public String calculateOverage(VehicleType vt, java.util.Date dateReturned, java.util.Date reservationEnd){
+		double overage = 0.0;
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		long daysInMilli = hoursInMilli * 24;
+		
+		long different = dateReturned.getTime() - reservationEnd.getTime();
+ 
+		long elapsedDays = different / daysInMilli;
+		different = different % daysInMilli;
+ 
+		long elapsedHours = different / hoursInMilli;
+		different = different % hoursInMilli;
+ 
+		long elapsedMinutes = different / minutesInMilli;
+		different = different % minutesInMilli;
+ 
+		long elapsedSeconds = different / secondsInMilli;
+		System.out.printf(
+			    "%d days, %d hours, %d minutes, %d seconds%n", 
+			    elapsedDays,
+			    elapsedHours, elapsedMinutes, elapsedSeconds);
+		
+		if (elapsedDays > 0){
+			overage += vt.getDailyPrice() * elapsedDays;
+		}
+		if (elapsedHours > 0){
+			double hourlyCost = vt.getHourlyPrice() * elapsedHours;
+			overage += hourlyCost;
+		}
+		if (elapsedMinutes != 0){
+			overage += vt.getHourlyPrice();
+		}
+		
+		return overage + "$" + elapsedDays + " days," + elapsedHours + " hours, and " + elapsedMinutes + " minutes";
+	}
+	
+	
+	/**
+	 * Calculate how much customer will be charged
+	 * http://www.mkyong.com/java/java-time-elapsed-in-days-hours-minutes-seconds/
+	 * @param vt
+	 * @param startDate
+	 * @param stopDate
+	 * @return
+	 */
+	public double calculateCost(VehicleType vt, java.util.Date startDate, java.util.Date stopDate){
+		double cost = 0.0;
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		long daysInMilli = hoursInMilli * 24;
+		
+		long different = stopDate.getTime() - startDate.getTime();
+ 
+		long elapsedDays = different / daysInMilli;
+		different = different % daysInMilli;
+ 
+		long elapsedHours = different / hoursInMilli;
+		different = different % hoursInMilli;
+ 
+		long elapsedMinutes = different / minutesInMilli;
+		different = different % minutesInMilli;
+ 
+		long elapsedSeconds = different / secondsInMilli;
+		System.out.printf(
+			    "%d days, %d hours, %d minutes, %d seconds%n", 
+			    elapsedDays,
+			    elapsedHours, elapsedMinutes, elapsedSeconds);
+		
+		if (elapsedDays > 0){
+			cost += vt.getDailyPrice() * elapsedDays;
+		}
+		if (elapsedHours > 0){
+			double hourlyCost = vt.getHourlyPrice() * elapsedHours;
+			cost += hourlyCost;
+		}
+		if (elapsedMinutes != 0){
+			cost += vt.getHourlyPrice();
+		}
+		return cost;
+	}
+	
 	//http://www.mkyong.com/java/how-to-check-if-date-is-valid-in-java/
 	/**
 	 * Return true if the Date is an actual date

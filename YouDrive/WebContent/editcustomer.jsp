@@ -15,7 +15,82 @@
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/offcanvas.js"></script>
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	    <![endif]-->
 	<title>Edit Customer Details</title>
+	<script>
+		$(function() {
+			var cardTypes = [
+				"Mastercard",
+				"Visa",
+				"Discover",
+				"Amex"
+			];
+	    	
+			var states = [
+	      		"AK",
+	      		"AL",
+	      		"AR",
+	      		"CA",
+	      		"CO",
+	      		"CT",
+	      		"DE",
+	     		"DC",
+	    		"FL",
+	    		"GA",
+	     		"HI",
+	     		"ID",
+	      		"IL",
+	      		"IN",
+	     		"IA",
+	      		"KS",
+	     		"KY",
+	      		"LA",
+	      		"ME",
+	      		"MD",
+	      		"MA",
+	      		"MI",
+	      		"MN",
+	      		"MS",
+	      		"MO",
+	      		"MT",
+	      		"NE",
+	      		"NV",
+	      		"NH",
+	      		"NJ",
+	      		"NM",
+	      		"NY",
+	      		"NC",
+	      		"ND",
+	      		"OH",
+	      		"OK",
+	      		"OR",
+	      		"PA",
+	      		"RI",
+	      		"SC",
+	      		"SD",
+	      		"TN",
+	      		"TX",
+	      		"UT",
+	      		"VT",
+	      		"VA",
+	      		"WA",
+	      		"WV",
+	      		"WI",
+	      		"WY"
+	    	];
+	    	$("#state").autocomplete({
+	      		source: states
+	    	});
+	    	
+	    	$("#ccType").autocomplete({
+	      		source: cardTypes
+	    	});
+		});
+	</script>
 </head>
 <body>
 	<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -27,7 +102,7 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://localhost:8080/YouDrive">YouDrive</a>
+				<a class="navbar-brand" href="index.jsp">YouDrive</a>
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
@@ -99,16 +174,18 @@
 												<input id="ccExpirationDate" name="ccExpirationDate" maxlength="7" value="${ user.ccExpirationDate }"/><br />
 												<label for="ccSecurityCode">Verification Code:</label>
 												<input id="ccSecurityCode" name="ccSecurityCode" value="${ user.ccSecurityCode }"/><br />
-											</div>				
+											</div>
+											<br/>
 											<input type="hidden" id="id" name="id" value="${user.id }" />
 											<input type="hidden" id="action" name="action" value="CustomerEditUser"/>
-											<input type="submit" value="Update"/>
+											<button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>
+											
 											<c:choose>
 												<c:when test="${loggedInUser.isAdmin()}">
-													<input type="button" onclick="window.location.replace('managecustomers.jsp')" value="Cancel"/>
+													<button type="button" class="btn btn-default btn-lg btn-block" onclick="window.location.replace('managecustomers.jsp')">Cancel</button>
 												</c:when>
 												<c:otherwise>
-													<input type="button" onclick="window.location.replace('user.jsp')" value="Cancel"/>
+													<button type="button" class="btn btn-default btn-lg btn-block" onclick="window.location.replace('user.jsp')">Cancel</button>
 												</c:otherwise>
 											</c:choose>
 										</form>
