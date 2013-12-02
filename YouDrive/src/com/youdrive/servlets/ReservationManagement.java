@@ -180,8 +180,11 @@ public class ReservationManagement extends HttpServlet {
 											ArrayList<Vehicle> allVehicles = ivm.getAllVehiclesByLocationAndType(locationID, vehicleTypeID);
 
 											int size = allVehicles.size();
+											ArrayList<Vehicle> results = new ArrayList<Vehicle>();
 											ArrayList<Location> allLocations = ilm.getAllLocations();
-											
+											boolean isNewLocFound = false;
+
+											int newLocationID = 0, newVehicleTypeID = 0;
 											if (size == 0){
 												//Find next location with good amount of vehicles
 												int max = 0;
@@ -193,6 +196,9 @@ public class ReservationManagement extends HttpServlet {
 														if (temp.size() > max){
 															allVehicles = temp;
 															newLocation = ll.getName();
+															isNewLocFound = true;
+															newLocationID = ll.getId();
+															newVehicleTypeID = vehicleTypeID;
 														}
 														masterList.add(temp);
 													}
@@ -201,10 +207,17 @@ public class ReservationManagement extends HttpServlet {
 												size = allVehicles.size();
 											}
 											
+											//Update the location and vehicle type objects
+											if (isNewLocFound){
+												locationID = newLocationID;
+												vehicleTypeID = newVehicleTypeID;
+												vt = ivtm.getVehicleType(vehicleTypeID);
+												l = ilm.getLocationById(locationID);
+											}
+											
 											if (size == 0){
 												request.setAttribute("errorMessage", "0 vehicles at that location and type combination");
 											}else{
-												ArrayList<Vehicle> results = new ArrayList<Vehicle>();
 												//Going through list and
 												for (Vehicle v : allVehicles){
 													//Get reservations in Reservations that fit this location id and vehicle id
@@ -263,7 +276,11 @@ public class ReservationManagement extends HttpServlet {
 													session.setAttribute("searchResults",results);
 													dispatchedPage = "/reservationcheck.jsp";
 												}else{
-													request.setAttribute("errorMessage", "Change parameters. Found vehicles reserved that overlap your start/end dates/times");
+													String  message = "Change parameters. Found vehicles reserved that overlap your start/end dates/times";
+													if (isNewLocFound){
+														message = "No vehicles found using the chosen location and vehicle type combination. Your search was conducted with an alternate location " + l.getName() + " and there were overlapping reservations found.";
+													}
+													request.setAttribute("errorMessage", message);
 												}
 											}
 										}
