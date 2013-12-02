@@ -79,7 +79,7 @@
 												value="<c:out value="${location.address }"/>" />
 											<br />
 											<label for="capacity">Location Capacity:</label>
-											<input  required type="text" id="capacity" name="capacity"
+											<input  required type="number" id="capacity" name="capacity"
 												value="<c:out value="${location.capacity }"/>" />
 											<br />
 											<input type="hidden" name="action" id="action" value="editLocation" />
