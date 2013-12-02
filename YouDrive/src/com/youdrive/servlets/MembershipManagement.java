@@ -158,6 +158,7 @@ public class MembershipManagement extends HttpServlet {
 							boolean result = ium.extendMembership(newExpirationDate.getTime(), user.getId());
 							
 							if (result){
+								user.setMemberExpiration(newExpirationDate.getTime());
 								request.setAttribute("infoMessage","Successfully extended your membership plan. Your card has been charged $" + defaultPlan.getPrice());
 							}else{
 								request.setAttribute("errorMessage", "Unable to extend your membership at this time.");
@@ -210,6 +211,7 @@ public class MembershipManagement extends HttpServlet {
 										dispatchedPage = (loggedInUser.isAdmin()) ? "/managecustomers.jsp":"/index.jsp";
 										//Invalidate user and maybe session
 										if (!loggedInUser.isAdmin()){
+											loggedInUser.setActive(false);
 											session.setAttribute("loggedInUser", null);
 											session.invalidate();
 										}

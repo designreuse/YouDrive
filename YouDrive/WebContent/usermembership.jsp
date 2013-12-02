@@ -109,7 +109,7 @@
 							<c:if test="${ membershipMgr == null}">
 								<jsp:useBean id="membershipMgr" class="com.youdrive.helpers.MembershipDAO" scope="session" />	
 							</c:if>
-							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}" />
+							<c:set var="membershipObj" value="${ membershipMgr.getMembership(loggedInUser.membershipLevel)}"/>
 							<c:choose>
 								<c:when test="${membershipObj != null }">
 									<h3>
