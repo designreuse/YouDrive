@@ -181,15 +181,21 @@ public class UserManagement extends HttpServlet {
 					request.setAttribute("errorMessage","");
 					//Send user to right landing page
 					if (user.isActive()){
-						//Check user's expiration date;
-						java.util.Date currentDate = Calendar.getInstance().getTime();
-						if (currentDate.compareTo(user.getMemberExpiration()) < 0){
+						if (user.isAdmin()){
 							//Stash logged in user to session context
 							session.setAttribute("loggedInUser", user);
-							dispatchedPage = user.isAdmin() ? "/admin.jsp":"/user.jsp";
+							dispatchedPage = "/admin.jsp";
 						}else{
-							request.setAttribute("errorMessage", "Membership has expired.");
-							dispatchedPage = "/login.jsp";
+							//Check user's expiration date;
+							java.util.Date currentDate = Calendar.getInstance().getTime();
+							if (currentDate.compareTo(user.getMemberExpiration()) < 0){
+								//Stash logged in user to session context
+								session.setAttribute("loggedInUser", user);
+								dispatchedPage = "/user.jsp";
+							}else{
+								request.setAttribute("errorMessage", "Membership has expired.");
+								dispatchedPage = "/login.jsp";
+							}
 						}
 					}else{
 						request.setAttribute("errorMessage", "Account deactivated.");
