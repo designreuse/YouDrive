@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.catalina.filters.CsrfPreventionFilter;
-
 import com.youdrive.helpers.LocationDAO;
 import com.youdrive.interfaces.ILocationManager;
 import com.youdrive.util.ConnectionManager;
