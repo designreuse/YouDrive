@@ -34,6 +34,17 @@
 			    }
 			});
 		}
+		
+		function confirmExtension(){
+			var msg = "You are about to extend your membership for 6 months which will be added to the current membership expiration date. You will be charged the $150.00 for this plan.";
+			alertify.confirm(msg, function(result) {
+			    if (result) {
+					$('#extendMembershipForm').submit();
+			    } else {
+			        console.log("Cancel clicked.");
+			    }
+			});
+		}
 	</script>
 </head>
 <body>
@@ -85,6 +96,11 @@
 							<c:out value="${errorMessage }" />
 						</div>
 					</c:if>
+					<c:if test="${infoMessage != null && infoMessage.length() > 0}">
+						<div id="infoDisplay" class="alert alert-success">
+							<c:out value="${infoMessage }" />
+						</div>
+					</c:if>
 					<c:choose>
 						<c:when test="${loggedInUser == null}">
 							<p class="error">Please <a href="login.jsp">login</a> to access this page.</p>
@@ -107,16 +123,16 @@
 										
 										<br/><br/>
 										<%-- Extend Membership Form --%>
+										<button onclick="confirmExtension()" class="btn btn-success btn-lg">Extend Membership</button>
 										<form id="extendMembershipForm" name="extendMembershipForm" method="post" action="MembershipManagement">
 											<input type="hidden" type="hidden" id="action" name="action" value="extendMembership" />
 											<input type="hidden"  id="customerID" name="customerID" value="${loggedInUser.id }"/>
-											<button type="submit" class="btn btn-success btn-lg">Extend Membership</button>
 										</form>
 										
 										<br/>
 										<%-- Terminate Membership form --%>
 										
-										<button type="submit" onclick="confirmTermination()" class="btn btn-danger">Terminate Membership</button>
+										<button onclick="confirmTermination()" class="btn btn-danger">Terminate Membership</button>
 										<form id="terminateMembershipForm" name="terminateMembershipForm" method="post" action="MembershipManagement">
 											<input type="hidden" id="action" name="action" value="terminateUserMembership" />
 											<input type="hidden" id="customerID" name="customerID" value="${loggedInUser.id }"/>

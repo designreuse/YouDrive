@@ -2,6 +2,7 @@ package com.youdrive.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -130,9 +131,36 @@ public class MembershipManagement extends HttpServlet {
 					}
 				}
 			}else if (action.equalsIgnoreCase("deleteMembership")){
-				//Admin function
+				//Admin function for removing membership plans
 				deleteMembership(request,imm);
 				dispatchedPage = "/managememberships.jsp";
+			}else if (action.equalsIgnoreCase("extendMembership")){
+				//By default, extend by 6 months. 
+				//TODO allow use to choose new plan to extend to.
+				//Assumes the user on usermembership.jsp is a customer. 
+				User user = (User)session.getAttribute("loggedInUser");
+				if (user != null){
+					if (user.isActive()){
+						dispatchedPage = (user.isAdmin()) ? "/managecustomers.jsp":"/index.jsp";
+						//Id of 1 in Memberships table should be the default plan
+						Membership defaultPlan = imm.getMembership(1);
+						if (defaultPlan != null){
+							if (extendMembership(request,session,user, defaultPlan)){
+								request.setAttribute("infoMessage","Successfully extended your membership plan. Your card has been charged $" + defaultPlan.getPrice());
+							}else{
+								request.setAttribute("errorMessage", "Unable to extend your membership at this time.");
+							}
+						}else{
+							request.setAttribute("errorMessage", "Invalid membership plan selected. Admin problem.");
+						}
+					}else{
+						dispatchedPage = "/login.jsp";
+						request.setAttribute("errorMessage", "Your account has been deactivated.");
+					}
+				}else{
+					dispatchedPage = "/login.jsp";
+					request.setAttribute("errorMessage", "You are not logged in.");
+				}
 			}else if (action.equalsIgnoreCase("terminateUserMembership")){
 				System.out.println("Terminate Membership action called.");
 				String userID = request.getParameter("customerID");
@@ -204,6 +232,16 @@ public class MembershipManagement extends HttpServlet {
 		}
 		dispatcher = ctx.getRequestDispatcher(dispatchedPage);
 		dispatcher.forward(request,response);
+	}
+
+	private boolean extendMembership(HttpServletRequest request, HttpSession session, User user, Membership defaultPlan) {
+		java.util.Date currentExpDate = user.getMemberExpiration();
+		Calendar newExpirationDate = Calendar.getInstance();
+		newExpirationDate.setTime(currentExpDate);
+		newExpirationDate.add(Calendar.MONTH, defaultPlan.getDuration());
+		
+		
+		return false;
 	}
 
 	private int addMembership(HttpServletRequest request,IMembershipManager imm){
